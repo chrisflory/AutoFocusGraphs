@@ -84,11 +84,9 @@ slack = """
 
 def tab(name, body):
     return f"""            <TabItem Header="{name}">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <StackPanel Margin="0,4,0,0" Grid.IsSharedSizeScope="True">
 {body.strip()}
                     </StackPanel>
-                </ScrollViewer>
             </TabItem>"""
 
 
@@ -97,7 +95,7 @@ out = f"""<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <DataTemplate x:Key="AutofocusGraphs_Options">
-        <TabControl Loaded="OptionsPanel_Loaded" Grid.IsSharedSizeScope="True">
+        <TabControl Loaded="OptionsPanel_Loaded" Grid.IsSharedSizeScope="True" VerticalAlignment="Top">
 {tab("General", general)}
 {tab("Discord", discord + "\n\n            " + role_block)}
 {tab("Graph", graph)}

@@ -54,7 +54,7 @@ using System.Runtime.InteropServices;
 
 
 
-[assembly: AssemblyMetadata("FeaturedImageURL", "https://raw.githubusercontent.com/chrisflory/AutofocusGraphs/develop/assets/webhook-icon-af-graphs.png")]
+[assembly: AssemblyMetadata("FeaturedImageURL", "https://raw.githubusercontent.com/chrisflory/AutofocusDiscord/main/assets/webhook-icon-af-graphs.png")]
 
 [assembly: AssemblyMetadata("ScreenshotURL", "")]
 
