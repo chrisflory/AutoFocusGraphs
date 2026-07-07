@@ -1,4 +1,4 @@
-# AutofocusGraphs
+# <img src="assets/webhook-icon-af-graphs.png" alt="AutofocusGraphs logo" width="96" align="middle" /> AutofocusGraphs
 
 **Experimental spin-off of [AutofocusDiscord](https://github.com/chrisflory/AutofocusDiscord)** — same V-curve graph engine, multiple delivery channels.
 
