@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AutofocusGraphs v1.3.1.0 — Security, Bug &amp; Error Review</title>
+  <style>
+    @page { margin: 2cm; size: letter; }
+    body {
+      font-family: "Segoe UI", Calibri, Arial, sans-serif;
+      font-size: 11pt;
+      line-height: 1.45;
+      color: #1a1a1a;
+      max-width: 7.5in;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    h1 { font-size: 20pt; margin-bottom: 0.2em; color: #111; }
+    h2 { font-size: 14pt; margin-top: 1.4em; border-bottom: 1px solid #ccc; padding-bottom: 0.2em; }
+    h3 { font-size: 12pt; margin-top: 1em; }
+    .meta { color: #555; font-size: 10pt; margin-bottom: 1.5em; }
+    table { width: 100%; border-collapse: collapse; margin: 0.8em 0 1.2em; font-size: 10pt; }
+    th, td { border: 1px solid #bbb; padding: 6px 8px; text-align: left; vertical-align: top; }
+    th { background: #f0f0f0; font-weight: 600; }
+    tr:nth-child(even) td { background: #fafafa; }
+    .sev-high { color: #c0392b; font-weight: 600; }
+    .sev-medium { color: #d35400; font-weight: 600; }
+    .sev-low { color: #7f8c8d; font-weight: 600; }
+    .ok { color: #1e8449; font-weight: 600; }
+    .box { background: #f8f9fa; border-left: 4px solid #5865F2; padding: 10px 14px; margin: 1em 0; }
+    code { font-family: Consolas, monospace; font-size: 9.5pt; background: #eee; padding: 1px 4px; }
+    ul { margin: 0.4em 0; }
+    li { margin: 0.25em 0; }
+    .footer { margin-top: 2em; font-size: 9pt; color: #666; border-top: 1px solid #ddd; padding-top: 10px; }
+  </style>
+</head>
+<body>
+
+<h1>AutofocusGraphs — Security, Bug &amp; Error Review</h1>
+<p class="meta">
+  <strong>Project:</strong> AutofocusGraphs NINA Plugin<br />
+  <strong>Version reviewed:</strong> 1.3.1.0 (release build)<br />
+  <strong>Patch applied:</strong> 1.3.1.1 (fixes documented in Section 4)<br />
+  <strong>Review date:</strong> July 4, 2026<br />
+  <strong>Repository:</strong> https://github.com/chrisflory/AutofocusDiscord<br />
+  <strong>Reviewer:</strong> Automated code review (Bugbot + Security Review + manual verification)
+</p>
+
+<div class="box">
+  <strong>Executive summary:</strong> Security posture is <span class="ok">ship-ready</span> for the plugin’s threat model (local NINA user, user-owned Discord webhook). Six logic bugs were found in edge-case paths; all were fixed in <strong>v1.3.1.1</strong>. Core happy-path behavior (per-run posts, graph preview, digests, webhook validation) is sound.
+</div>
+
+<h2>1. Scope &amp; Methodology</h2>
+<p>This review covered the v1.3.1.0 release delta (since v1.3.0.1) plus full-plugin security paths:</p>
+<ul>
+  <li>Automated bug review (logic, races, null handling, digest timing, UI bindings)</li>
+  <li>Automated security review (webhook SSRF, secrets in logs, path traversal, Discord injection, JSON parsing, TLS)</li>
+  <li>Manual verification of findings against source code</li>
+  <li>Release build validation</li>
+</ul>
+<p><strong>Threat model:</strong> Single-user Windows desktop running NINA; plugin watches <code>%LocalAppData%\NINA\AutoFocus</code>; outbound HTTPS posts to user-configured Discord webhooks only.</p>
+
+<h2>2. Security Review</h2>
+<p><strong>Result: No medium, high, or critical issues found.</strong></p>
+
+<table>
+  <thead>
+    <tr><th>Area</th><th>Verdict</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Webhook URL / SSRF</td>
+      <td class="ok">Pass</td>
+      <td><code>WebhookUrlValidator</code> enforces HTTPS, Discord hosts, and <code>/api/.../webhooks/{id}/{token}</code> path shape on every post path.</td>
+    </tr>
+    <tr>
+      <td>Secret exposure</td>
+      <td class="ok">Pass</td>
+      <td>Webhook URL/token not logged. Logs use sanitized filenames and outcome labels only.</td>
+    </tr>
+    <tr>
+      <td>Path traversal</td>
+      <td class="ok">Pass</td>
+      <td>Fixed AutoFocus folder; <code>GetFullPath</code> + prefix check; <code>IncludeSubdirectories = false</code>; <code>*.json</code> only.</td>
+    </tr>
+    <tr>
+      <td>Discord injection</td>
+      <td class="ok">Pass</td>
+      <td>Role pings validated (17–20 digit ID). Content uses <code>Safe()</code> for <code>@everyone</code>/<code>@here</code>. New live-failure embeds sanitized.</td>
+    </tr>
+    <tr>
+      <td>AF JSON parsing</td>
+      <td class="ok">Pass</td>
+      <td>2 MiB max file size; 500 measure points max; <code>JObject.Parse</code> with typed accessors; no unsafe deserialization.</td>
+    </tr>
+    <tr>
+      <td>Network / TLS</td>
+      <td class="ok">Pass</td>
+      <td>Default <code>HttpClient</code>; 60s timeout; no certificate bypass added in v1.3.1.0.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>2.1 Low-severity / defense-in-depth (optional, not blockers)</h3>
+<ul>
+  <li><strong>Embed titles</strong> use raw <code>Filter</code> from JSON without <code>Safe()</code>. A crafted local AF file could put <code>@everyone</code> in an embed title; requires write access to the user’s own AutoFocus folder and only affects that user’s webhook.</li>
+  <li><strong>TOCTOU</strong>: path containment is checked before file settle/read; re-check immediately before read would tighten hygiene on shared machines.</li>
+</ul>
+
+<h2>3. Bug &amp; Error Findings (v1.3.1.0)</h2>
+
+<table>
+  <thead>
+    <tr><th>Severity</th><th>Location</th><th>Finding</th><th>Status</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="sev-high">High</td>
+      <td><code>SequenceDigestCoordinator.cs</code></td>
+      <td><strong>Sequence digest race on back-to-back runs.</strong> <code>OnSequenceFinished</code> is async; <code>PostSequenceDigestAsync</code> re-read reports at post time. If the next sequence starts during wait/post, <code>BeginSequence()</code> clears <code>sequenceReports</code> — digest can be empty, wrong, or throw.</td>
+      <td class="ok">Fixed in 1.3.1.1</td>
+    </tr>
+    <tr>
+      <td class="sev-medium">Medium</td>
+      <td><code>AutofocusLiveFailureMonitor.cs</code></td>
+      <td><strong>Live AF failure alerts blocked in digest-only mode.</strong> Posting required <code>PostPerRun || PostFailures</code> even when <strong>Post when autofocus ends without a JSON report</strong> was enabled.</td>
+      <td class="ok">Fixed in 1.3.1.1</td>
+    </tr>
+    <tr>
+      <td class="sev-medium">Medium</td>
+      <td><code>SequenceDigestCoordinator.cs</code></td>
+      <td><strong>Pending post wait skipped.</strong> Reports landing after wait-loop timeout but before final count check could skip <code>WaitForPendingPostsAsync</code>, causing digest before per-run post completes.</td>
+      <td class="ok">Fixed in 1.3.1.1</td>
+    </tr>
+    <tr>
+      <td class="sev-medium">Medium</td>
+      <td><code>Options.xaml</code> / <code>AutofocusGraphs.cs</code></td>
+      <td><strong><code>DiscordEnabled</code> not synced with UI toggle.</strong> Master checkbox bound to <code>Enabled</code> only; if <code>DiscordEnabled</code> was off, status showed “Discord posting is turned off” with no way to fix from UI.</td>
+      <td class="ok">Fixed in 1.3.1.1</td>
+    </tr>
+    <tr>
+      <td class="sev-low">Low</td>
+      <td><code>SessionDigestService.cs</code></td>
+      <td><strong>Shutdown digest required <code>Enabled</code>.</strong> Disabling monitoring before NINA exit skipped configured shutdown digest despite collected reports.</td>
+      <td class="ok">Fixed in 1.3.1.1</td>
+    </tr>
+    <tr>
+      <td class="sev-low">Low</td>
+      <td><code>AutofocusRunTracker.cs</code></td>
+      <td><strong><code>lastReportUtc</code> read outside lock.</strong> Theoretical race in live failure detection on tight timing; low impact on single-user desktop.</td>
+      <td class="ok">Fixed in 1.3.1.1</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>4. Fixes Applied (v1.3.1.1)</h2>
+<table>
+  <thead>
+    <tr><th>Fix</th><th>Implementation</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Sequence digest snapshot</td>
+      <td><code>WaitAndSnapshotSequenceReportsAsync</code> returns a frozen report list; <code>PostSequenceDigestAsync(reports)</code> posts from snapshot.</td>
+    </tr>
+    <tr>
+      <td>Pending post wait</td>
+      <td>Always wait for pending per-run posts whenever sequence reports exist, regardless of how the wait loop exited.</td>
+    </tr>
+    <tr>
+      <td>Live AF in digest-only</td>
+      <td>Removed gate requiring per-run/failure toggles; live failure posts only need <code>PostLiveAfFailures</code>, <code>DiscordEnabled</code>, and valid webhook.</td>
+    </tr>
+    <tr>
+      <td>UI / DiscordEnabled sync</td>
+      <td>Master <code>Enabled</code> setter now sets <code>DiscordEnabled</code> to the same value and refreshes status.</td>
+    </tr>
+    <tr>
+      <td>Shutdown digest</td>
+      <td>New <code>PostShutdownDigestAsync</code> bypasses <code>Enabled</code> check; teardown uses it when <code>PostDigestOnShutdown</code> is on.</td>
+    </tr>
+    <tr>
+      <td>Thread safety</td>
+      <td><code>HasNewReportSince</code> reads <code>lastReportUtc</code> under the tracker lock.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>5. Build &amp; Compile</h2>
+<p>Release configuration builds successfully with <code>dotnet build -c Release</code>. Release artifact contains 7 managed/native DLLs per publishing docs. NINA must be closed during deploy if post-build copy targets the plugin folder (DLL lock).</p>
+
+<h2>6. Overall Verdict</h2>
+<table>
+  <thead>
+    <tr><th>Category</th><th>v1.3.1.0</th><th>After 1.3.1.1 patch</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Security</td><td class="ok">Ship-ready</td><td class="ok">Ship-ready</td></tr>
+    <tr><td>Core happy path</td><td class="ok">Ship-ready</td><td class="ok">Ship-ready</td></tr>
+    <tr><td>Edge cases</td><td>6 known gaps</td><td class="ok">Addressed</td></tr>
+  </tbody>
+</table>
+
+<p><strong>Recommendation:</strong> Use <strong>v1.3.1.1</strong> (or later) for production. v1.3.1.0 is acceptable for typical single-sequence overnight use with per-run posting enabled; the patch is recommended for back-to-back sequences, digest-only + live-failure setups, and shutdown digest reliability.</p>
+
+<div class="footer">
+  Generated for AutofocusGraphs · Chris Flory @starjunkie · MIT License<br />
+  This report documents automated and manual review findings; it is not a formal penetration test or certification.
+</div>
+
+</body>
+</html>

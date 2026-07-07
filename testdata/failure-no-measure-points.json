@@ -1,0 +1,9 @@
+{
+  "FinalHFR": 2.0,
+  "Filter": "L",
+  "Timestamp": "2026-07-03T20:00:05.0000000-05:00",
+  "MeasurePoints": [],
+  "RSquares": {
+    "Hyperbolic": 0.99
+  }
+}

@@ -1,0 +1,41 @@
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio
+.vs/
+
+# NuGet
+*.nupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+project.lock.json
+artifacts/
+
+# Secrets — never commit webhook URLs or local config dumps
+*.webhook
+secrets.*
+.env
+.env.*
+
+# Others
+~$*
+*~
+*.zip
+
+# Local release packaging (artifacts are published via GitHub Releases)
+publish/

@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <OutputType>Library</OutputType>
+    <RootNamespace>AutofocusGraphs</RootNamespace>
+    <AssemblyName>AutofocusGraphs</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWPF>true</UseWPF>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <!-- Required so ScottPlot/SkiaSharp are copied next to the plugin DLL for NINA to load -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="tools\**\*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NINA.Plugin" Version="3.3.0.1047-nightly" />
+    <PackageReference Include="ScottPlot" Version="5.0.55" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="assets\avatar.png" />
+    <EmbeddedResource Include="assets\graph-preview-sample.json" />
+    <EmbeddedResource Include="assets\graph-preview-backlash-sample.json" />
+  </ItemGroup>
+  <!-- Deploy plugin + ScottPlot/SkiaSharp only (do not ship NINA assemblies into the plugin folder).
+       Native Skia/HarfBuzz libs are copied to the plugin root so NINA's ALC can find them. -->
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <PropertyGroup>
+      <PluginDeployDir>$(LocalAppData)\NINA\Plugins\3.0.0\$(TargetName)\</PluginDeployDir>
+    </PropertyGroup>
+    <ItemGroup>
+      <_ManagedDeps Include="$(TargetDir)$(TargetFileName)" />
+      <_ManagedDeps Include="$(TargetDir)ScottPlot.dll" />
+      <_ManagedDeps Include="$(TargetDir)SkiaSharp.dll" />
+      <_ManagedDeps Include="$(TargetDir)SkiaSharp.HarfBuzz.dll" />
+      <_ManagedDeps Include="$(TargetDir)HarfBuzzSharp.dll" />
+      <!-- Prefer x64 natives beside the managed DLLs for reliable loading inside NINA -->
+      <_NativeRoot Include="$(TargetDir)runtimes\win-x64\native\libSkiaSharp.dll" />
+      <_NativeRoot Include="$(TargetDir)runtimes\win-x64\native\libHarfBuzzSharp.dll" />
+    </ItemGroup>
+    <MakeDir Directories="$(PluginDeployDir)" />
+    <Copy SourceFiles="@(_ManagedDeps)" DestinationFolder="$(PluginDeployDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(_NativeRoot)" DestinationFolder="$(PluginDeployDir)" SkipUnchangedFiles="true" />
+    <Message Importance="high" Text="Deployed plugin to $(PluginDeployDir)" />
+  </Target>
+</Project>

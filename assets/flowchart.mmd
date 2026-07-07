@@ -1,0 +1,24 @@
+%% Horizontal pipeline — render: python tools/render_flowchart.py
+flowchart LR
+    classDef nina fill:#5865f2,stroke:#4752c4,color:#fff
+    classDef core fill:#36393f,stroke:#72767d,color:#fff
+    classDef sequence stroke:#57f287,stroke-width:3px,fill:#36393f,color:#fff
+    classDef session stroke:#9b59b6,stroke-width:3px,fill:#36393f,color:#fff
+    classDef failure stroke:#ed4245,stroke-width:3px,fill:#36393f,color:#fff
+    classDef discord stroke:#57f287,stroke-width:3px,fill:#36393f,color:#fff
+    classDef graph stroke:#00d4ff,stroke-width:3px,fill:#36393f,color:#fff
+    classDef quality stroke:#f39c12,stroke-width:3px,fill:#36393f,color:#fff
+
+    AF["NINA writes AF JSON"]:::nina
+    W["Folder watcher"]:::core
+    S["File settle"]:::core
+    P["Parse + ReportStore"]:::core
+    AF --> W --> S --> P
+
+    P --> SEQ["Sequence digest<br/>at sequence end · name"]:::sequence
+    P --> SES["Session digest<br/>NINA exit · this session only"]:::session
+    P --> FAIL["Failure posts<br/>bad JSON · live AF"]:::failure
+    P --> D["Upload delay"]:::core
+    D --> QG["Quality gate<br/>R² · HFR"]:::quality
+    QG --> VC["V-curve PNG<br/>overlays · hints · preview"]:::graph
+    VC --> PR["Per-run Discord post"]:::discord

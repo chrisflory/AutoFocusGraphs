@@ -1,0 +1,112 @@
+{
+  "FinalHFR": 2.05,
+  "Version": 2,
+  "Filter": "G",
+  "AutoFocuserName": "Hocus Focus",
+  "StarDetectorName": "Hocus Focus",
+  "Timestamp": "2026-07-03T22:33:00.0000000-05:00",
+  "Temperature": 13.24,
+  "Method": "STARHFR",
+  "Fitting": "HYPERBOLIC",
+  "InitialFocusPoint": {
+    "Value": 2.05,
+    "Error": 0.0,
+    "Position": 11075.0
+  },
+  "CalculatedFocusPoint": {
+    "Value": 2.05,
+    "Error": 0.0,
+    "Position": 11075.0
+  },
+  "PreviousFocusPoint": {
+    "Value": 2.05,
+    "Error": 0.0,
+    "Position": 11070.0
+  },
+  "MeasurePoints": [
+    {
+      "Value": 5.65,
+      "Error": 0.1,
+      "Position": 10675.0
+    },
+    {
+      "Value": 4.8,
+      "Error": 0.1,
+      "Position": 10775.0
+    },
+    {
+      "Value": 3.95,
+      "Error": 0.1,
+      "Position": 10875.0
+    },
+    {
+      "Value": 2.95,
+      "Error": 0.1,
+      "Position": 10975.0
+    },
+    {
+      "Value": 2.1,
+      "Error": 0.1,
+      "Position": 11075.0
+    },
+    {
+      "Value": 3.05,
+      "Error": 0.1,
+      "Position": 11175.0
+    },
+    {
+      "Value": 3.85,
+      "Error": 0.1,
+      "Position": 11275.0
+    },
+    {
+      "Value": 4.8,
+      "Error": 0.1,
+      "Position": 11375.0
+    },
+    {
+      "Value": 5.75,
+      "Error": 0.1,
+      "Position": 11475.0
+    }
+  ],
+  "Intersections": {
+    "GaussianMaximum": null,
+    "QuadraticMinimum": null,
+    "HyperbolicMinimum": {
+      "Value": 2.05,
+      "Error": 0.0,
+      "Position": 11075.0
+    },
+    "TrendLineIntersection": {
+      "Value": 2.05,
+      "Error": 0.0,
+      "Position": 11075.0
+    }
+  },
+  "Fittings": {
+    "LeftTrend": "",
+    "Hyperbolic": "",
+    "Quadratic": "",
+    "Gaussian": "",
+    "RightTrend": ""
+  },
+  "RSquares": {
+    "LeftTrend": 0.99,
+    "Hyperbolic": 0.97,
+    "Quadratic": "NaN",
+    "RightTrend": 0.98
+  },
+  "BacklashCompensation": {
+    "BacklashCompensationModel": "OVERSHOOT",
+    "BacklashOUT": 600,
+    "BacklashIN": 0
+  },
+  "Duration": "00:01:45.1234567",
+  "FocuserOptions": {
+    "AutoFocusStepSize": 100,
+    "BacklashCompensationModel": 1,
+    "BacklashOut": 600,
+    "BacklashIn": 0
+  }
+}

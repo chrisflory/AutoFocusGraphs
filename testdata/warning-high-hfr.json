@@ -1,0 +1,57 @@
+{
+  "FinalHFR": 5.25,
+  "Region": null,
+  "Version": 2,
+  "Filter": "OIII",
+  "AutoFocuserName": "Hocus Focus",
+  "StarDetectorName": "Hocus Focus",
+  "Timestamp": "2026-07-03T20:00:02.0000000-05:00",
+  "Temperature": 13.25,
+  "Method": "STARHFR",
+  "Fitting": "HYPERBOLIC",
+  "InitialFocusPoint": { "Position": 11245.0, "Value": 5.30, "Error": 0.0 },
+  "CalculatedFocusPoint": { "Position": 11233.141024013301, "Value": 5.10, "Error": 0.0 },
+  "PreviousFocusPoint": { "Position": 11233.141024013301, "Value": 5.10, "Error": 0.0 },
+  "MeasurePoints": [
+    { "Position": 10845.0, "Value": 10.4, "Error": 0.28 },
+    { "Position": 10945.0, "Value": 8.1, "Error": 0.32 },
+    { "Position": 11045.0, "Value": 6.8, "Error": 0.33 },
+    { "Position": 11145.0, "Value": 5.9, "Error": 0.21 },
+    { "Position": 11245.0, "Value": 5.25, "Error": 0.05 },
+    { "Position": 11345.0, "Value": 5.9, "Error": 0.23 },
+    { "Position": 11445.0, "Value": 6.9, "Error": 0.50 },
+    { "Position": 11545.0, "Value": 8.2, "Error": 0.63 },
+    { "Position": 11645.0, "Value": 10.1, "Error": 0.39 }
+  ],
+  "Intersections": {
+    "TrendLineIntersection": { "Position": 11235.0, "Value": 4.0, "Error": 0.0 },
+    "HyperbolicMinimum": { "Position": 11233.141024013301, "Value": 5.10, "Error": 0.0 },
+    "QuadraticMinimum": null,
+    "GaussianMaximum": null
+  },
+  "Fittings": {
+    "Quadratic": "",
+    "Hyperbolic": "",
+    "Gaussian": "",
+    "LeftTrend": "",
+    "RightTrend": ""
+  },
+  "RSquares": {
+    "Quadratic": "NaN",
+    "Hyperbolic": 0.998,
+    "LeftTrend": 0.996,
+    "RightTrend": 0.994
+  },
+  "BacklashCompensation": {
+    "BacklashCompensationModel": "OVERSHOOT",
+    "BacklashIN": 0,
+    "BacklashOUT": 600
+  },
+  "Duration": "00:02:11.3776972",
+  "FocuserOptions": {
+    "AutoFocusStepSize": 100,
+    "BacklashIn": 0,
+    "BacklashOut": 600,
+    "BacklashCompensationModel": 1
+  }
+}

@@ -1,0 +1,589 @@
+<ResourceDictionary
+    x:Class="AutofocusGraphs.Options"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DataTemplate x:Key="AutofocusGraphs_Options">
+        <StackPanel Orientation="Vertical" Margin="0,4,0,0" Grid.IsSharedSizeScope="True" Loaded="OptionsPanel_Loaded">
+
+            <Grid Margin="0,0,0,10" ToolTip="Master switch for all Discord posting. When off, no per-run posts, digests, or live failure alerts are sent.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Enable autofocus graph posts" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding Enabled}" VerticalAlignment="Center" />
+            </Grid>
+            <TextBlock Text="{Binding StatusText}" Margin="0,0,0,4" TextWrapping="Wrap" FontStyle="Italic" Opacity="0.8" />
+            <TextBlock Text="{Binding LastPostStatus}" Margin="0,0,0,12" TextWrapping="Wrap" Opacity="0.8" />
+
+            <TextBlock Text="Discord" FontSize="16" FontWeight="Bold" Margin="0,12,0,10" />
+
+            <Grid Margin="0,0,0,10" ToolTip="Post autofocus graphs and digests to Discord when configured.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Enable Discord" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding DiscordEnabled}" VerticalAlignment="Center" />
+            </Grid>
+
+            <TextBlock Text="Discord webhook URL" Margin="0,0,0,4" />
+            <TextBox Text="{Binding WebhookUrl, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" MaxWidth="640" Margin="0,0,0,4" />
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <Button Content="Test webhook" Command="{Binding TestWebhookCommand}" HorizontalAlignment="Left" Padding="12,4"
+                        ToolTip="Send a short test message to this Discord webhook to confirm the URL works." />
+                <TextBlock Text="✓" FontSize="20" FontWeight="Bold" Foreground="#2ECC71" VerticalAlignment="Center" Margin="10,0,0,0"
+                           Visibility="{Binding WebhookTestSuccessVisible}" ToolTip="Test message posted to Discord." />
+                <TextBlock Text="✗" FontSize="20" FontWeight="Bold" Foreground="#E74C3C" VerticalAlignment="Center" Margin="10,0,0,0"
+                           Visibility="{Binding WebhookTestFailureVisible}" ToolTip="{Binding WebhookTestToolTip}" />
+            </StackPanel>
+
+            <TextBlock Text="Discord thread ID (optional)" Margin="0,0,0,4" />
+            <TextBox Text="{Binding DiscordThreadId, UpdateSourceTrigger=PropertyChanged}" MinWidth="240" Margin="0,0,0,4" />
+            <TextBlock Text="Numeric thread ID for an existing thread. Leave empty to post in the channel." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
+
+            <Grid Margin="0,0,0,10" ToolTip="Forum channels only. Posts go into a thread named AF yyyy-MM-dd for the night. Leave off for normal text channels (required — otherwise Discord returns an error).">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Nightly forum thread name (AF yyyy-MM-dd)" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding UseNightlyThreadName}" VerticalAlignment="Center" />
+            </Grid>
+            <TextBlock Text="Forum channels only: posts go into a thread named AF yyyy-MM-dd for the night. Leave OFF for a normal text channel." Margin="0,0,0,10" Opacity="0.7" TextWrapping="Wrap" />
+
+            <TextBlock Text="Embed detail" Margin="0,0,0,4" />
+            <ComboBox ItemsSource="{Binding EmbedModeOptions}" SelectedItem="{Binding EmbedMode}" Width="160" HorizontalAlignment="Left" Margin="0,0,0,8" />
+            <TextBlock Text="Attachments" Margin="0,0,0,4" />
+            <ComboBox ItemsSource="{Binding AttachModeOptions}" SelectedItem="{Binding AttachMode}" Width="160" HorizontalAlignment="Left" Margin="0,0,0,12"
+                      ToolTip="Both = graph + embed. GraphOnly = image with short message. EmbedOnly = text embed, no PNG." />
+
+            <TextBlock Text="Telegram" FontSize="16" FontWeight="Bold" Margin="0,12,0,10" />
+
+            <Grid Margin="0,0,0,10" ToolTip="Post autofocus graphs and digests to a Telegram chat or channel.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Enable Telegram" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding TelegramEnabled}" VerticalAlignment="Center" />
+            </Grid>
+
+            <TextBlock Text="Telegram bot token" Margin="0,0,0,4" />
+            <TextBox Text="{Binding TelegramBotToken, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" MaxWidth="640" Margin="0,0,0,4" />
+            <TextBlock Text="From @BotFather (e.g. 123456789:ABC...). Stored locally only." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
+
+            <TextBlock Text="Telegram chat ID" Margin="0,0,0,4" />
+            <TextBox Text="{Binding TelegramChatId, UpdateSourceTrigger=PropertyChanged}" MinWidth="240" Margin="0,0,0,4" />
+            <TextBlock Text="Numeric chat ID (e.g. -1001234567890) or @channelusername. Bot must be a member." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
+
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                <Button Content="Test Telegram" Command="{Binding TestTelegramCommand}" HorizontalAlignment="Left" Padding="12,4"
+                        ToolTip="Send a short test message via the Telegram Bot API." />
+                <TextBlock Text="✓" FontSize="20" FontWeight="Bold" Foreground="#2ECC71" VerticalAlignment="Center" Margin="10,0,0,0"
+                           Visibility="{Binding TelegramTestSuccessVisible}" ToolTip="Test message posted to Telegram." />
+                <TextBlock Text="✗" FontSize="20" FontWeight="Bold" Foreground="#E74C3C" VerticalAlignment="Center" Margin="10,0,0,0"
+                           Visibility="{Binding TelegramTestFailureVisible}" ToolTip="{Binding TelegramTestToolTip}" />
+            </StackPanel>
+
+            <TextBlock Text="Graph" FontSize="16" FontWeight="Bold" Margin="0,12,0,10" />
+
+            <TextBlock Text="Live preview — toggle overlays below; same PNG sent to enabled destinations."
+                       Margin="0,0,0,4" Opacity="0.7" TextWrapping="Wrap" FontSize="12" />
+            <TextBlock Text="Preview sample" Margin="0,0,0,4" Opacity="0.7" FontSize="12" />
+            <ComboBox ItemsSource="{Binding GraphPreviewSampleOptions}" SelectedItem="{Binding GraphPreviewSample}"
+                      Width="220" HorizontalAlignment="Left" Margin="0,0,0,8"
+                      ToolTip="Normal = good AF curve. Backlash test = synthetic asymmetric V-curve with overshoot IN+OUT for hint testing." />
+            <Border Background="#36393F" CornerRadius="4" Margin="0,0,0,8" Padding="6" HorizontalAlignment="Left" MaxWidth="960"
+                    SnapsToDevicePixels="True" UseLayoutRounding="True">
+                <Image Source="{Binding GraphPreviewImage}" Stretch="Uniform" MaxHeight="540" MaxWidth="960"
+                       RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" UseLayoutRounding="True" />
+            </Border>
+
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <Button Content="All overlays on" Command="{Binding GraphOverlaysAllOnCommand}" Padding="10,4" Margin="0,0,8,0"
+                        ToolTip="Enable every graph overlay (turns off minimal graph mode)." />
+                <Button Content="All overlays off" Command="{Binding GraphOverlaysAllOffCommand}" Padding="10,4" Margin="0,0,8,0"
+                        ToolTip="Minimal graph only — points and final HFR, all other overlays off." />
+                <Button Content="Expand preview" Command="{Binding ExpandGraphPreviewCommand}" Padding="10,4"
+                        ToolTip="Open a larger preview window that updates as you toggle overlays." />
+            </StackPanel>
+
+            <UniformGrid Columns="2" MaxWidth="960" HorizontalAlignment="Left" Margin="0,0,0,12">
+                <Grid Margin="0,2,16,2" ToolTip="Points and final HFR only — hides fits, trends, markers, and other overlays.">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Minimal graph" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <CheckBox Grid.Column="1" IsChecked="{Binding MinimalGraphMode}" VerticalAlignment="Center" />
+                </Grid>
+                <Grid Margin="0,2,16,2" ToolTip="Show the measured HFR value next to each point on the V-curve.">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="HFR point labels" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <CheckBox Grid.Column="1" IsChecked="{Binding ShowMeasurePointLabels}" VerticalAlignment="Center" />
+                </Grid>
+                <Grid Margin="0,2,16,2" ToolTip="Draw NINA's hyperbolic focus curve; R² appears in the legend when enabled.">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Hyperbolic fit" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <CheckBox Grid.Column="1" IsChecked="{Binding ShowHyperbolicFit}" VerticalAlignment="Center" />
+                </Grid>
+                <Grid Margin="0,2,16,2" ToolTip="Draw the parabolic (quadratic) least-squares curve through measure points.">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Parabolic fit" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <CheckBox Grid.Column="1" IsChecked="{Binding ShowParabolicFit}" VerticalAlignment="Center" />
+                </Grid>
+                <Grid Margin="0,2,16,2" ToolTip="Left and right linear trend segments, split at the calculated focus position.">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Trend lines" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <CheckBox Grid.Column="1" IsChecked="{Binding ShowTrendLines}" VerticalAlignment="Center" />
+                </Grid>
+                <Grid Margin="0,2,16,2" ToolTip="Label the left and right trend segments directly on the graph.">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Trend segment labels" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <CheckBox Grid.Column="1" IsChecked="{Binding LabelTrendSegments}" VerticalAlignment="Center" />
+                </Grid>
+                <Grid Margin="0,2,16,2" ToolTip="Vertical dashed line at the calculated focus position (Focus Pos in legend).">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Focus position line" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <CheckBox Grid.Column="1" IsChecked="{Binding ShowFocusPositionLine}" VerticalAlignment="Center" />
+                </Grid>
+                <Grid Margin="0,2,16,2" ToolTip="Top-right overlay: temperature, step size, and run duration.">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Context strip" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <CheckBox Grid.Column="1" IsChecked="{Binding ShowGraphContextStrip}" VerticalAlignment="Center" />
+                </Grid>
+                <Grid Margin="0,2,16,2" ToolTip="Gray dotted vertical line at the previous autofocus position, with Δ focus in steps.">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Previous AF marker" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <CheckBox Grid.Column="1" IsChecked="{Binding ShowPreviousFocusMarker}" VerticalAlignment="Center" />
+                </Grid>
+                <Grid Margin="0,2,16,2" ToolTip="Include R² values for left and right trends in the graph legend.">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Trend R² in legend" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <CheckBox Grid.Column="1" IsChecked="{Binding ShowTrendR2InLegend}" VerticalAlignment="Center" />
+                </Grid>
+                <Grid Margin="0,2,16,2" ToolTip="Blue diamond at the focuser position when the autofocus run started.">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Initial focus marker" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <CheckBox Grid.Column="1" IsChecked="{Binding ShowInitialFocusMarker}" VerticalAlignment="Center" />
+                </Grid>
+                <Grid Margin="0,2,16,2" ToolTip="Vertical bars from each point's HFR uncertainty (JSON Error field). Legend entry: HFR uncertainty.">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="HFR error bars" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <CheckBox Grid.Column="1" IsChecked="{Binding ShowMeasurePointErrorBars}" VerticalAlignment="Center" />
+                </Grid>
+                <Grid Margin="0,2,16,2" ToolTip="Rule-based observations in the lower-left (step size, wing shape, R², etc.). Turn off if you only want the curve.">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Graph analysis hints" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <CheckBox Grid.Column="1" IsChecked="{Binding ShowGraphAnalysisHints}" VerticalAlignment="Center" />
+                </Grid>
+            </UniformGrid>
+
+            <TextBlock Text="Graph options" FontSize="14" FontWeight="SemiBold" Margin="0,4,0,8" Opacity="0.9" />
+            <Grid Margin="0,0,0,10" ToolTip="Append filter name to the graph title (e.g. N.I.N.A. Autofocus Run — L).">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Include filter name in graph title" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding ShowFilterInGraphTitle}" VerticalAlignment="Center" />
+            </Grid>
+            <Grid Margin="0,0,0,12" ToolTip="Corner annotation when the hyperbolic fit minimum and calculated focus differ by more than one step (Fit Δ N steps).">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Warn when fit minimum ≠ calculated focus" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding ShowFitDisagreementWarning}" VerticalAlignment="Center" />
+            </Grid>
+            <Grid Margin="0,0,0,10" ToolTip="When on (default), graph hints stick to measured facts and curve shape. When off, one optional suggestion may appear when wing shape and overshoot settings both apply.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Conservative graph hints" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding ConservativeGraphHints}" IsEnabled="{Binding ShowGraphAnalysisHints}" VerticalAlignment="Center" />
+            </Grid>
+
+            <TextBlock Text="Quality gate" FontSize="16" FontWeight="Bold" Margin="0,12,0,10" />
+
+            <Grid Margin="0,0,0,10" ToolTip="Evaluate hyperbolic R² and final HFR against thresholds; flagged runs show a warning in the Discord embed.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Enable quality gate (R² / HFR warnings)" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding QualityGateEnabled}" VerticalAlignment="Center" />
+            </Grid>
+            <Grid Margin="0,0,0,10" ToolTip="Play a Windows system sound when a run triggers a quality warning (R² or HFR threshold).">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Play sound on quality warning" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding NotifyOnQualityWarning}" VerticalAlignment="Center" />
+            </Grid>
+
+            <TextBlock Text="Discord alert role ID (optional)" Margin="0,0,0,4" />
+            <TextBox Text="{Binding DiscordAlertRoleId, UpdateSourceTrigger=PropertyChanged}" MinWidth="240" Margin="0,0,0,4" />
+            <TextBlock Text="Numeric role ID from Discord (Server Settings → Roles → right-click role → Copy Role ID). Used to ping on warnings or failures." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
+
+            <Grid Margin="0,0,0,10" ToolTip="Mention the alert role (&lt;@&amp;roleId&gt;) in Discord when a quality warning is posted. Requires Discord alert role ID below.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Ping role on quality warning" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding PingRoleOnWarning}" VerticalAlignment="Center" />
+            </Grid>
+            <Grid Margin="0,0,0,10" ToolTip="Mention the alert role on failure posts and live autofocus aborts (no JSON report). Requires Discord alert role ID below.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Ping role on failure / live AF abort" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding PingRoleOnFailure}" VerticalAlignment="Center" />
+            </Grid>
+            <Grid Margin="0,0,0,10" ToolTip="Hooks NINA autofocus lifecycle events. Posts a failure embed when a run ends but no AutoFocus JSON appears on disk (cancelled, timed out, or failed early).">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Post when autofocus ends without a JSON report" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding PostLiveAfFailures}" VerticalAlignment="Center" />
+            </Grid>
+
+            <TextBlock Text="Minimum hyperbolic R²" Margin="0,0,0,4" />
+            <TextBox Text="{Binding MinR2}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,8" />
+            <TextBlock Text="Maximum final HFR" Margin="0,0,0,4" />
+            <TextBox Text="{Binding MaxFinalHfr}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,8" />
+            <TextBlock Text="Per-filter profiles" Margin="0,0,0,4" />
+            <TextBlock Text="Optional overrides per filter. Names match your NINA filter wheel (Equipment → Filter wheel), plus filters seen in AF reports. Pick from the list or type one. Prefix match: Ha also matches Ha-7nm and H-alpha." Margin="0,0,0,6" Opacity="0.7" TextWrapping="Wrap" />
+            <Grid Margin="0,0,0,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="120" />
+                    <ColumnDefinition Width="80" />
+                    <ColumnDefinition Width="80" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Filter" Opacity="0.8" Margin="0,0,8,0" />
+                <TextBlock Grid.Column="1" Text="Min R²" Opacity="0.8" Margin="0,0,8,0" />
+                <TextBlock Grid.Column="2" Text="Max HFR" Opacity="0.8" Margin="0,0,8,0" />
+            </Grid>
+            <ItemsControl ItemsSource="{Binding FilterProfileRows}" Margin="0,0,0,6">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="120" />
+                                <ColumnDefinition Width="80" />
+                                <ColumnDefinition Width="80" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ComboBox
+                                Grid.Column="0"
+                                IsEditable="True"
+                                IsTextSearchEnabled="True"
+                                ItemsSource="{Binding DataContext.KnownFilterNames, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                Text="{Binding Filter, UpdateSourceTrigger=PropertyChanged}"
+                                Margin="0,0,8,0"
+                                ToolTip="Filter names from your NINA profile filter wheel and AF reports. Type a custom name if needed." />
+                            <TextBox
+                                Grid.Column="1"
+                                Text="{Binding MinR2Text, UpdateSourceTrigger=PropertyChanged}"
+                                Margin="0,0,8,0" />
+                            <TextBox
+                                Grid.Column="2"
+                                Text="{Binding MaxFinalHfrText, UpdateSourceTrigger=PropertyChanged}"
+                                Margin="0,0,8,0" />
+                            <Button
+                                Grid.Column="3"
+                                Content="Remove"
+                                Padding="8,2"
+                                Command="{Binding DataContext.RemoveFilterProfileCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                CommandParameter="{Binding}" />
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Button
+                Content="Add filter profile"
+                Command="{Binding AddFilterProfileCommand}"
+                HorizontalAlignment="Left"
+                Padding="12,4"
+                Margin="0,0,0,12" />
+
+            <Grid Margin="0,0,0,10" ToolTip="Post to enabled destinations when a report file exists but cannot be parsed or has no measure points.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Post failures / unreadable reports" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding PostFailures}" VerticalAlignment="Center" />
+            </Grid>
+
+            <TextBlock Text="What to post" FontSize="16" FontWeight="Bold" Margin="0,12,0,10" />
+
+            <Grid Margin="0,0,0,10" ToolTip="Post each autofocus run to enabled destinations as it completes. Turn off for digest-only mode — runs are still tracked locally for session summaries.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Post each autofocus run" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding PostPerRun}" VerticalAlignment="Center" />
+            </Grid>
+            <TextBlock Text="Turn off for digest-only mode: runs are still tracked for the session summary, but nothing is posted after each AF." Margin="0,0,0,10" Opacity="0.7" TextWrapping="Wrap" />
+
+            <Grid Margin="0,0,0,10" ToolTip="Attach the V-curve PNG to each per-run Discord post. Respects graph overlay settings above.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Include V-curve graph on each run" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding IncludePerRunGraph}" VerticalAlignment="Center" />
+            </Grid>
+
+            <Grid Margin="0,0,0,10" ToolTip="Attach the raw AutoFocus JSON file to each per-run Discord post.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Attach raw JSON report on each run" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding AttachJson}" VerticalAlignment="Center" />
+            </Grid>
+
+            <TextBlock Text="Session digest" FontSize="16" FontWeight="Bold" Margin="0,12,0,10" />
+
+            <Grid Margin="0,0,0,10" ToolTip="When an Advanced or simple sequencer run finishes, post a summary of autofocus runs from that sequence only. Resets for the next sequence.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Post digest when sequencer sequence completes" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding PostDigestOnSequenceEnd}" VerticalAlignment="Center" />
+            </Grid>
+            <Grid Margin="0,0,0,10" ToolTip="When NINA closes, post an end-of-session summary. Only runs if at least one autofocus JSON was written since NINA opened.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Post session digest when NINA exits" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding PostDigestOnShutdown}" VerticalAlignment="Center" />
+            </Grid>
+            <Grid Margin="0,0,0,10" ToolTip="Include an HFR-over-time trend chart in session and sequence digests (most recent N runs; see Trend chart max runs).">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Include trend chart in session digest" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding IncludeDigestTrendChart}" VerticalAlignment="Center" />
+            </Grid>
+            <TextBlock Text="Trend chart max runs" Margin="0,0,0,4" />
+            <TextBox Text="{Binding DigestTrendMaxRuns}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,8" />
+
+            <Button Content="Post sequence digest now" Command="{Binding PostDigestNowCommand}" HorizontalAlignment="Left" Padding="12,4" Margin="0,0,0,4"
+                    ToolTip="Post a digest for the current sequence (runs since the last sequence start). If none, falls back to session digest (runs since NINA opened)." />
+            <TextBlock Text="Includes stats (min/avg/max HFR, best/worst, warnings, by filter), full run list, and a trend chart. Session digest covers only runs since NINA opened." Margin="0,0,0,4" TextWrapping="Wrap" Opacity="0.7" />
+            <TextBlock Text="{Binding DigestStatus}" Margin="0,0,0,12" TextWrapping="Wrap" Opacity="0.8" />
+
+            <TextBlock Text="Posting" FontSize="16" FontWeight="Bold" Margin="0,12,0,10" />
+            <TextBlock Text="Upload delay (seconds)" Margin="0,0,0,4" />
+            <TextBox Text="{Binding UploadDelaySeconds}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,12" />
+            <TextBlock Text="Message template" Margin="0,0,0,4" />
+            <TextBox Text="{Binding MessageTemplate, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" MaxWidth="640" Margin="0,0,0,4" />
+            <TextBlock Text="Tokens: {shortfilename} (one line), {filename} (truncated), {filenamefull}, {time}, {filter}, {prefix}. Full filename is always in the embed footer; hover works on the JSON attachment if enabled." Margin="0,0,0,12" Opacity="0.7" TextWrapping="Wrap" />
+            <TextBlock Text="Watch folder" Margin="0,0,0,4" />
+            <TextBox Text="{Binding WatchFolder, Mode=OneWay}" IsReadOnly="True" HorizontalAlignment="Stretch" MaxWidth="640" />
+
+        </StackPanel>
+    </DataTemplate>
+</ResourceDictionary>
