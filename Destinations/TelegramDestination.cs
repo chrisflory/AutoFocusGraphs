@@ -110,37 +110,13 @@ namespace AutofocusGraphs.Destinations {
             }
 
             if (!string.IsNullOrWhiteSpace(request.MessageTemplate) && report != null) {
-                var message = FormatMessageTemplate(request.MessageTemplate, report, quality);
+                var message = ReportMessageFormatter.BuildReportMessage(report, request.MessageTemplate, quality);
                 if (!string.IsNullOrWhiteSpace(message)) {
                     sb.Append('\n').Append(TelegramBotClient.ConvertDiscordMarkdownToHtml(message));
                 }
             }
 
             return sb.ToString();
-        }
-
-        private static string FormatMessageTemplate(string messageTemplate, AutofocusReport report, QualityResult quality) {
-            var template = string.IsNullOrWhiteSpace(messageTemplate)
-                ? "New autofocus report: **{shortfilename}** ({filter})"
-                : messageTemplate;
-            var message = template
-                .Replace("{prefix}", quality?.ContentPrefix ?? string.Empty, System.StringComparison.OrdinalIgnoreCase)
-                .Replace("{shortfilename}", report.FormatShortFileName() ?? string.Empty, System.StringComparison.OrdinalIgnoreCase)
-                .Replace("{time}", report.FormatDigestTimestamp() ?? string.Empty, System.StringComparison.OrdinalIgnoreCase)
-                .Replace("{filenamefull}", report.FormatFullFileName() ?? string.Empty, System.StringComparison.OrdinalIgnoreCase)
-                .Replace("{filename}", report.FormatTruncatedFileName() ?? string.Empty, System.StringComparison.OrdinalIgnoreCase)
-                .Replace("{filter}", report.Filter ?? "N/A", System.StringComparison.OrdinalIgnoreCase);
-
-            if (!template.Contains("{prefix}", System.StringComparison.OrdinalIgnoreCase) &&
-                quality?.Outcome != ReportOutcome.Success) {
-                message = $"{quality?.ContentPrefix}: {message}";
-            }
-
-            if (!string.IsNullOrWhiteSpace(quality?.Reason)) {
-                message += $"\n{quality.Reason}";
-            }
-
-            return message;
         }
 
         private static string BuildDigestCaption(DigestPostRequest request) {

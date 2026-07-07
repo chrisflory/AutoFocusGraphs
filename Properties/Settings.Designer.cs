@@ -393,5 +393,29 @@ namespace AutofocusGraphs.Properties {
             get { return ((string)(this["TelegramChatId"])); }
             set { this["TelegramChatId"] = value; }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SlackEnabled {
+            get { return ((bool)(this["SlackEnabled"])); }
+            set { this["SlackEnabled"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SlackBotToken {
+            get { return ((string)(this["SlackBotToken"])); }
+            set { this["SlackBotToken"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SlackChannelId {
+            get { return ((string)(this["SlackChannelId"])); }
+            set { this["SlackChannelId"] = value; }
+        }
     }
 }

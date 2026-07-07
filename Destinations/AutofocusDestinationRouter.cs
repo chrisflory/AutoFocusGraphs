@@ -9,7 +9,7 @@ namespace AutofocusGraphs.Destinations {
     internal static class AutofocusDestinationRouter {
         private static readonly IAutofocusDestination[] Destinations = {
             new DiscordDestination(),
-            new TelegramDestination(),
+            new SlackDestination(),
         };
 
         public static IReadOnlyList<IAutofocusDestination> All => Destinations;

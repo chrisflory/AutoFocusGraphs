@@ -21,7 +21,7 @@ Graph overlays, hints, digests, and session tracking are **destination-agnostic*
 
 - N.I.N.A. **3.3** or newer (.NET 10 nightlies)
 - **Discord:** channel webhook URL
-- **Telegram:** bot token from [@BotFather](https://t.me/BotFather) + chat ID (bot must be able to post)
+- **Slack:** bot token (`xoxb-...`) + channel ID (`C...` / `G...`); bot needs `chat:write` and `files:write`
 
 ## Install (from source)
 
@@ -40,12 +40,20 @@ Close N.I.N.A. before rebuilding.
 
 ## Configure
 
-**Options → Plugins → AutofocusGraphs**
+**Options → Plugins → AutofocusGraphs** (tabbed like NINA Ground Station)
+
+| Tab | Contents |
+|---|---|
+| **General** | Master enable + status |
+| **Discord** | Webhook, threads, embed/attach, role pings |
+| **Graph** | Live preview + overlays |
+| **Telegram** | Bot token, chat ID, test |
+| **Slack** | Bot token, channel ID, test |
+| **Quality & posting** | Quality gate, digests, per-run toggles |
 
 1. **Enable autofocus graph posts** — master monitoring switch
-2. **Discord** — enable, webhook URL, test webhook (embed/thread options unchanged from AutofocusDiscord)
-3. **Telegram** — enable, bot token, chat ID, test Telegram
-4. **Graph** — live preview, overlays, hints (shared renderer for all destinations)
+2. Enable one or more destinations on their tabs and run each **Test** button
+3. **Graph** tab — overlays and preview (shared PNG for all destinations)
 
 Enable one or both destinations. Per-run posts and digests fan out to every enabled, configured channel.
 

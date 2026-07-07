@@ -37,6 +37,8 @@ namespace AutofocusGraphs {
         private string webhookTestToolTip = string.Empty;
         private bool? telegramTestResult;
         private string telegramTestToolTip = string.Empty;
+        private bool? slackTestResult;
+        private string slackTestToolTip = string.Empty;
         private ImageSource graphPreviewImage;
         private CancellationTokenSource graphPreviewRefreshCts;
         private bool suppressGraphPreviewRefresh;
@@ -102,6 +104,7 @@ namespace AutofocusGraphs {
 
             TestWebhookCommand = new RelayCommand(async _ => await TestDestinationAsync("Discord"));
             TestTelegramCommand = new RelayCommand(async _ => await TestDestinationAsync("Telegram"));
+            TestSlackCommand = new RelayCommand(async _ => await TestDestinationAsync("Slack"));
             PostDigestNowCommand = new RelayCommand(async _ => await PostDigestNowAsync());
             GraphOverlaysAllOnCommand = new RelayCommand(_ => SetAllGraphOverlays(allOn: true));
             GraphOverlaysAllOffCommand = new RelayCommand(_ => SetAllGraphOverlays(allOn: false));
@@ -138,6 +141,7 @@ namespace AutofocusGraphs {
 
         public ICommand TestWebhookCommand { get; }
         public ICommand TestTelegramCommand { get; }
+        public ICommand TestSlackCommand { get; }
         public ICommand PostDigestNowCommand { get; }
         public ICommand GraphOverlaysAllOnCommand { get; }
         public ICommand GraphOverlaysAllOffCommand { get; }
@@ -179,6 +183,14 @@ namespace AutofocusGraphs {
 
         public string TelegramTestToolTip => telegramTestToolTip;
 
+        public Visibility SlackTestSuccessVisible =>
+            slackTestResult == true ? Visibility.Visible : Visibility.Collapsed;
+
+        public Visibility SlackTestFailureVisible =>
+            slackTestResult == false ? Visibility.Visible : Visibility.Collapsed;
+
+        public string SlackTestToolTip => slackTestToolTip;
+
         public string LastPostStatus => PostStatusTracker.LastPostStatus;
 
         public string DigestStatus {
@@ -203,6 +215,14 @@ namespace AutofocusGraphs {
             RaisePropertyChanged(nameof(TelegramTestSuccessVisible));
             RaisePropertyChanged(nameof(TelegramTestFailureVisible));
             RaisePropertyChanged(nameof(TelegramTestToolTip));
+        }
+
+        private void SetSlackTestResult(bool? result, string toolTip = null) {
+            slackTestResult = result;
+            slackTestToolTip = toolTip ?? string.Empty;
+            RaisePropertyChanged(nameof(SlackTestSuccessVisible));
+            RaisePropertyChanged(nameof(SlackTestFailureVisible));
+            RaisePropertyChanged(nameof(SlackTestToolTip));
         }
 
         public override async Task Teardown() {
@@ -242,21 +262,31 @@ namespace AutofocusGraphs {
                         return;
                     }
                     SetTelegramTestResult(null);
+                } else if (string.Equals(destinationName, "Slack", StringComparison.OrdinalIgnoreCase)) {
+                    if (!SlackEnabled) {
+                        SetSlackTestResult(false, "Enable Slack posting first.");
+                        return;
+                    }
+                    SetSlackTestResult(null);
                 }
 
                 await AutofocusDestinationRouter.TestDestinationAsync(destinationName, CancellationToken.None).ConfigureAwait(true);
                 if (string.Equals(destinationName, "Discord", StringComparison.OrdinalIgnoreCase)) {
                     SetWebhookTestResult(true, "Test message posted to Discord.");
-                } else {
+                } else if (string.Equals(destinationName, "Telegram", StringComparison.OrdinalIgnoreCase)) {
                     SetTelegramTestResult(true, "Test message posted to Telegram.");
+                } else {
+                    SetSlackTestResult(true, "Test message posted to Slack.");
                 }
                 RaisePropertyChanged(nameof(StatusText));
                 RaisePropertyChanged(nameof(LastPostStatus));
             } catch (Exception ex) {
                 if (string.Equals(destinationName, "Discord", StringComparison.OrdinalIgnoreCase)) {
                     SetWebhookTestResult(false, $"Test failed: {ex.Message}");
-                } else {
+                } else if (string.Equals(destinationName, "Telegram", StringComparison.OrdinalIgnoreCase)) {
                     SetTelegramTestResult(false, $"Test failed: {ex.Message}");
+                } else {
+                    SetSlackTestResult(false, $"Test failed: {ex.Message}");
                 }
                 RaisePropertyChanged(nameof(LastPostStatus));
                 Logger.Error($"AutofocusGraphs: {destinationName} test failed: {ex.Message}");
@@ -350,6 +380,36 @@ namespace AutofocusGraphs {
                 Save();
                 RaisePropertyChanged();
                 SetTelegramTestResult(null);
+            }
+        }
+
+        public bool SlackEnabled {
+            get => Settings.Default.SlackEnabled;
+            set {
+                Settings.Default.SlackEnabled = value;
+                Save();
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(StatusText));
+            }
+        }
+
+        public string SlackBotToken {
+            get => Settings.Default.SlackBotToken;
+            set {
+                Settings.Default.SlackBotToken = (value ?? string.Empty).Trim();
+                Save();
+                RaisePropertyChanged();
+                SetSlackTestResult(null);
+            }
+        }
+
+        public string SlackChannelId {
+            get => Settings.Default.SlackChannelId;
+            set {
+                Settings.Default.SlackChannelId = (value ?? string.Empty).Trim();
+                Save();
+                RaisePropertyChanged();
+                SetSlackTestResult(null);
             }
         }
 
@@ -1015,6 +1075,8 @@ namespace AutofocusGraphs {
             if (propertyName == nameof(Enabled) || propertyName == nameof(WebhookUrl) ||
                 propertyName == nameof(DiscordEnabled) || propertyName == nameof(TelegramEnabled) ||
                 propertyName == nameof(TelegramBotToken) || propertyName == nameof(TelegramChatId) ||
+                propertyName == nameof(SlackEnabled) || propertyName == nameof(SlackBotToken) ||
+                propertyName == nameof(SlackChannelId) ||
                 propertyName == nameof(PostPerRun) || propertyName == nameof(PostDigestOnShutdown) ||
                 propertyName == nameof(PostDigestOnSequenceEnd)) {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(StatusText)));

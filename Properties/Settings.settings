@@ -146,5 +146,14 @@
     <Setting Name="TelegramChatId" Type="System.String" Scope="User">
       <Value Profile="(Default)"></Value>
     </Setting>
+    <Setting Name="SlackEnabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="SlackBotToken" Type="System.String" Scope="User">
+      <Value Profile="(Default)"></Value>
+    </Setting>
+    <Setting Name="SlackChannelId" Type="System.String" Scope="User">
+      <Value Profile="(Default)"></Value>
+    </Setting>
   </Settings>
 </SettingsFile>

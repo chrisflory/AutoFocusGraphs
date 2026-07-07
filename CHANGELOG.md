@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Tabbed options UI (General, Discord, Graph, Telegram, Slack, Quality & posting)
+- **Slack** destination (Bot token + channel ID, files.upload + chat.postMessage)
+- Shared `ReportMessageFormatter` for Telegram/Slack captions
+
 ## 0.1.0.0 (develop)
 
 - Fork from AutofocusDiscord v1.3.1.5 as **AutofocusGraphs**
