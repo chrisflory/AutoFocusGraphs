@@ -50,11 +50,11 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyMetadata("Tags", "autofocus,graph,discord,telegram,slack,email,webhook,notification")]
 
-[assembly: AssemblyMetadata("ChangelogURL", "https://github.com/chrisflory/AutoFocusGraphs/blob/develop/CHANGELOG.md")]
+[assembly: AssemblyMetadata("ChangelogURL", "https://github.com/chrisflory/AutoFocusGraphs/blob/main/CHANGELOG.md")]
 
 
 
-[assembly: AssemblyMetadata("FeaturedImageURL", "https://raw.githubusercontent.com/chrisflory/AutoFocusGraphs/develop/assets/webhook-icon-af-graphs.png")]
+[assembly: AssemblyMetadata("FeaturedImageURL", "https://raw.githubusercontent.com/chrisflory/AutoFocusGraphs/main/assets/webhook-icon-af-graphs.png")]
 
 [assembly: AssemblyMetadata("ScreenshotURL", "")]
 
@@ -64,7 +64,7 @@ using System.Runtime.InteropServices;
 
 
 
-![AutoFocusGraphs pipeline](https://raw.githubusercontent.com/chrisflory/AutoFocusGraphs/develop/assets/flowchart.png)
+![AutoFocusGraphs pipeline](https://raw.githubusercontent.com/chrisflory/AutoFocusGraphs/main/assets/flowchart.png)
 
 
 
