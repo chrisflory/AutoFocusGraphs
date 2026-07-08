@@ -85,13 +85,13 @@ namespace AutoFocusGraphs {
 
                     var embed = new JObject {
                         ["title"] = "Webhook test successful",
-                        ["description"] = "Autofocus can post to this channel.",
+                        ["description"] = "AutoFocusGraphs can post to this channel.",
                         ["color"] = 0x2ECC71,
                         ["timestamp"] = DateTime.UtcNow.ToString("o")
                     };
 
                     var root = ApplyIdentity(new JObject {
-                        ["content"] = "Autofocus webhook test",
+                        ["content"] = "AutoFocusGraphs webhook test",
                         ["embeds"] = new JArray { embed }
                     }, postOptions);
 

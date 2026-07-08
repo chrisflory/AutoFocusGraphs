@@ -1,10 +1,8 @@
 # <img src="assets/webhook-icon-af-graphs.png" alt="AutoFocusGraphs logo" width="96" align="middle" /> AutoFocusGraphs
 
-**Experimental spin-off of [AutofocusDiscord](https://github.com/chrisflory/AutofocusDiscord)** — same V-curve graph engine, multiple delivery channels.
-
 N.I.N.A. plugin that watches autofocus JSON reports, renders dark-mode V-curve PNGs (ScottPlot), and posts them to **Discord**, **Telegram**, **Slack**, **email**, or any combination.
 
-> **Status:** `develop` branch — not a replacement for AutofocusDiscord yet. Install side-by-side only if you want to test (different plugin GUID / folder name).
+> **Status:** v0.1.0.0 on `develop` — multi-destination autofocus graph delivery for N.I.N.A. 3.3 nightlies.
 
 ## Architecture
 
@@ -17,7 +15,9 @@ NINA AF JSON → parse + quality gate → AutofocusGraphGenerator (shared PNG)
                                          └─ Email (SMTP)
 ```
 
-Graph overlays, hints, digests, and session tracking are **destination-agnostic**. Each channel implements `IAutofocusDestination`.
+![AutoFocusGraphs pipeline](assets/flowchart.png)
+
+Graph overlays, hints, digests, and session tracking are **destination-agnostic**. Each channel implements `IAutofocusDestination`. Per-run posts fan out to every enabled destination independently — one channel failing does not block the others.
 
 ## Requirements
 
@@ -52,22 +52,12 @@ Close N.I.N.A. before rebuilding.
 | **Discord** | Webhook, threads, embed/attach, role pings |
 | **Telegram** | Bot token, chat ID, test |
 | **Slack** | Bot token, channel ID, test |
-| **Email** | SMTP settings, from/to, test |
+| **Email** | SMTP settings, subject template, test |
 
 1. **Graph** tab — enable monitoring, tune the graph, quality thresholds, and what gets posted
 2. Enable one or more destinations on their tabs and run each **Test** button
 
 Enable any combination of destinations. Per-run posts and digests fan out to every enabled, configured channel.
-
-## Relationship to AutofocusDiscord
-
-| | AutofocusDiscord | AutoFocusGraphs |
-| --- | --- | --- |
-| Focus | Discord webhook only | Multi-channel graph delivery |
-| Plugin ID | `a7c3e91f-…` | `b8d4f02a-…` (separate install) |
-| Maturity | Released (v1.3.1.x) | Experimental (v0.1.0.0) |
-
-AutofocusDiscord remains the stable Discord-only plugin until AutoFocusGraphs is proven out.
 
 ## License
 

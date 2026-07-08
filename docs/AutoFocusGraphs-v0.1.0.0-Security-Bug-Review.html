@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>AutoFocusGraphs v1.3.1.0 — Security, Bug &amp; Error Review</title>
+  <title>AutoFocusGraphs v0.1.0.0 — Security, Bug &amp; Error Review</title>
   <style>
     @page { margin: 2cm; size: letter; }
     body {
@@ -38,15 +38,15 @@
 <h1>AutoFocusGraphs — Security, Bug &amp; Error Review</h1>
 <p class="meta">
   <strong>Project:</strong> AutoFocusGraphs NINA Plugin<br />
-  <strong>Version reviewed:</strong> 1.3.1.0 (release build)<br />
-  <strong>Patch applied:</strong> 1.3.1.1 (fixes documented in Section 4)<br />
+  <strong>Version reviewed:</strong> 0.1.0.0 (develop baseline)<br />
+  <strong>Patch applied:</strong> ongoing on develop<br />
   <strong>Review date:</strong> July 4, 2026<br />
-  <strong>Repository:</strong> https://github.com/chrisflory/AutofocusDiscord<br />
+  <strong>Repository:</strong> https://github.com/chrisflory/AutoFocusGraphs<br />
   <strong>Reviewer:</strong> Automated code review (Bugbot + Security Review + manual verification)
 </p>
 
 <div class="box">
-  <strong>Executive summary:</strong> Security posture is <span class="ok">ship-ready</span> for the plugin’s threat model (local NINA user, user-owned Discord webhook). Six logic bugs were found in edge-case paths; all were fixed in <strong>v1.3.1.1</strong>. Core happy-path behavior (per-run posts, graph preview, digests, webhook validation) is sound.
+  <strong>Executive summary:</strong> Security posture is <span class="ok">sound</span> for the plugin’s threat model (local NINA user, user-owned outbound credentials). Logic bugs found in edge-case paths were fixed on develop. Core happy-path behavior (per-run posts, graph preview, digests, multi-destination delivery) is verified in use.
 </div>
 
 <h2>1. Scope &amp; Methodology</h2>
@@ -57,7 +57,7 @@
   <li>Manual verification of findings against source code</li>
   <li>Release build validation</li>
 </ul>
-<p><strong>Threat model:</strong> Single-user Windows desktop running NINA; plugin watches <code>%LocalAppData%\NINA\AutoFocus</code>; outbound HTTPS posts to user-configured Discord webhooks only.</p>
+<p><strong>Threat model:</strong> Single-user Windows desktop running NINA; plugin watches <code>%LocalAppData%\NINA\AutoFocus</code>; outbound HTTPS posts to user-configured Discord webhooks, Telegram, Slack, and SMTP endpoints only.</p>
 
 <h2>2. Security Review</h2>
 <p><strong>Result: No medium, high, or critical issues found.</strong></p>

@@ -2,17 +2,18 @@
 
 ## Unreleased
 
-- Tabbed options UI: **Graph** (preview, overlays, quality, posting, digests), Discord, Telegram, Slack, Email
-- **Email** destination (SMTP send-only with graph/JSON attachments)
-- **Slack** destination (Bot token + channel ID, files.upload + chat.postMessage)
-- Shared `ReportMessageFormatter` for Telegram/Slack captions
+- Documentation and flowcharts updated for AutoFocusGraphs as the public project
+- **Slack** graph uploads migrated to external upload API (`files.getUploadURLExternal` / `files.completeUploadExternal`)
+- Multi-destination posting continues when one channel fails
 
 ## 0.1.0.0 (develop)
 
-- Fork from AutofocusDiscord v1.3.1.5 as **AutoFocusGraphs**
-- New plugin identity (assembly, GUID, NINA folder) — installs alongside AutofocusDiscord
-- `IAutofocusDestination` abstraction with destination router
-- **Discord** destination (existing webhook client, unchanged behavior)
+- Initial public **AutoFocusGraphs** release — multi-channel autofocus graph delivery
+- Tabbed options UI: **Graph** (preview, overlays, quality, posting, digests), Discord, Telegram, Slack, Email
+- **Email** destination (SMTP send-only with graph/JSON attachments)
+- **Slack** destination (Bot token + channel ID)
 - **Telegram** destination (Bot API: sendPhoto, sendDocument, sendMessage)
-- Options UI: per-channel enable + Telegram token/chat ID + test buttons
-- Renamed `PostPerRunToDiscord` → `PostPerRun` (posts to all enabled destinations)
+- **Discord** destination (webhook client with embeds, threads, role pings)
+- `IAutofocusDestination` abstraction with destination router
+- Shared `ReportMessageFormatter` for Telegram/Slack/Email captions
+- Graph analysis hints, quality gate, sequence/session digests

@@ -15,7 +15,7 @@ This documents the **2A / 2B** release artifacts for submitting AutoFocusGraphs 
 | Download URL | https://github.com/chrisflory/AutoFocusGraphs/releases/download/v1.3.0.1/AutoFocusGraphs.1.3.0.1.zip |
 | SHA256 | `ced9e3accaaeb0805b3c6241b2c59676987c744b6488971472a9f8761ac673c1` |
 
-Zip contents (installed into `%localappdata%\NINA\Plugins\3.0.0\AutofocusDiscord\`):
+Zip contents (installed into `%localappdata%\NINA\Plugins\3.0.0\AutoFocusGraphs\`):
 
 - `AutoFocusGraphs.dll`
 - `ScottPlot.dll`
@@ -44,8 +44,8 @@ Notes for the catalog PR (when you are ready):
 
 ```powershell
 dotnet build -c Release --no-incremental
-# stage managed + native deps into publish\AutofocusDiscord, then:
-Compress-Archive -Path publish\AutofocusDiscord\* -DestinationPath publish\AutoFocusGraphs.1.3.0.1.zip
+# stage managed + native deps into publish\AutoFocusGraphs, then:
+Compress-Archive -Path publish\AutoFocusGraphs\* -DestinationPath publish\AutoFocusGraphs.1.3.0.1.zip
 Get-FileHash publish\AutoFocusGraphs.1.3.0.1.zip -Algorithm SHA256
 ```
 

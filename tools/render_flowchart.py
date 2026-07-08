@@ -42,7 +42,7 @@ BORDER_SESSION = (155, 89, 182)     # purple — session digest
 
 BORDER_FAILURE = (237, 66, 69)      # red — failure / bad JSON
 
-BORDER_DISCORD = (87, 242, 135)     # green — Discord webhook posts
+BORDER_DEST = (87, 242, 135)     # green — per-run destination posts
 
 BORDER_GRAPH = (0, 212, 255)       # cyan — V-curve PNG
 
@@ -160,7 +160,7 @@ def main():
 
     draw.rounded_rectangle((72, 28, W - 16, H - 16), radius=12, outline=CONTAINER_BORDER, width=2)
 
-    draw.text((88, 38), "v1.3.1.4", fill=SUB, font=font(12, bold=True))
+    draw.text((88, 38), "v0.1.0.0", fill=SUB, font=font(12, bold=True))
 
 
 
@@ -202,7 +202,7 @@ def main():
 
     targets = [
 
-        ((960, 48, 1150, 100), "Sequence digest", "at sequence end\nname · wait → Discord", BORDER_SEQUENCE, 3),
+        ((960, 48, 1150, 100), "Sequence digest", "at sequence end\nname · enabled destinations", BORDER_SEQUENCE, 3),
 
         ((960, 118, 1150, 170), "Session digest", "NINA exit · this session only", BORDER_SESSION, 3),
 
@@ -248,7 +248,7 @@ def main():
 
     arrow_h(draw, vc[2], chain_y + 28, pr[0], chain_y + 28)
 
-    styled_box(draw, pr, "Per-run Discord post", "embed · graph · JSON", outline=BORDER_DISCORD, width=3)
+    styled_box(draw, pr, "Per-run destination post", "Discord · Telegram · Slack · Email", outline=BORDER_DEST, width=3)
 
 
 

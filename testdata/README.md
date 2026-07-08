@@ -2,7 +2,7 @@
 
 Copy these into `%localappdata%\NINA\AutoFocus` with the plugin enabled (`develop` branch defaults).
 
-| File | Expected Discord result |
+| File | Expected result (enabled destinations) |
 | --- | --- |
 | `success-good-run.json` | Blue success — clean V-curve, R² ≈ 0.998, HFR ≈ 1.62 |
 | `warning-low-r2.json` | Yellow — **noisy/scattered points** (looks bad), R² **0.55** |

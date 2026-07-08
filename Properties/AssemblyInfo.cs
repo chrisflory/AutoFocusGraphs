@@ -22,7 +22,7 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("AutoFocusGraphs")]
 
-[assembly: AssemblyDescription("Watches N.I.N.A. AutoFocus reports and posts V-curve graphs to Discord, Telegram, and other destinations.")]
+[assembly: AssemblyDescription("Watches N.I.N.A. AutoFocus reports and posts V-curve graphs to Discord, Telegram, Slack, and email.")]
 
 
 
@@ -48,13 +48,13 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyMetadata("Homepage", "https://github.com/chrisflory/AutoFocusGraphs")]
 
-[assembly: AssemblyMetadata("Tags", "autofocus,graph,discord,telegram,webhook,notification")]
+[assembly: AssemblyMetadata("Tags", "autofocus,graph,discord,telegram,slack,email,webhook,notification")]
 
 [assembly: AssemblyMetadata("ChangelogURL", "https://github.com/chrisflory/AutoFocusGraphs/blob/develop/CHANGELOG.md")]
 
 
 
-[assembly: AssemblyMetadata("FeaturedImageURL", "https://raw.githubusercontent.com/chrisflory/AutofocusDiscord/main/assets/webhook-icon-af-graphs.png")]
+[assembly: AssemblyMetadata("FeaturedImageURL", "https://raw.githubusercontent.com/chrisflory/AutoFocusGraphs/develop/assets/webhook-icon-af-graphs.png")]
 
 [assembly: AssemblyMetadata("ScreenshotURL", "")]
 
@@ -86,7 +86,7 @@ Per-run V-curve posts, sequence digests, and session digests to **Discord**, **T
 
 
 
-Graph rendering is shared across all destinations.")]
+Each destination can be enabled independently. Graph rendering is shared across all channels.")]
 
 
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="920" height="720" viewBox="0 0 920 720" role="img" aria-label="AutofocusDiscord pipeline">
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="720" viewBox="0 0 920 720" role="img" aria-label="AutoFocusGraphs pipeline">
   <defs>
     <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
       <polygon points="0 0, 10 4, 0 8" fill="#b9bbbe"/>
@@ -8,7 +8,7 @@
       .title { font: 700 22px Segoe UI, Arial, sans-serif; fill: #ffffff; }
       .box { fill: #36393f; stroke: #72767d; stroke-width: 2; rx: 10; }
       .nina { fill: #5865f2; stroke: #4752c4; }
-      .discord { fill: #57f287; stroke: #3ba55d; }
+      .dest { fill: #57f287; stroke: #3ba55d; }
       .optional { stroke-dasharray: 6 4; fill: #4f545c; }
       .label { font: 600 14px Segoe UI, Arial, sans-serif; fill: #ffffff; }
       .sublabel { font: 400 12px Segoe UI, Arial, sans-serif; fill: #dcddde; }
@@ -16,7 +16,7 @@
     </style>
   </defs>
   <rect width="920" height="720" fill="#2f3136"/>
-  <text x="460" y="36" text-anchor="middle" class="title">AutofocusDiscord pipeline</text>
+  <text x="460" y="36" text-anchor="middle" class="title">AutoFocusGraphs pipeline</text>
 
   <!-- Row 1: NINA -->
   <rect x="310" y="58" width="300" height="44" class="box nina"/>
@@ -27,15 +27,15 @@
   <!-- Row 2: Watcher -->
   <rect x="250" y="128" width="420" height="52" class="box"/>
   <text x="460" y="152" text-anchor="middle" class="label">Folder watcher</text>
-  <text x="460" y="170" text-anchor="middle" class="sublabel">file settle ’ parse ’ ReportStore</text>
+  <text x="460" y="170" text-anchor="middle" class="sublabel">file settle · parse · ReportStore</text>
 
   <line x1="460" y1="180" x2="460" y2="210" class="line"/>
 
   <!-- Row 3: Branch -->
   <rect x="70" y="210" width="340" height="88" class="box"/>
   <text x="240" y="236" text-anchor="middle" class="label">Per-run post (optional)</text>
-  <text x="240" y="256" text-anchor="middle" class="sublabel">upload delay ’ quality gate</text>
-  <text x="240" y="274" text-anchor="middle" class="sublabel">V-curve PNG ’ Discord</text>
+  <text x="240" y="256" text-anchor="middle" class="sublabel">upload delay · quality gate</text>
+  <text x="240" y="274" text-anchor="middle" class="sublabel">V-curve PNG · enabled destinations</text>
 
   <rect x="510" y="210" width="340" height="88" class="box"/>
   <text x="680" y="236" text-anchor="middle" class="label">Digest tracking</text>
@@ -48,7 +48,7 @@
   <!-- Row 4: Sequence digest -->
   <rect x="170" y="360" width="580" height="72" class="box optional"/>
   <text x="460" y="388" text-anchor="middle" class="label">Sequence digest (sequencer run ends)</text>
-  <text x="460" y="408" text-anchor="middle" class="sublabel">wait for last AF JSON + per-run post, then Discord</text>
+  <text x="460" y="408" text-anchor="middle" class="sublabel">wait for last AF JSON + per-run post, then all enabled destinations</text>
 
   <line x1="680" y1="298" x2="680" y2="330" class="line"/>
   <line x1="680" y1="330" x2="460" y2="330" class="line"/>
@@ -67,4 +67,8 @@
 
   <line x1="240" y1="298" x2="240" y2="608" class="line"/>
   <line x1="240" y1="608" x2="170" y2="608" class="line"/>
+
+  <!-- Destinations legend -->
+  <rect x="170" y="650" width="580" height="44" class="box dest"/>
+  <text x="460" y="678" text-anchor="middle" class="label">Discord · Telegram · Slack · Email</text>
 </svg>
