@@ -610,7 +610,7 @@
 
             <TextBlock Text="Slack bot token" Margin="0,0,0,4" />
             <TextBox Text="{Binding SlackBotToken, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" MaxWidth="640" Margin="0,0,0,4" />
-            <TextBlock Text="Bot User OAuth Token (xoxb-...) from your Slack app. Needs chat:write and files:write." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
+            <TextBlock Text="Bot User OAuth Token (xoxb-...) from your Slack app. Needs chat:write and files:write. Graph uploads use Slack's external upload API (Test Slack only sends text)." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
 
             <TextBlock Text="Slack channel ID" Margin="0,0,0,4" />
             <TextBox Text="{Binding SlackChannelId, UpdateSourceTrigger=PropertyChanged}" MinWidth="240" Margin="0,0,0,4" />

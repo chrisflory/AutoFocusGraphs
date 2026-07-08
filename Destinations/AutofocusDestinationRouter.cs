@@ -32,23 +32,14 @@ namespace AutoFocusGraphs.Destinations {
             return true;
         }
 
-        public static async Task PostReportAsync(ReportPostRequest request, CancellationToken token) {
-            foreach (var destination in GetActiveDestinations()) {
-                await destination.PostReportAsync(request, token).ConfigureAwait(false);
-            }
-        }
+        public static Task PostReportAsync(ReportPostRequest request, CancellationToken token) =>
+            PostToAllEnabledBestEffortAsync((d, ct) => d.PostReportAsync(request, ct), token);
 
-        public static async Task PostFailureAsync(FailurePostRequest request, CancellationToken token) {
-            foreach (var destination in GetActiveDestinations()) {
-                await destination.PostFailureAsync(request, token).ConfigureAwait(false);
-            }
-        }
+        public static Task PostFailureAsync(FailurePostRequest request, CancellationToken token) =>
+            PostToAllEnabledBestEffortAsync((d, ct) => d.PostFailureAsync(request, ct), token);
 
-        public static async Task PostDigestAsync(DigestPostRequest request, CancellationToken token) {
-            foreach (var destination in GetActiveDestinations()) {
-                await destination.PostDigestAsync(request, token).ConfigureAwait(false);
-            }
-        }
+        public static Task PostDigestAsync(DigestPostRequest request, CancellationToken token) =>
+            PostToAllEnabledBestEffortAsync((d, ct) => d.PostDigestAsync(request, ct), token);
 
         public static async Task TestDestinationAsync(string destinationName, CancellationToken token) {
             var destination = Destinations.FirstOrDefault(d =>
@@ -68,9 +59,15 @@ namespace AutoFocusGraphs.Destinations {
             await destination.TestConnectionAsync(token).ConfigureAwait(false);
         }
 
-        public static async Task PostToAllEnabledAsync(
+        public static Task PostToAllEnabledAsync(
             Func<IAutofocusDestination, CancellationToken, Task> action,
-            CancellationToken token) {
+            CancellationToken token) =>
+            PostToAllEnabledBestEffortAsync(action, token, throwOnAnyFailure: true);
+
+        private static async Task PostToAllEnabledBestEffortAsync(
+            Func<IAutofocusDestination, CancellationToken, Task> action,
+            CancellationToken token,
+            bool throwOnAnyFailure = false) {
             var failures = new List<string>();
             foreach (var destination in GetActiveDestinations()) {
                 try {
@@ -82,7 +79,12 @@ namespace AutoFocusGraphs.Destinations {
             }
 
             if (failures.Count > 0) {
-                throw new InvalidOperationException(string.Join("; ", failures));
+                var summary = string.Join("; ", failures);
+                if (throwOnAnyFailure) {
+                    throw new InvalidOperationException(summary);
+                }
+
+                Logger.Warning($"AutoFocusGraphs: one or more destinations failed: {summary}");
             }
         }
     }

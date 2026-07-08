@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NINA.Core.Utility;
 using System;
@@ -25,27 +26,20 @@ namespace AutoFocusGraphs.Destinations {
             string jsonFilePath,
             string jsonFileName,
             CancellationToken tokenCt) {
+            var uploads = new List<(byte[] Bytes, string FileName)>();
             if (graphPng != null && graphPng.Length > 0) {
-                await UploadFileAsync(
-                    token,
-                    channelId,
-                    graphPng,
-                    "autofocus_curve.png",
-                    message,
-                    tokenCt).ConfigureAwait(false);
-            } else if (!string.IsNullOrWhiteSpace(message)) {
-                await PostMessageAsync(token, channelId, message, tokenCt).ConfigureAwait(false);
+                uploads.Add((graphPng, "autofocus_curve.png"));
             }
 
             if (attachJson && !string.IsNullOrWhiteSpace(jsonFilePath) && File.Exists(jsonFilePath)) {
                 var bytes = await File.ReadAllBytesAsync(jsonFilePath, tokenCt).ConfigureAwait(false);
-                await UploadFileAsync(
-                    token,
-                    channelId,
-                    bytes,
-                    SanitizeFileName(jsonFileName ?? Path.GetFileName(jsonFilePath)),
-                    null,
-                    tokenCt).ConfigureAwait(false);
+                uploads.Add((bytes, SanitizeFileName(jsonFileName ?? Path.GetFileName(jsonFilePath))));
+            }
+
+            if (uploads.Count > 0) {
+                await UploadFilesV2Async(token, channelId, uploads, message, tokenCt).ConfigureAwait(false);
+            } else if (!string.IsNullOrWhiteSpace(message)) {
+                await PostMessageAsync(token, channelId, message, tokenCt).ConfigureAwait(false);
             }
         }
 
@@ -61,9 +55,98 @@ namespace AutoFocusGraphs.Destinations {
             string caption,
             CancellationToken tokenCt) {
             if (chartPng != null && chartPng.Length > 0) {
-                await UploadFileAsync(token, channelId, chartPng, "autofocus_digest.png", caption, tokenCt).ConfigureAwait(false);
+                await UploadFilesV2Async(
+                    token,
+                    channelId,
+                    new[] { (chartPng, "autofocus_digest.png") },
+                    caption,
+                    tokenCt).ConfigureAwait(false);
             } else {
                 await PostMessageAsync(token, channelId, caption, tokenCt).ConfigureAwait(false);
+            }
+        }
+
+        private static async Task UploadFilesV2Async(
+            string token,
+            string channelId,
+            IReadOnlyList<(byte[] Bytes, string FileName)> files,
+            string initialComment,
+            CancellationToken tokenCt) {
+            var uploaded = new List<(string Id, string Title)>();
+            foreach (var file in files) {
+                if (file.Bytes == null || file.Bytes.Length == 0) {
+                    continue;
+                }
+
+                var safeName = SanitizeFileName(file.FileName);
+                var (uploadUrl, fileId) = await GetUploadUrlAsync(token, safeName, file.Bytes.Length, tokenCt).ConfigureAwait(false);
+                await UploadBytesToExternalUrlAsync(uploadUrl, file.Bytes, safeName, tokenCt).ConfigureAwait(false);
+                uploaded.Add((fileId, safeName));
+            }
+
+            if (uploaded.Count == 0) {
+                if (!string.IsNullOrWhiteSpace(initialComment)) {
+                    await PostMessageAsync(token, channelId, initialComment, tokenCt).ConfigureAwait(false);
+                }
+                return;
+            }
+
+            var filesJson = new JArray();
+            foreach (var entry in uploaded) {
+                filesJson.Add(new JObject {
+                    ["id"] = entry.Id,
+                    ["title"] = entry.Title,
+                });
+            }
+
+            var form = new Dictionary<string, string> {
+                ["token"] = token,
+                ["channel_id"] = channelId,
+                ["files"] = filesJson.ToString(Formatting.None),
+            };
+            if (!string.IsNullOrWhiteSpace(initialComment)) {
+                form["initial_comment"] = TrimText(initialComment);
+            }
+
+            await PostSlackApiAsync("files.completeUploadExternal", form, null, tokenCt).ConfigureAwait(false);
+        }
+
+        private static async Task<(string UploadUrl, string FileId)> GetUploadUrlAsync(
+            string token,
+            string fileName,
+            int length,
+            CancellationToken tokenCt) {
+            var form = new Dictionary<string, string> {
+                ["token"] = token,
+                ["filename"] = fileName,
+                ["length"] = length.ToString(),
+            };
+
+            var body = await PostSlackApiRawAsync("files.getUploadURLExternal", form, null, tokenCt).ConfigureAwait(false);
+            var json = JObject.Parse(body);
+            var uploadUrl = json["upload_url"]?.ToString();
+            var fileId = json["file_id"]?.ToString();
+            if (string.IsNullOrWhiteSpace(uploadUrl) || string.IsNullOrWhiteSpace(fileId)) {
+                throw new InvalidOperationException(FormatSlackError(body, "Slack upload URL response was incomplete."));
+            }
+
+            return (uploadUrl, fileId);
+        }
+
+        private static async Task UploadBytesToExternalUrlAsync(
+            string uploadUrl,
+            byte[] bytes,
+            string fileName,
+            CancellationToken tokenCt) {
+            using var content = new MultipartFormDataContent();
+            content.Add(new ByteArrayContent(bytes), "file", fileName);
+            using var response = await Http.PostAsync(uploadUrl, content, tokenCt).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode) {
+                var body = await response.Content.ReadAsStringAsync(tokenCt).ConfigureAwait(false);
+                throw new InvalidOperationException(
+                    string.IsNullOrWhiteSpace(body)
+                        ? $"Slack file upload failed ({(int)response.StatusCode})."
+                        : body);
             }
         }
 
@@ -78,26 +161,14 @@ namespace AutoFocusGraphs.Destinations {
             await PostSlackApiAsync("chat.postMessage", form, null, tokenCt).ConfigureAwait(false);
         }
 
-        private static async Task UploadFileAsync(
-            string token,
-            string channelId,
-            byte[] bytes,
-            string fileName,
-            string initialComment,
-            CancellationToken tokenCt) {
-            using var content = new MultipartFormDataContent();
-            content.Add(new StringContent(token), "token");
-            content.Add(new StringContent(channelId), "channels");
-            content.Add(new StringContent(SanitizeFileName(fileName)), "filename");
-            if (!string.IsNullOrWhiteSpace(initialComment)) {
-                content.Add(new StringContent(TrimText(initialComment)), "initial_comment");
-            }
+        private static Task PostSlackApiAsync(
+            string method,
+            Dictionary<string, string> formFields,
+            HttpContent multipartContent,
+            CancellationToken tokenCt) =>
+            PostSlackApiRawAsync(method, formFields, multipartContent, tokenCt);
 
-            content.Add(new ByteArrayContent(bytes), "file", SanitizeFileName(fileName));
-            await PostSlackApiAsync("files.upload", null, content, tokenCt).ConfigureAwait(false);
-        }
-
-        private static async Task PostSlackApiAsync(
+        private static async Task<string> PostSlackApiRawAsync(
             string method,
             Dictionary<string, string> formFields,
             HttpContent multipartContent,
@@ -122,9 +193,13 @@ namespace AutoFocusGraphs.Destinations {
                 }
             } catch (InvalidOperationException) {
                 throw;
+            } catch (JsonReaderException) {
+                // Non-JSON success bodies are unexpected but should not hide HTTP success.
             } catch (Exception ex) {
                 Logger.Warning($"AutoFocusGraphs: Slack response parse warning: {ex.Message}");
             }
+
+            return body;
         }
 
         internal static string ConvertMarkdownForSlack(string text) {
@@ -145,6 +220,7 @@ namespace AutoFocusGraphs.Destinations {
                         "channel_not_found" => "Slack channel ID was not found.",
                         "invalid_auth" => "Slack bot token is invalid or revoked.",
                         "missing_scope" => "Slack bot token is missing required scopes (chat:write, files:write).",
+                        "method_deprecated" => "Slack rejected the legacy file upload API. Update AutoFocusGraphs to the latest build.",
                         _ => error,
                     };
                 }
