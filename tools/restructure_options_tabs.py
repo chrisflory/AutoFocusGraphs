@@ -91,10 +91,10 @@ def tab(name, body):
 
 
 out = f"""<ResourceDictionary
-    x:Class="AutofocusGraphs.Options"
+    x:Class="AutoFocusGraphs.Options"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <DataTemplate x:Key="AutofocusGraphs_Options">
+    <DataTemplate x:Key="AutoFocusGraphs_Options">
         <TabControl Loaded="OptionsPanel_Loaded" Grid.IsSharedSizeScope="True" VerticalAlignment="Top">
 {tab("General", general)}
 {tab("Discord", discord + "\n\n            " + role_block)}

@@ -1,6 +1,6 @@
 using System;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     /// <summary>
     /// Ensures outbound posts only go to Discord webhook endpoints (SSRF protection).
     /// </summary>

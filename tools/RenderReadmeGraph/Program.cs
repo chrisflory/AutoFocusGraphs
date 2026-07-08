@@ -1,4 +1,4 @@
-using AutofocusGraphs;
+using AutoFocusGraphs;
 using System;
 using System.IO;
 
@@ -47,14 +47,14 @@ namespace RenderReadmeGraph {
         private static string FindRepoRoot() {
             var dir = new DirectoryInfo(AppContext.BaseDirectory);
             while (dir != null) {
-                if (File.Exists(Path.Combine(dir.FullName, "AutofocusGraphs.csproj"))) {
+                if (File.Exists(Path.Combine(dir.FullName, "AutoFocusGraphs.csproj"))) {
                     return dir.FullName;
                 }
 
                 dir = dir.Parent;
             }
 
-            throw new InvalidOperationException("Could not locate AutofocusGraphs repository root.");
+            throw new InvalidOperationException("Could not locate AutoFocusGraphs repository root.");
         }
     }
 }

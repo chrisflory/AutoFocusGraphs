@@ -7,14 +7,14 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AutofocusGraphs.Destinations {
+namespace AutoFocusGraphs.Destinations {
     internal static class SlackBotClient {
         private static readonly HttpClient Http = new HttpClient {
             Timeout = TimeSpan.FromSeconds(90)
         };
 
         public static Task SendTestAsync(string token, string channelId, CancellationToken tokenCt) =>
-            PostMessageAsync(token, channelId, "AutofocusGraphs test — Slack delivery is configured.", tokenCt);
+            PostMessageAsync(token, channelId, "AutoFocusGraphs test — Slack delivery is configured.", tokenCt);
 
         public static async Task SendReportAsync(
             string token,
@@ -123,7 +123,7 @@ namespace AutofocusGraphs.Destinations {
             } catch (InvalidOperationException) {
                 throw;
             } catch (Exception ex) {
-                Logger.Warning($"AutofocusGraphs: Slack response parse warning: {ex.Message}");
+                Logger.Warning($"AutoFocusGraphs: Slack response parse warning: {ex.Message}");
             }
         }
 

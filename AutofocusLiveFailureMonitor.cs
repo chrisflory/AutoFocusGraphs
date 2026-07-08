@@ -1,14 +1,14 @@
-using AutofocusGraphs.Destinations;
-using AutofocusGraphs.Properties;
+using AutoFocusGraphs.Destinations;
+using AutoFocusGraphs.Properties;
 using NINA.Core.Utility;
 using NINA.Equipment.Interfaces.Mediator;
 using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Settings = AutofocusGraphs.Properties.Settings;
+using Settings = AutoFocusGraphs.Properties.Settings;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     internal static class AutofocusLiveFailureMonitor {
         private static int pendingChecks;
 
@@ -28,7 +28,7 @@ namespace AutofocusGraphs {
                     await Task.Delay(TimeSpan.FromSeconds(delaySeconds), CancellationToken.None).ConfigureAwait(false);
                     await CheckForMissingReportAsync(startedUtc, baselineReports, info).ConfigureAwait(false);
                 } catch (Exception ex) {
-                    Logger.Warning($"AutofocusGraphs: live AF failure check error: {ex.Message}");
+                    Logger.Warning($"AutoFocusGraphs: live AF failure check error: {ex.Message}");
                 } finally {
                     Interlocked.Decrement(ref pendingChecks);
                 }
@@ -65,10 +65,11 @@ namespace AutofocusGraphs {
                 await AutofocusDestinationRouter.PostFailureAsync(new FailurePostRequest {
                     FileName = fileName,
                     Reason = reason,
+                    SequenceName = ReportStore.Instance.GetPendingSequenceName(),
                 }, CancellationToken.None).ConfigureAwait(false);
-                Logger.Info($"AutofocusGraphs: posted live AF failure for {fileName}");
+                Logger.Info($"AutoFocusGraphs: posted live AF failure for {fileName}");
             } catch (Exception ex) {
-                Logger.Error($"AutofocusGraphs: could not post live AF failure: {ex.Message}");
+                Logger.Error($"AutoFocusGraphs: could not post live AF failure: {ex.Message}");
             }
         }
     }

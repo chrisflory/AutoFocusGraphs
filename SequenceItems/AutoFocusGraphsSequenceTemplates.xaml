@@ -1,15 +1,15 @@
 <ResourceDictionary
-    x:Class="AutofocusGraphs.SequenceItems.AutofocusGraphsSequenceTemplates"
+    x:Class="AutoFocusGraphs.SequenceItems.AutoFocusGraphsSequenceTemplates"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:AutofocusGraphs.SequenceItems"
+    xmlns:local="clr-namespace:AutoFocusGraphs.SequenceItems"
     xmlns:nina="clr-namespace:NINA.View.Sequencer;assembly=NINA.Sequencer">
 
     <DataTemplate DataType="{x:Type local:PostSessionDigestInstruction}">
         <nina:SequenceBlockView DataContext="{Binding}">
             <nina:SequenceBlockView.SequenceItemContent>
                 <TextBlock
-                    Text="Posts the AutofocusGraphs sequence digest to enabled destinations (same data as Options → Post sequence digest now)."
+                    Text="Posts the AutoFocusGraphs sequence digest to enabled destinations (same data as Options → Post sequence digest now)."
                     TextWrapping="Wrap"
                     Opacity="0.85" />
             </nina:SequenceBlockView.SequenceItemContent>

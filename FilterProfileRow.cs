@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     /// <summary>
     /// One editable per-filter quality row in the options UI.
     /// </summary>

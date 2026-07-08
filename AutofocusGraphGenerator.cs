@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     /// <summary>
     /// Builds a dark-mode autofocus V-curve PNG (replaces the matplotlib Discord bot graph).
     /// </summary>

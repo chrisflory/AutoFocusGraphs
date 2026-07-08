@@ -1,5 +1,5 @@
-using AutofocusGraphs.Destinations;
-using AutofocusGraphs.Properties;
+using AutoFocusGraphs.Destinations;
+using AutoFocusGraphs.Properties;
 using NINA.Core.Utility;
 using System;
 using System.Collections.Concurrent;
@@ -7,9 +7,9 @@ using System.IO;
 using System.Media;
 using System.Threading;
 using System.Threading.Tasks;
-using Settings = AutofocusGraphs.Properties.Settings;
+using Settings = AutoFocusGraphs.Properties.Settings;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     /// <summary>
     /// Watches AutoFocus JSON reports, evaluates quality, and posts to configured destinations.
     /// </summary>
@@ -34,7 +34,7 @@ namespace AutofocusGraphs {
 
             var options = getOptions();
             if (!options.Enabled) {
-                Logger.Info("AutofocusGraphs: monitoring is disabled.");
+                Logger.Info("AutoFocusGraphs: monitoring is disabled.");
                 return;
             }
 
@@ -52,7 +52,7 @@ namespace AutofocusGraphs {
             watcher.Renamed += OnRenamed;
             watcher.EnableRaisingEvents = true;
 
-            Logger.Info($"AutofocusGraphs: watching {folder}");
+            Logger.Info($"AutoFocusGraphs: watching {folder}");
         }
 
         public void Stop() {
@@ -98,7 +98,7 @@ namespace AutofocusGraphs {
                     await HandleNewFileAsync(e.FullPath, token).ConfigureAwait(false);
                 } catch (OperationCanceledException) {
                 } catch (Exception ex) {
-                    Logger.Error($"AutofocusGraphs: failed processing {Path.GetFileName(e.FullPath)}: {ex.Message}");
+                    Logger.Error($"AutoFocusGraphs: failed processing {Path.GetFileName(e.FullPath)}: {ex.Message}");
                 } finally {
                     await Task.Delay(1000, CancellationToken.None).ConfigureAwait(false);
                     inFlight.TryRemove(e.FullPath, out _);
@@ -112,12 +112,12 @@ namespace AutofocusGraphs {
             await WaitForReadableFileAsync(filePath, token).ConfigureAwait(false);
 
             if (!IsPathInsideAutoFocusFolder(filePath)) {
-                Logger.Warning("AutofocusGraphs: ignored file outside AutoFocus folder.");
+                Logger.Warning("AutoFocusGraphs: ignored file outside AutoFocus folder.");
                 return;
             }
 
             if (!File.Exists(filePath)) {
-                Logger.Warning($"AutofocusGraphs: file disappeared before upload: {Path.GetFileName(filePath)}");
+                Logger.Warning($"AutoFocusGraphs: file disappeared before upload: {Path.GetFileName(filePath)}");
                 return;
             }
 
@@ -133,11 +133,11 @@ namespace AutofocusGraphs {
             }
 
             if (!AutofocusDestinationRouter.ValidateActiveDestinations(out var destinationError)) {
-                Logger.Warning($"AutofocusGraphs: {destinationError}");
+                Logger.Warning($"AutoFocusGraphs: {destinationError}");
                 return;
             }
 
-            Logger.Info($"AutofocusGraphs: processing {info.Name} ({info.Length} bytes)");
+            Logger.Info($"AutoFocusGraphs: processing {info.Name} ({info.Length} bytes)");
 
             AutofocusReport report = null;
             string failureReason = null;
@@ -184,12 +184,12 @@ namespace AutofocusGraphs {
             }
 
             if (!options.PostPerRun) {
-                Logger.Info($"AutofocusGraphs: stored report for session digest only ({info.Name})");
+                Logger.Info($"AutoFocusGraphs: stored report for session digest only ({info.Name})");
                 return;
             }
 
             if (!AutofocusDestinationRouter.AnyActiveDestination()) {
-                Logger.Info($"AutofocusGraphs: no posting destination configured ({info.Name})");
+                Logger.Info($"AutoFocusGraphs: no posting destination configured ({info.Name})");
                 return;
             }
 
@@ -224,9 +224,9 @@ namespace AutofocusGraphs {
                         options.ConservativeGraphHints,
                         options.MinR2,
                         options.MaxFinalHfr);
-                    Logger.Info($"AutofocusGraphs: graph rendered ({graphPng.Length} bytes)");
+                    Logger.Info($"AutoFocusGraphs: graph rendered ({graphPng.Length} bytes)");
                 } catch (Exception ex) {
-                    Logger.Error($"AutofocusGraphs: graph generation failed, posting embed only: {ex.Message}");
+                    Logger.Error($"AutoFocusGraphs: graph generation failed, posting embed only: {ex.Message}");
                 }
             }
 
@@ -238,6 +238,7 @@ namespace AutofocusGraphs {
                     AttachJson = attachJson,
                     JsonFilePath = filePath,
                     Quality = quality,
+                    SequenceName = ReportStore.Instance.GetPendingSequenceName(),
                 }, token).ConfigureAwait(false);
             } finally {
                 SequenceRunPostTracker.EndPost();
@@ -250,7 +251,7 @@ namespace AutofocusGraphs {
             } catch {
                 // ignore audio failures
             }
-            Logger.Warning($"AutofocusGraphs: quality warning notification: {reason}");
+            Logger.Warning($"AutoFocusGraphs: quality warning notification: {reason}");
         }
 
         private static async Task WaitForReadableFileAsync(string filePath, CancellationToken token) {
@@ -276,11 +277,11 @@ namespace AutofocusGraphs {
 
         private static async Task TryPostFailureAsync(PluginRuntimeOptions options, string fileName, string reason, CancellationToken token) {
             if (!options.PostPerRun) {
-                Logger.Warning($"AutofocusGraphs: failure not posted ({fileName}): {reason}");
+                Logger.Warning($"AutoFocusGraphs: failure not posted ({fileName}): {reason}");
                 return;
             }
             if (!options.PostFailures) {
-                Logger.Warning($"AutofocusGraphs: failure not posted ({fileName}): {reason}");
+                Logger.Warning($"AutoFocusGraphs: failure not posted ({fileName}): {reason}");
                 return;
             }
             if (!AutofocusDestinationRouter.AnyActiveDestination()) {
@@ -290,9 +291,10 @@ namespace AutofocusGraphs {
                 await AutofocusDestinationRouter.PostFailureAsync(new FailurePostRequest {
                     FileName = fileName,
                     Reason = reason,
+                    SequenceName = ReportStore.Instance.GetPendingSequenceName(),
                 }, token).ConfigureAwait(false);
             } catch (Exception ex) {
-                Logger.Error($"AutofocusGraphs: could not post failure: {ex.Message}");
+                Logger.Error($"AutoFocusGraphs: could not post failure: {ex.Message}");
             }
         }
 

@@ -2,7 +2,7 @@ using NINA.Sequencer.Interfaces.Mediator;
 using System;
 using System.IO;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     internal static class SequenceNameResolver {
         public static string Resolve(ISequenceMediator sequenceMediator) {
             if (sequenceMediator == null) {

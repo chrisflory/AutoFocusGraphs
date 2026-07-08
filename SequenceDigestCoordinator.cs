@@ -1,14 +1,14 @@
-using AutofocusGraphs.Destinations;
-using AutofocusGraphs.Properties;
+using AutoFocusGraphs.Destinations;
+using AutoFocusGraphs.Properties;
 using NINA.Core.Utility;
 using NINA.Sequencer.Interfaces.Mediator;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Settings = AutofocusGraphs.Properties.Settings;
+using Settings = AutoFocusGraphs.Properties.Settings;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     /// <summary>
     /// Posts an autofocus digest when the Advanced (or simple) sequencer run finishes.
     /// </summary>
@@ -59,18 +59,18 @@ namespace AutofocusGraphs {
                 sequenceMediator.SequenceStarting += OnSequenceStarting;
                 sequenceMediator.SequenceFinished += OnSequenceFinished;
                 subscribed = true;
-                Logger.Info("AutofocusGraphs: listening for sequencer start/finish (per-sequence digest).");
+                Logger.Info("AutoFocusGraphs: listening for sequencer start/finish (per-sequence digest).");
             } catch (OperationCanceledException) {
                 // shutting down
             } catch (Exception ex) {
-                Logger.Warning($"AutofocusGraphs: could not subscribe to sequencer events: {ex.Message}");
+                Logger.Warning($"AutoFocusGraphs: could not subscribe to sequencer events: {ex.Message}");
             }
         }
 
         private Task OnSequenceStarting(object sender, EventArgs e) {
             ReportStore.Instance.BeginSequence();
             ReportStore.Instance.SetPendingSequenceName(SequenceNameResolver.Resolve(sequenceMediator));
-            Logger.Info("AutofocusGraphs: sequence started — tracking autofocus runs for sequence digest.");
+            Logger.Info("AutoFocusGraphs: sequence started — tracking autofocus runs for sequence digest.");
             return Task.CompletedTask;
         }
 
@@ -87,21 +87,21 @@ namespace AutofocusGraphs {
             }
 
             if (SessionDigestService.ShouldSkipAutomaticDigest(out var skipReason)) {
-                Logger.Info($"AutofocusGraphs: skipping sequence digest — {skipReason}");
+                Logger.Info($"AutoFocusGraphs: skipping sequence digest — {skipReason}");
                 return;
             }
 
             var snapshot = await WaitAndSnapshotSequenceReportsAsync(CancellationToken.None).ConfigureAwait(false);
             if (snapshot == null || snapshot.Count == 0) {
-                Logger.Info("AutofocusGraphs: sequence finished with no autofocus runs — skipping digest.");
+                Logger.Info("AutoFocusGraphs: sequence finished with no autofocus runs — skipping digest.");
                 return;
             }
 
             try {
                 await SessionDigestService.PostSequenceDigestAsync(snapshot, sequenceName, CancellationToken.None).ConfigureAwait(false);
-                Logger.Info($"AutofocusGraphs: sequence digest posted after sequence finished ({snapshot.Count} run(s)).");
+                Logger.Info($"AutoFocusGraphs: sequence digest posted after sequence finished ({snapshot.Count} run(s)).");
             } catch (Exception ex) {
-                Logger.Error($"AutofocusGraphs: sequence digest failed: {ex.Message}");
+                Logger.Error($"AutoFocusGraphs: sequence digest failed: {ex.Message}");
             }
         }
 
@@ -143,7 +143,7 @@ namespace AutofocusGraphs {
                 var postWaitMs = Math.Max(30000, uploadDelayMs + 20000);
                 await SequenceRunPostTracker.WaitForPendingPostsAsync(token, postWaitMs).ConfigureAwait(false);
                 if (SequenceRunPostTracker.HasPendingPosts) {
-                    Logger.Warning("AutofocusGraphs: sequence digest proceeding while per-run posts are still in flight.");
+                    Logger.Warning("AutoFocusGraphs: sequence digest proceeding while per-run posts are still in flight.");
                 }
             }
 

@@ -1,10 +1,10 @@
 <ResourceDictionary
-    x:Class="AutofocusGraphs.Options"
+    x:Class="AutoFocusGraphs.Options"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <DataTemplate x:Key="AutofocusGraphs_Options">
+    <DataTemplate x:Key="AutoFocusGraphs_Options">
         <TabControl Loaded="OptionsPanel_Loaded" Grid.IsSharedSizeScope="True" VerticalAlignment="Top">
-            <TabItem Header="General">
+            <TabItem Header="Graph">
                     <StackPanel Margin="0,4,0,0" Grid.IsSharedSizeScope="True">
 <Grid Margin="0,0,0,10" ToolTip="Master switch for autofocus monitoring and posting. When off, no per-run posts, digests, or live failure alerts are sent.">
                 <Grid.ColumnDefinitions>
@@ -24,109 +24,8 @@
             </Grid>
             <TextBlock Text="{Binding StatusText}" Margin="0,0,0,4" TextWrapping="Wrap" FontStyle="Italic" Opacity="0.8" />
             <TextBlock Text="{Binding LastPostStatus}" Margin="0,0,0,12" TextWrapping="Wrap" Opacity="0.8" />
-                    </StackPanel>
-            </TabItem>
-            <TabItem Header="Discord">
-                    <StackPanel Margin="0,4,0,0" Grid.IsSharedSizeScope="True">
-<Grid Margin="0,0,0,10" ToolTip="Post autofocus graphs and digests to Discord when configured.">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="Enable Discord" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
-                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
-                </Grid>
-                <CheckBox Grid.Column="1" IsChecked="{Binding DiscordEnabled}" VerticalAlignment="Center" />
-            </Grid>
 
-            <TextBlock Text="Discord webhook URL" Margin="0,0,0,4" />
-            <TextBox Text="{Binding WebhookUrl, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" MaxWidth="640" Margin="0,0,0,4" />
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                <Button Content="Test webhook" Command="{Binding TestWebhookCommand}" HorizontalAlignment="Left" Padding="12,4"
-                        ToolTip="Send a short test message to this Discord webhook to confirm the URL works." />
-                <TextBlock Text="✓" FontSize="20" FontWeight="Bold" Foreground="#2ECC71" VerticalAlignment="Center" Margin="10,0,0,0"
-                           Visibility="{Binding WebhookTestSuccessVisible}" ToolTip="Test message posted to Discord." />
-                <TextBlock Text="✗" FontSize="20" FontWeight="Bold" Foreground="#E74C3C" VerticalAlignment="Center" Margin="10,0,0,0"
-                           Visibility="{Binding WebhookTestFailureVisible}" ToolTip="{Binding WebhookTestToolTip}" />
-            </StackPanel>
-
-            <TextBlock Text="Discord thread ID (optional)" Margin="0,0,0,4" />
-            <TextBox Text="{Binding DiscordThreadId, UpdateSourceTrigger=PropertyChanged}" MinWidth="240" Margin="0,0,0,4" />
-            <TextBlock Text="Numeric thread ID for an existing thread. Leave empty to post in the channel." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
-
-            <Grid Margin="0,0,0,10" ToolTip="Forum channels only. Posts go into a thread named AF yyyy-MM-dd for the night. Leave off for normal text channels (required — otherwise Discord returns an error).">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="Nightly forum thread name (AF yyyy-MM-dd)" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
-                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
-                </Grid>
-                <CheckBox Grid.Column="1" IsChecked="{Binding UseNightlyThreadName}" VerticalAlignment="Center" />
-            </Grid>
-            <TextBlock Text="Forum channels only: posts go into a thread named AF yyyy-MM-dd for the night. Leave OFF for a normal text channel." Margin="0,0,0,10" Opacity="0.7" TextWrapping="Wrap" />
-
-            <TextBlock Text="Embed detail" Margin="0,0,0,4" />
-            <ComboBox ItemsSource="{Binding EmbedModeOptions}" SelectedItem="{Binding EmbedMode}" Width="160" HorizontalAlignment="Left" Margin="0,0,0,8" />
-            <TextBlock Text="Attachments" Margin="0,0,0,4" />
-            <ComboBox ItemsSource="{Binding AttachModeOptions}" SelectedItem="{Binding AttachMode}" Width="160" HorizontalAlignment="Left" Margin="0,0,0,12"
-                      ToolTip="Both = graph + embed. GraphOnly = image with short message. EmbedOnly = text embed, no PNG." />
-
-            
-
-            <TextBlock Text="Discord alert role ID (optional)" Margin="0,0,0,4" />
-            <TextBox Text="{Binding DiscordAlertRoleId, UpdateSourceTrigger=PropertyChanged}" MinWidth="240" Margin="0,0,0,4" />
-            <TextBlock Text="Numeric role ID from Discord (Server Settings → Roles → right-click role → Copy Role ID). Used to ping on warnings or failures." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
-
-            <Grid Margin="0,0,0,10" ToolTip="Mention the alert role (&lt;@&amp;roleId&gt;) in Discord when a quality warning is posted. Requires Discord alert role ID below.">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="Ping role on quality warning" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
-                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
-                </Grid>
-                <CheckBox Grid.Column="1" IsChecked="{Binding PingRoleOnWarning}" VerticalAlignment="Center" />
-            </Grid>
-            <Grid Margin="0,0,0,10" ToolTip="Mention the alert role on failure posts and live autofocus aborts (no JSON report). Requires Discord alert role ID below.">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="Ping role on failure / live AF abort" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
-                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
-                </Grid>
-                <CheckBox Grid.Column="1" IsChecked="{Binding PingRoleOnFailure}" VerticalAlignment="Center" />
-            </Grid>
-                    </StackPanel>
-            </TabItem>
-            <TabItem Header="Graph">
-                    <StackPanel Margin="0,4,0,0" Grid.IsSharedSizeScope="True">
-<TextBlock Text="Live preview — toggle overlays below; same PNG sent to enabled destinations."
+            <TextBlock Text="Live preview — toggle overlays below; same PNG sent to enabled destinations."
                        Margin="0,0,0,4" Opacity="0.7" TextWrapping="Wrap" FontSize="12" />
             <TextBlock Text="Preview sample" Margin="0,0,0,4" Opacity="0.7" FontSize="12" />
             <ComboBox ItemsSource="{Binding GraphPreviewSampleOptions}" SelectedItem="{Binding GraphPreviewSample}"
@@ -303,85 +202,10 @@
                 </Grid>
                 <CheckBox Grid.Column="1" IsChecked="{Binding ConservativeGraphHints}" IsEnabled="{Binding ShowGraphAnalysisHints}" VerticalAlignment="Center" />
             </Grid>
-                    </StackPanel>
-            </TabItem>
-            <TabItem Header="Telegram">
-                    <StackPanel Margin="0,4,0,0" Grid.IsSharedSizeScope="True">
-<Grid Margin="0,0,0,10" ToolTip="Post autofocus graphs and digests to a Telegram chat or channel.">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="Enable Telegram" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
-                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
-                </Grid>
-                <CheckBox Grid.Column="1" IsChecked="{Binding TelegramEnabled}" VerticalAlignment="Center" />
-            </Grid>
 
-            <TextBlock Text="Telegram bot token" Margin="0,0,0,4" />
-            <TextBox Text="{Binding TelegramBotToken, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" MaxWidth="640" Margin="0,0,0,4" />
-            <TextBlock Text="From @BotFather (e.g. 123456789:ABC...). Stored locally only." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
+            <TextBlock Text="Quality &amp; posting" FontSize="16" FontWeight="Bold" Margin="0,16,0,10" />
 
-            <TextBlock Text="Telegram chat ID" Margin="0,0,0,4" />
-            <TextBox Text="{Binding TelegramChatId, UpdateSourceTrigger=PropertyChanged}" MinWidth="240" Margin="0,0,0,4" />
-            <TextBlock Text="Numeric chat ID (e.g. -1001234567890) or @channelusername. Bot must be a member." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
-
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                <Button Content="Test Telegram" Command="{Binding TestTelegramCommand}" HorizontalAlignment="Left" Padding="12,4"
-                        ToolTip="Send a short test message via the Telegram Bot API." />
-                <TextBlock Text="✓" FontSize="20" FontWeight="Bold" Foreground="#2ECC71" VerticalAlignment="Center" Margin="10,0,0,0"
-                           Visibility="{Binding TelegramTestSuccessVisible}" ToolTip="Test message posted to Telegram." />
-                <TextBlock Text="✗" FontSize="20" FontWeight="Bold" Foreground="#E74C3C" VerticalAlignment="Center" Margin="10,0,0,0"
-                           Visibility="{Binding TelegramTestFailureVisible}" ToolTip="{Binding TelegramTestToolTip}" />
-            </StackPanel>
-                    </StackPanel>
-            </TabItem>
-            <TabItem Header="Slack">
-                    <StackPanel Margin="0,4,0,0" Grid.IsSharedSizeScope="True">
-<Grid Margin="0,0,0,10" ToolTip="Post autofocus graphs and digests to a Slack channel.">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="Enable Slack" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
-                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
-                </Grid>
-                <CheckBox Grid.Column="1" IsChecked="{Binding SlackEnabled}" VerticalAlignment="Center" />
-            </Grid>
-
-            <TextBlock Text="Slack bot token" Margin="0,0,0,4" />
-            <TextBox Text="{Binding SlackBotToken, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" MaxWidth="640" Margin="0,0,0,4" />
-            <TextBlock Text="Bot User OAuth Token (xoxb-...) from your Slack app. Needs chat:write and files:write." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
-
-            <TextBlock Text="Slack channel ID" Margin="0,0,0,4" />
-            <TextBox Text="{Binding SlackChannelId, UpdateSourceTrigger=PropertyChanged}" MinWidth="240" Margin="0,0,0,4" />
-            <TextBlock Text="Channel ID (C... or G...). Invite the bot to the channel before testing." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
-
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                <Button Content="Test Slack" Command="{Binding TestSlackCommand}" HorizontalAlignment="Left" Padding="12,4"
-                        ToolTip="Send a short test message via the Slack Web API." />
-                <TextBlock Text="✓" FontSize="20" FontWeight="Bold" Foreground="#2ECC71" VerticalAlignment="Center" Margin="10,0,0,0"
-                           Visibility="{Binding SlackTestSuccessVisible}" ToolTip="Test message posted to Slack." />
-                <TextBlock Text="✗" FontSize="20" FontWeight="Bold" Foreground="#E74C3C" VerticalAlignment="Center" Margin="10,0,0,0"
-                           Visibility="{Binding SlackTestFailureVisible}" ToolTip="{Binding SlackTestToolTip}" />
-            </StackPanel>
-                    </StackPanel>
-            </TabItem>
-            <TabItem Header="Quality &amp; posting">
-                    <StackPanel Margin="0,4,0,0" Grid.IsSharedSizeScope="True">
-<Grid Margin="0,0,0,10" ToolTip="Evaluate hyperbolic R² and final HFR against thresholds; flagged runs show a warning in the Discord embed.">
+            <Grid Margin="0,0,0,10" ToolTip="Evaluate hyperbolic R² and final HFR against thresholds; flagged runs show a warning in the Discord embed.">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
@@ -628,6 +452,261 @@
             <TextBlock Text="Tokens: {shortfilename} (one line), {filename} (truncated), {filenamefull}, {time}, {filter}, {prefix}. Full filename is always in the embed footer; hover works on the JSON attachment if enabled." Margin="0,0,0,12" Opacity="0.7" TextWrapping="Wrap" />
             <TextBlock Text="Watch folder" Margin="0,0,0,4" />
             <TextBox Text="{Binding WatchFolder, Mode=OneWay}" IsReadOnly="True" HorizontalAlignment="Stretch" MaxWidth="640" />
+                    </StackPanel>
+            </TabItem>
+            <TabItem Header="Discord">
+                    <StackPanel Margin="0,4,0,0" Grid.IsSharedSizeScope="True">
+<Grid Margin="0,0,0,10" ToolTip="Post autofocus graphs and digests to Discord when configured.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Enable Discord" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding DiscordEnabled}" VerticalAlignment="Center" />
+            </Grid>
+
+            <TextBlock Text="Discord webhook URL" Margin="0,0,0,4" />
+            <TextBox Text="{Binding WebhookUrl, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" MaxWidth="640" Margin="0,0,0,4" />
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <Button Content="Test webhook" Command="{Binding TestWebhookCommand}" HorizontalAlignment="Left" Padding="12,4"
+                        ToolTip="Send a short test message to this Discord webhook to confirm the URL works." />
+                <TextBlock Text="✓" FontSize="20" FontWeight="Bold" Foreground="#2ECC71" VerticalAlignment="Center" Margin="10,0,0,0"
+                           Visibility="{Binding WebhookTestSuccessVisible}" ToolTip="Test message posted to Discord." />
+                <TextBlock Text="✗" FontSize="20" FontWeight="Bold" Foreground="#E74C3C" VerticalAlignment="Center" Margin="10,0,0,0"
+                           Visibility="{Binding WebhookTestFailureVisible}" ToolTip="{Binding WebhookTestToolTip}" />
+            </StackPanel>
+
+            <TextBlock Text="Discord thread ID (optional)" Margin="0,0,0,4" />
+            <TextBox Text="{Binding DiscordThreadId, UpdateSourceTrigger=PropertyChanged}" MinWidth="240" Margin="0,0,0,4" />
+            <TextBlock Text="Numeric thread ID for an existing thread. Leave empty to post in the channel." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
+
+            <Grid Margin="0,0,0,10" ToolTip="Forum channels only. Posts go into a thread named AF yyyy-MM-dd for the night. Leave off for normal text channels (required — otherwise Discord returns an error).">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Nightly forum thread name (AF yyyy-MM-dd)" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding UseNightlyThreadName}" VerticalAlignment="Center" />
+            </Grid>
+            <TextBlock Text="Forum channels only: posts go into a thread named AF yyyy-MM-dd for the night. Leave OFF for a normal text channel." Margin="0,0,0,10" Opacity="0.7" TextWrapping="Wrap" />
+
+            <TextBlock Text="Embed detail" Margin="0,0,0,4" />
+            <ComboBox ItemsSource="{Binding EmbedModeOptions}" SelectedItem="{Binding EmbedMode}" Width="160" HorizontalAlignment="Left" Margin="0,0,0,8" />
+            <TextBlock Text="Attachments" Margin="0,0,0,4" />
+            <ComboBox ItemsSource="{Binding AttachModeOptions}" SelectedItem="{Binding AttachMode}" Width="160" HorizontalAlignment="Left" Margin="0,0,0,12"
+                      ToolTip="Both = graph + embed. GraphOnly = image with short message. EmbedOnly = text embed, no PNG." />
+
+            
+
+            <TextBlock Text="Discord alert role ID (optional)" Margin="0,0,0,4" />
+            <TextBox Text="{Binding DiscordAlertRoleId, UpdateSourceTrigger=PropertyChanged}" MinWidth="240" Margin="0,0,0,4" />
+            <TextBlock Text="Numeric role ID from Discord (Server Settings → Roles → right-click role → Copy Role ID). Used to ping on warnings or failures." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
+
+            <Grid Margin="0,0,0,10" ToolTip="Mention the alert role (&lt;@&amp;roleId&gt;) in Discord when a quality warning is posted. Requires Discord alert role ID below.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Ping role on quality warning" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding PingRoleOnWarning}" VerticalAlignment="Center" />
+            </Grid>
+            <Grid Margin="0,0,0,10" ToolTip="Mention the alert role on failure posts and live autofocus aborts (no JSON report). Requires Discord alert role ID below.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Ping role on failure / live AF abort" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding PingRoleOnFailure}" VerticalAlignment="Center" />
+            </Grid>
+                    </StackPanel>
+            </TabItem>
+            <TabItem Header="Telegram">
+                    <StackPanel Margin="0,4,0,0" Grid.IsSharedSizeScope="True">
+<Grid Margin="0,0,0,10" ToolTip="Post autofocus graphs and digests to a Telegram chat or channel.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Enable Telegram" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding TelegramEnabled}" VerticalAlignment="Center" />
+            </Grid>
+
+            <TextBlock Text="Telegram bot token" Margin="0,0,0,4" />
+            <TextBox Text="{Binding TelegramBotToken, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" MaxWidth="640" Margin="0,0,0,4" />
+            <TextBlock Text="From @BotFather (e.g. 123456789:ABC...). Stored locally only." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
+
+            <TextBlock Text="Telegram chat ID" Margin="0,0,0,4" />
+            <TextBox Text="{Binding TelegramChatId, UpdateSourceTrigger=PropertyChanged}" MinWidth="240" Margin="0,0,0,4" />
+            <TextBlock Text="Numeric chat ID (e.g. -1001234567890) or @channelusername. Bot must be a member." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
+
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                <Button Content="Test Telegram" Command="{Binding TestTelegramCommand}" HorizontalAlignment="Left" Padding="12,4"
+                        ToolTip="Send a short test message via the Telegram Bot API." />
+                <TextBlock Text="✓" FontSize="20" FontWeight="Bold" Foreground="#2ECC71" VerticalAlignment="Center" Margin="10,0,0,0"
+                           Visibility="{Binding TelegramTestSuccessVisible}" ToolTip="Test message posted to Telegram." />
+                <TextBlock Text="✗" FontSize="20" FontWeight="Bold" Foreground="#E74C3C" VerticalAlignment="Center" Margin="10,0,0,0"
+                           Visibility="{Binding TelegramTestFailureVisible}" ToolTip="{Binding TelegramTestToolTip}" />
+            </StackPanel>
+                    </StackPanel>
+            </TabItem>
+            <TabItem Header="Slack">
+                    <StackPanel Margin="0,4,0,0" Grid.IsSharedSizeScope="True">
+<Grid Margin="0,0,0,10" ToolTip="Post autofocus graphs and digests to a Slack channel.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Enable Slack" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding SlackEnabled}" VerticalAlignment="Center" />
+            </Grid>
+
+            <TextBlock Text="Slack bot token" Margin="0,0,0,4" />
+            <TextBox Text="{Binding SlackBotToken, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" MaxWidth="640" Margin="0,0,0,4" />
+            <TextBlock Text="Bot User OAuth Token (xoxb-...) from your Slack app. Needs chat:write and files:write." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
+
+            <TextBlock Text="Slack channel ID" Margin="0,0,0,4" />
+            <TextBox Text="{Binding SlackChannelId, UpdateSourceTrigger=PropertyChanged}" MinWidth="240" Margin="0,0,0,4" />
+            <TextBlock Text="Channel ID (C... or G...). Invite the bot to the channel before testing." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
+
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                <Button Content="Test Slack" Command="{Binding TestSlackCommand}" HorizontalAlignment="Left" Padding="12,4"
+                        ToolTip="Send a short test message via the Slack Web API." />
+                <TextBlock Text="✓" FontSize="20" FontWeight="Bold" Foreground="#2ECC71" VerticalAlignment="Center" Margin="10,0,0,0"
+                           Visibility="{Binding SlackTestSuccessVisible}" ToolTip="Test message posted to Slack." />
+                <TextBlock Text="✗" FontSize="20" FontWeight="Bold" Foreground="#E74C3C" VerticalAlignment="Center" Margin="10,0,0,0"
+                           Visibility="{Binding SlackTestFailureVisible}" ToolTip="{Binding SlackTestToolTip}" />
+            </StackPanel>
+                    </StackPanel>
+            </TabItem>
+            <TabItem Header="Email">
+                    <StackPanel Margin="0,4,0,0" Grid.IsSharedSizeScope="True">
+<Grid Margin="0,0,0,10" ToolTip="Email autofocus graphs and digests via SMTP.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Enable email" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding EmailEnabled}" VerticalAlignment="Center" />
+            </Grid>
+
+            <TextBlock Text="Outgoing (SMTP)" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,8" Opacity="0.9" />
+
+            <TextBlock Text="SMTP host" Margin="0,0,0,4" />
+            <TextBox Text="{Binding EmailSmtpHost, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" MaxWidth="640" Margin="0,0,0,4" />
+            <TextBlock Text="e.g. smtp.gmail.com, smtp.office365.com, or 127.0.0.1 for Proton Mail Bridge." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
+
+            <TextBlock Text="SMTP port" Margin="0,0,0,4" />
+            <TextBox Text="{Binding EmailSmtpPort}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,8" />
+
+            <Grid Margin="0,0,0,10" ToolTip="On port 587 or Proton Bridge 1025, this uses STARTTLS (connect, then upgrade to TLS). Port 465 uses SSL from the start. Turn off only for plain SMTP on port 25.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="SMTP: use STARTTLS / SSL" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding EmailUseSsl}" VerticalAlignment="Center" />
+            </Grid>
+
+            <TextBlock Text="SMTP username" Margin="0,0,0,4" />
+            <TextBox Text="{Binding EmailUsername, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" MaxWidth="640" Margin="0,0,0,4" />
+            <TextBlock Text="Usually your email address. Leave blank for open relay without auth." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
+
+            <TextBlock Text="SMTP password" Margin="0,0,0,4" />
+            <PasswordBox Loaded="EmailPassword_Loaded" PasswordChanged="EmailPassword_Changed"
+                         HorizontalAlignment="Stretch" MaxWidth="640" Margin="0,0,0,4" />
+            <TextBlock Text="App password for Gmail/Outlook, or your SMTP password. Stored locally only." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
+
+            <TextBlock Text="From address" Margin="0,0,0,4" />
+            <TextBox Text="{Binding EmailFrom, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" MaxWidth="640" Margin="0,0,0,4" />
+            <TextBlock Text="Optional if SMTP username is your email. Proton Bridge requires your Proton address — custom domains like nina@home.local are rejected. Display name OK: NINA Graphs &lt;you@protonmail.com&gt;" Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
+
+            <TextBlock Text="To address(es)" Margin="0,0,0,4" />
+            <TextBox Text="{Binding EmailTo, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" MaxWidth="640" Margin="0,0,0,4" />
+            <TextBlock Text="One or more recipients, separated by commas. Test email sends to yourself if this is blank." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" />
+
+            <TextBlock Text="Email subject" Margin="0,0,0,4" />
+            <TextBox Text="{Binding EmailSubjectTemplate, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" MaxWidth="640" Margin="0,0,0,4" />
+            <TextBlock Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap">
+                <Run Text="Leave blank for the default: " />
+                <Run Text="NINA AutoFocus Graphs - {sequence} - {date}" FontFamily="Consolas" />
+                <Run Text=" when a sequence is running, or " />
+                <Run Text="NINA Manual AutoFocus Graphs - {date}" FontFamily="Consolas" />
+                <Run Text=" for manual AF. Enter a custom subject only if you want something else — tokens: {sequence}, {date}, {time}, {filter}, {shortfilename}, {filename}, {reason}." />
+            </TextBlock>
+
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                <Button Content="Test email" Click="TestEmail_Click" HorizontalAlignment="Left" Padding="12,4"
+                        ToolTip="Send a short test email via SMTP." />
+                <TextBlock Text="✓" FontSize="20" FontWeight="Bold" Foreground="#2ECC71" VerticalAlignment="Center" Margin="10,0,0,0"
+                           Visibility="{Binding EmailTestSuccessVisible}" ToolTip="{Binding EmailTestToolTip}" />
+                <TextBlock Text="✗" FontSize="20" FontWeight="Bold" Foreground="#E74C3C" VerticalAlignment="Center" Margin="10,0,0,0"
+                           Visibility="{Binding EmailTestFailureVisible}" ToolTip="{Binding EmailTestToolTip}" />
+            </StackPanel>
+            <TextBlock Text="{Binding EmailTestStatusText}" Margin="0,0,0,12" Opacity="0.85" TextWrapping="Wrap" />
                     </StackPanel>
             </TabItem>
         </TabControl>

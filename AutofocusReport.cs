@@ -5,7 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     /// <summary>
     /// Parsed N.I.N.A. autofocus JSON report (Hocus Focus / built-in).
     /// </summary>
@@ -350,6 +350,25 @@ namespace AutofocusGraphs {
                 return full.Substring(0, dot);
             }
             return full;
+        }
+
+        /// <summary>
+        /// Date portion for email subjects (yyyy-MM-dd), from JSON timestamp or filename.
+        /// </summary>
+        public string FormatSubjectDate() {
+            if (CapturedUtc.HasValue) {
+                return CapturedUtc.Value.ToLocalTime().ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+            }
+
+            var shortName = FormatShortFileName();
+            if (shortName.Length >= 10 &&
+                shortName[4] == '-' &&
+                shortName[7] == '-' &&
+                char.IsDigit(shortName[0])) {
+                return shortName.Substring(0, 10);
+            }
+
+            return DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
         }
 
         /// <summary>

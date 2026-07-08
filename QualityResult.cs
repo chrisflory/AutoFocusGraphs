@@ -1,4 +1,4 @@
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     internal enum ReportOutcome {
         Success,
         Warning,

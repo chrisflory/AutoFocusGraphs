@@ -1,8 +1,8 @@
-using AutofocusGraphs.Properties;
+using AutoFocusGraphs.Properties;
 using System;
-using Settings = AutofocusGraphs.Properties.Settings;
+using Settings = AutoFocusGraphs.Properties.Settings;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     internal enum EmbedDetailMode {
         Detailed,
         Compact

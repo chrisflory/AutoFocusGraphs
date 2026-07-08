@@ -2,8 +2,8 @@
   <PropertyGroup>
     <TargetFramework>net10.0-windows</TargetFramework>
     <OutputType>Library</OutputType>
-    <RootNamespace>AutofocusGraphs</RootNamespace>
-    <AssemblyName>AutofocusGraphs</AssemblyName>
+    <RootNamespace>AutoFocusGraphs</RootNamespace>
+    <AssemblyName>AutoFocusGraphs</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWPF>true</UseWPF>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
@@ -17,6 +17,7 @@
     <Compile Remove="tools\**\*.cs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="MailKit" Version="4.11.0" />
     <PackageReference Include="NINA.Plugin" Version="3.3.0.1047-nightly" />
     <PackageReference Include="ScottPlot" Version="5.0.55" />
   </ItemGroup>
@@ -37,6 +38,9 @@
       <_ManagedDeps Include="$(TargetDir)SkiaSharp.dll" />
       <_ManagedDeps Include="$(TargetDir)SkiaSharp.HarfBuzz.dll" />
       <_ManagedDeps Include="$(TargetDir)HarfBuzzSharp.dll" />
+      <_ManagedDeps Include="$(TargetDir)MailKit.dll" />
+      <_ManagedDeps Include="$(TargetDir)MimeKit.dll" />
+      <_ManagedDeps Include="$(TargetDir)BouncyCastle.Cryptography.dll" />
       <!-- Prefer x64 natives beside the managed DLLs for reliable loading inside NINA -->
       <_NativeRoot Include="$(TargetDir)runtimes\win-x64\native\libSkiaSharp.dll" />
       <_NativeRoot Include="$(TargetDir)runtimes\win-x64\native\libHarfBuzzSharp.dll" />

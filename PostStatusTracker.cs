@@ -1,6 +1,6 @@
 using System;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     /// <summary>
     /// Tracks the most recent Discord post outcome for the options UI.
     /// </summary>

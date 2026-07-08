@@ -1,4 +1,4 @@
-# AutofocusGraphs test reports
+# AutoFocusGraphs test reports
 
 Copy these into `%localappdata%\NINA\AutoFocus` with the plugin enabled (`develop` branch defaults).
 

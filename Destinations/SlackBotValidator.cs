@@ -1,7 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace AutofocusGraphs.Destinations {
+namespace AutoFocusGraphs.Destinations {
     internal static class SlackBotValidator {
         private static readonly Regex TokenPattern = new Regex(
             @"^xox[baprs]-[A-Za-z0-9-]+$",

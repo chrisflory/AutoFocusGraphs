@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AutofocusGraphs.Destinations {
+namespace AutoFocusGraphs.Destinations {
     internal static class TelegramBotClient {
         private static readonly HttpClient Http = new HttpClient {
             Timeout = TimeSpan.FromSeconds(60)
@@ -18,7 +18,7 @@ namespace AutofocusGraphs.Destinations {
             await SendMessageAsync(
                 token,
                 chatId,
-                "AutofocusGraphs test — Telegram delivery is configured.",
+                "AutoFocusGraphs test — Telegram delivery is configured.",
                 tokenCt).ConfigureAwait(false);
         }
 
@@ -109,7 +109,7 @@ namespace AutofocusGraphs.Destinations {
             } catch (InvalidOperationException) {
                 throw;
             } catch (Exception ex) {
-                Logger.Warning($"AutofocusGraphs: Telegram response parse warning: {ex.Message}");
+                Logger.Warning($"AutoFocusGraphs: Telegram response parse warning: {ex.Message}");
             }
         }
 

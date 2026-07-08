@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     /// <summary>
     /// Tracks in-flight per-run Discord posts so sequence digests can be sent after the last AF run.
     /// </summary>

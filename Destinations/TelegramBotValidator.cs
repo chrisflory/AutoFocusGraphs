@@ -1,7 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace AutofocusGraphs.Destinations {
+namespace AutoFocusGraphs.Destinations {
     internal static class TelegramBotValidator {
         private static readonly Regex TokenPattern = new Regex(
             @"^\d{8,10}:[A-Za-z0-9_-]{30,}$",

@@ -1,6 +1,6 @@
 using System;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     internal static class QualityEvaluator {
         public static QualityResult Evaluate(
             AutofocusReport report,

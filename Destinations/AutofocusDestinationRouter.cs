@@ -5,11 +5,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AutofocusGraphs.Destinations {
+namespace AutoFocusGraphs.Destinations {
     internal static class AutofocusDestinationRouter {
         private static readonly IAutofocusDestination[] Destinations = {
             new DiscordDestination(),
+            new TelegramDestination(),
             new SlackDestination(),
+            new EmailDestination(),
         };
 
         public static IReadOnlyList<IAutofocusDestination> All => Destinations;
@@ -75,7 +77,7 @@ namespace AutofocusGraphs.Destinations {
                     await action(destination, token).ConfigureAwait(false);
                 } catch (Exception ex) {
                     failures.Add($"{destination.Name}: {ex.Message}");
-                    Logger.Warning($"AutofocusGraphs: {destination.Name} post failed: {ex.Message}");
+                    Logger.Warning($"AutoFocusGraphs: {destination.Name} post failed: {ex.Message}");
                 }
             }
 

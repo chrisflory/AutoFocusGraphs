@@ -7,11 +7,11 @@ using System.ComponentModel.Composition;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AutofocusGraphs.SequenceItems {
+namespace AutoFocusGraphs.SequenceItems {
     [ExportMetadata("Name", "Post AF sequence digest")]
-    [ExportMetadata("Description", "Posts the AutofocusGraphs sequence digest (stats and run list for this sequence) to enabled destinations.")]
+    [ExportMetadata("Description", "Posts the AutoFocusGraphs sequence digest (stats and run list for this sequence) to enabled destinations.")]
     [ExportMetadata("Icon", "Discord_SVG")]
-    [ExportMetadata("Category", "AutofocusGraphs")]
+    [ExportMetadata("Category", "AutoFocusGraphs")]
     [Export(typeof(ISequenceItem))]
     [JsonObject(MemberSerialization.OptIn)]
     public sealed class PostSessionDigestInstruction : SequenceItem {
@@ -25,7 +25,7 @@ namespace AutofocusGraphs.SequenceItems {
 
         public override Task Execute(IProgress<ApplicationStatus> progress, CancellationToken token) {
             progress?.Report(new ApplicationStatus {
-                Status = "Posting AutofocusGraphs sequence digest…"
+                Status = "Posting AutoFocusGraphs sequence digest…"
             });
 
             return SessionDigestService.PostSequenceDigestAsync(token);

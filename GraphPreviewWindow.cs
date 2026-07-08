@@ -2,7 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     /// <summary>
     /// Larger graph preview for overlay tuning (updates while open).
     /// </summary>
@@ -10,7 +10,7 @@ namespace AutofocusGraphs {
         private readonly Image previewImage;
 
         public GraphPreviewWindow(ImageSource source) {
-            Title = "AutofocusGraphs — graph preview";
+            Title = "AutoFocusGraphs — graph preview";
             Background = new SolidColorBrush(Color.FromRgb(54, 57, 63));
             Width = 1240;
             Height = 780;

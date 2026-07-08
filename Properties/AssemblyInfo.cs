@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 
 
 
-[assembly: AssemblyTitle("AutofocusGraphs")]
+[assembly: AssemblyTitle("AutoFocusGraphs")]
 
 [assembly: AssemblyDescription("Watches N.I.N.A. AutoFocus reports and posts V-curve graphs to Discord, Telegram, and other destinations.")]
 
@@ -28,7 +28,7 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyCompany("Chris Flory @starjunkie")]
 
-[assembly: AssemblyProduct("AutofocusGraphs")]
+[assembly: AssemblyProduct("AutoFocusGraphs")]
 
 [assembly: AssemblyCopyright("Copyright © 2026 Chris Flory")]
 
@@ -42,15 +42,15 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyMetadata("LicenseURL", "https://opensource.org/licenses/MIT")]
 
-[assembly: AssemblyMetadata("Repository", "https://github.com/chrisflory/AutofocusGraphs")]
+[assembly: AssemblyMetadata("Repository", "https://github.com/chrisflory/AutoFocusGraphs")]
 
 
 
-[assembly: AssemblyMetadata("Homepage", "https://github.com/chrisflory/AutofocusGraphs")]
+[assembly: AssemblyMetadata("Homepage", "https://github.com/chrisflory/AutoFocusGraphs")]
 
 [assembly: AssemblyMetadata("Tags", "autofocus,graph,discord,telegram,webhook,notification")]
 
-[assembly: AssemblyMetadata("ChangelogURL", "https://github.com/chrisflory/AutofocusGraphs/blob/develop/CHANGELOG.md")]
+[assembly: AssemblyMetadata("ChangelogURL", "https://github.com/chrisflory/AutoFocusGraphs/blob/develop/CHANGELOG.md")]
 
 
 
@@ -64,21 +64,25 @@ using System.Runtime.InteropServices;
 
 
 
-![AutofocusGraphs pipeline](https://raw.githubusercontent.com/chrisflory/AutofocusGraphs/develop/assets/flowchart.png)
+![AutoFocusGraphs pipeline](https://raw.githubusercontent.com/chrisflory/AutoFocusGraphs/develop/assets/flowchart.png)
 
 
 
-Per-run V-curve posts, sequence digests, and session digests to **Discord** and **Telegram** (more channels planned).
+Per-run V-curve posts, sequence digests, and session digests to **Discord**, **Telegram**, **Slack**, and **email**.
 
 
 
 ## Setup
 
-1. Enable a destination under Options → Plugins → AutofocusGraphs
+1. Enable a destination under Options → Plugins → AutoFocusGraphs
 
 2. Discord: channel webhook URL → Test webhook
 
 3. Telegram: bot token from @BotFather + chat ID → Test Telegram
+
+4. Slack: bot token + channel ID → Test Slack
+
+5. Email: SMTP settings → Test email
 
 
 

@@ -1,13 +1,13 @@
-using AutofocusGraphs.Properties;
+using AutoFocusGraphs.Properties;
 using NINA.Core.Utility;
 using System;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Settings = AutofocusGraphs.Properties.Settings;
+using Settings = AutoFocusGraphs.Properties.Settings;
 
-namespace AutofocusGraphs.Destinations {
+namespace AutoFocusGraphs.Destinations {
     internal sealed class TelegramDestination : IAutofocusDestination {
         public string Name => "Telegram";
 
@@ -41,7 +41,7 @@ namespace AutofocusGraphs.Destinations {
                     request.Report?.FileName,
                     token).ConfigureAwait(false);
                 PostStatusTracker.RecordSuccess($"{request.Quality.Outcome} {request.Report?.FileName} (Telegram)");
-                Logger.Info($"AutofocusGraphs: posted report to Telegram ({request.Quality.Outcome})");
+                Logger.Info($"AutoFocusGraphs: posted report to Telegram ({request.Quality.Outcome})");
             } catch (System.Exception ex) {
                 PostStatusTracker.RecordFailure(ex.Message);
                 throw;
@@ -55,7 +55,7 @@ namespace AutofocusGraphs.Destinations {
                 request.FileName,
                 request.Reason,
                 token).ConfigureAwait(false);
-            Logger.Info($"AutofocusGraphs: posted failure to Telegram ({request.FileName})");
+            Logger.Info($"AutoFocusGraphs: posted failure to Telegram ({request.FileName})");
         }
 
         public async Task PostDigestAsync(DigestPostRequest request, CancellationToken token) {
@@ -67,7 +67,7 @@ namespace AutofocusGraphs.Destinations {
                         ordered,
                         Settings.Default.DigestTrendMaxRuns);
                 } catch (System.Exception ex) {
-                    Logger.Warning($"AutofocusGraphs: Telegram digest chart failed: {ex.Message}");
+                    Logger.Warning($"AutoFocusGraphs: Telegram digest chart failed: {ex.Message}");
                 }
             }
 
@@ -78,7 +78,7 @@ namespace AutofocusGraphs.Destinations {
                 chart,
                 caption,
                 token).ConfigureAwait(false);
-            Logger.Info($"AutofocusGraphs: posted {request.DigestLabel} digest to Telegram ({request.Reports?.Count ?? 0} run(s))");
+            Logger.Info($"AutoFocusGraphs: posted {request.DigestLabel} digest to Telegram ({request.Reports?.Count ?? 0} run(s))");
         }
 
         public Task TestConnectionAsync(CancellationToken token) =>

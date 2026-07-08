@@ -13,7 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     /// <summary>
     /// Posts autofocus reports to a Discord webhook (graph + embed).
     /// </summary>
@@ -63,7 +63,7 @@ namespace AutofocusGraphs {
                         token).ConfigureAwait(false);
                 }).ConfigureAwait(false);
                 PostStatusTracker.RecordSuccess($"{quality.Outcome} {SanitizeFileName(report.FileName)}");
-                Logger.Info($"AutofocusGraphs: posted report for {SanitizeFileName(report.FileName)} ({quality.Outcome}, graph={(includeGraph ? "yes" : "no")})");
+                Logger.Info($"AutoFocusGraphs: posted report for {SanitizeFileName(report.FileName)} ({quality.Outcome}, graph={(includeGraph ? "yes" : "no")})");
             } catch (Exception ex) {
                 var friendly = FormatDiscordError(ex.Message);
                 PostStatusTracker.RecordFailure(friendly);
@@ -98,7 +98,7 @@ namespace AutofocusGraphs {
                     await PostJsonAsync(safeUrl, root.ToString(Formatting.None), token).ConfigureAwait(false);
                 }).ConfigureAwait(false);
                 PostStatusTracker.RecordSuccess("webhook test");
-                Logger.Info("AutofocusGraphs: posted webhook test message");
+                Logger.Info("AutoFocusGraphs: posted webhook test message");
             } catch (Exception ex) {
                 var friendly = FormatDiscordError(ex.Message);
                 PostStatusTracker.RecordFailure(friendly);
@@ -128,7 +128,7 @@ namespace AutofocusGraphs {
                 return;
             }
 
-            Logger.Info("AutofocusGraphs: webhook has no icon; applying the built-in AF icon once.");
+            Logger.Info("AutoFocusGraphs: webhook has no icon; applying the built-in AF icon once.");
 
             const int maxAttempts = 2;
             Exception lastError = null;
@@ -140,7 +140,7 @@ namespace AutofocusGraphs {
                 } catch (Exception ex) {
                     lastError = ex;
                     if (attempt < maxAttempts) {
-                        Logger.Warning($"AutofocusGraphs: webhook profile update failed, retrying ({ex.Message})");
+                        Logger.Warning($"AutoFocusGraphs: webhook profile update failed, retrying ({ex.Message})");
                         await Task.Delay(TimeSpan.FromMilliseconds(300), token).ConfigureAwait(false);
                     }
                 }
@@ -150,7 +150,7 @@ namespace AutofocusGraphs {
                 throw lastError;
             }
             if (lastError != null) {
-                Logger.Warning($"AutofocusGraphs: could not set webhook icon: {lastError.Message}");
+                Logger.Warning($"AutoFocusGraphs: could not set webhook icon: {lastError.Message}");
             }
         }
 
@@ -171,7 +171,7 @@ namespace AutofocusGraphs {
             } catch (OperationCanceledException) {
                 throw;
             } catch (Exception ex) {
-                Logger.Warning($"AutofocusGraphs: could not read webhook profile: {ex.Message}");
+                Logger.Warning($"AutoFocusGraphs: could not read webhook profile: {ex.Message}");
                 return (false, null, false);
             }
         }
@@ -208,7 +208,7 @@ namespace AutofocusGraphs {
             if (avatarBytes != null && avatarBytes.Length > 0) {
                 body["avatar"] = $"data:{mediaType};base64,{Convert.ToBase64String(avatarBytes)}";
             } else {
-                Logger.Warning("AutofocusGraphs: no avatar image available for webhook profile update.");
+                Logger.Warning("AutoFocusGraphs: no avatar image available for webhook profile update.");
             }
 
             if (body.Count == 0) {
@@ -225,7 +225,7 @@ namespace AutofocusGraphs {
                     $"Could not update webhook profile ({(int)patchResponse.StatusCode}): {Truncate(errBody, 300)}");
             }
 
-            Logger.Info("AutofocusGraphs: updated webhook display name/avatar");
+            Logger.Info("AutoFocusGraphs: updated webhook display name/avatar");
         }
 
         private static async Task<(byte[] bytes, string mediaType)> LoadAvatarBytesAsync(
@@ -245,9 +245,9 @@ namespace AutofocusGraphs {
                             return (bytes, mediaType);
                         }
                     }
-                    Logger.Warning($"AutofocusGraphs: avatar URL failed (HTTP {(int)response.StatusCode}); using built-in icon.");
+                    Logger.Warning($"AutoFocusGraphs: avatar URL failed (HTTP {(int)response.StatusCode}); using built-in icon.");
                 } catch (Exception ex) {
-                    Logger.Warning($"AutofocusGraphs: avatar URL failed ({ex.Message}); using built-in icon.");
+                    Logger.Warning($"AutoFocusGraphs: avatar URL failed ({ex.Message}); using built-in icon.");
                 }
             }
 
@@ -266,7 +266,7 @@ namespace AutofocusGraphs {
             var name = asm.GetManifestResourceNames()
                 .FirstOrDefault(n => n.EndsWith("avatar.png", StringComparison.OrdinalIgnoreCase));
             if (name == null) {
-                Logger.Warning("AutofocusGraphs: embedded avatar.png not found in assembly.");
+                Logger.Warning("AutoFocusGraphs: embedded avatar.png not found in assembly.");
                 return null;
             }
 
@@ -355,7 +355,7 @@ namespace AutofocusGraphs {
                         token).ConfigureAwait(false);
                 }).ConfigureAwait(false);
                 PostStatusTracker.RecordSuccess($"failure {SanitizeFileName(fileName)}");
-                Logger.Info($"AutofocusGraphs: posted failure for {SanitizeFileName(fileName)}");
+                Logger.Info($"AutoFocusGraphs: posted failure for {SanitizeFileName(fileName)}");
             } catch (Exception ex) {
                 var friendly = FormatDiscordError(ex.Message);
                 PostStatusTracker.RecordFailure(friendly);
@@ -436,7 +436,7 @@ namespace AutofocusGraphs {
                         token).ConfigureAwait(false);
                 }).ConfigureAwait(false);
                 PostStatusTracker.RecordSuccess($"{digestLabel} digest ({ordered.Count} runs)");
-                Logger.Info($"AutofocusGraphs: posted {digestLabel} digest ({ordered.Count} runs)");
+                Logger.Info($"AutoFocusGraphs: posted {digestLabel} digest ({ordered.Count} runs)");
             } catch (Exception ex) {
                 var friendly = FormatDiscordError(ex.Message);
                 PostStatusTracker.RecordFailure(friendly);
@@ -751,7 +751,7 @@ namespace AutofocusGraphs {
             try {
                 await PostJsonAsync(ApplyThreadId(safeUrl, postOptions), buildPayload(postOptions), token).ConfigureAwait(false);
             } catch (InvalidOperationException ex) when (IsForumThreadError(ex.Message) && postOptions.UseNightlyThreadName) {
-                Logger.Warning("AutofocusGraphs: channel is not a forum; posting without nightly thread name.");
+                Logger.Warning("AutoFocusGraphs: channel is not a forum; posting without nightly thread name.");
                 var fallback = postOptions.WithoutNightlyThread();
                 await PostJsonAsync(ApplyThreadId(safeUrl, fallback), buildPayload(fallback), token).ConfigureAwait(false);
             }
@@ -782,7 +782,7 @@ namespace AutofocusGraphs {
                     token,
                     imageFileName).ConfigureAwait(false);
             } catch (InvalidOperationException ex) when (IsForumThreadError(ex.Message) && postOptions.UseNightlyThreadName) {
-                Logger.Warning("AutofocusGraphs: channel is not a forum; posting without nightly thread name.");
+                Logger.Warning("AutoFocusGraphs: channel is not a forum; posting without nightly thread name.");
                 var fallback = postOptions.WithoutNightlyThread();
                 await PostMultipartAsync(
                     ApplyThreadId(safeUrl, fallback),
@@ -886,13 +886,13 @@ namespace AutofocusGraphs {
                         delay = TimeSpan.FromSeconds(Math.Max(1, seconds));
                     }
 
-                    Logger.Warning($"AutofocusGraphs: Discord {status}, retry {attempt}/{maxAttempts} in {delay.TotalSeconds:0}s");
+                    Logger.Warning($"AutoFocusGraphs: Discord {status}, retry {attempt}/{maxAttempts} in {delay.TotalSeconds:0}s");
                     response.Dispose();
                     await Task.Delay(delay, token).ConfigureAwait(false);
                 } catch (HttpRequestException) when (attempt < maxAttempts) {
                     response?.Dispose();
                     var delay = TimeSpan.FromSeconds(Math.Pow(2, attempt));
-                    Logger.Warning($"AutofocusGraphs: network error, retry {attempt}/{maxAttempts} in {delay.TotalSeconds:0}s");
+                    Logger.Warning($"AutoFocusGraphs: network error, retry {attempt}/{maxAttempts} in {delay.TotalSeconds:0}s");
                     await Task.Delay(delay, token).ConfigureAwait(false);
                 }
             }

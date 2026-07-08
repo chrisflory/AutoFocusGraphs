@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     /// <summary>
     /// Loads autofocus reports from disk and tracks reports seen in this NINA session.
     /// </summary>
@@ -67,7 +67,7 @@ namespace AutofocusGraphs {
             try {
                 Changed?.Invoke(this, EventArgs.Empty);
             } catch (Exception ex) {
-                Logger.Warning($"AutofocusGraphs: report change notification failed: {ex.Message}");
+                Logger.Warning($"AutoFocusGraphs: report change notification failed: {ex.Message}");
             }
         }
 
@@ -89,7 +89,7 @@ namespace AutofocusGraphs {
             try {
                 Changed?.Invoke(this, EventArgs.Empty);
             } catch (Exception ex) {
-                Logger.Warning($"AutofocusGraphs: report change notification failed: {ex.Message}");
+                Logger.Warning($"AutoFocusGraphs: report change notification failed: {ex.Message}");
             }
 
             return name;
@@ -122,7 +122,7 @@ namespace AutofocusGraphs {
                 Changed?.Invoke(this, EventArgs.Empty);
             } catch (Exception ex) {
                 // A UI subscriber failing must never abort report processing/posting.
-                Logger.Warning($"AutofocusGraphs: report change notification failed: {ex.Message}");
+                Logger.Warning($"AutoFocusGraphs: report change notification failed: {ex.Message}");
             }
         }
 
@@ -211,7 +211,7 @@ namespace AutofocusGraphs {
                     var json = File.ReadAllText(file.FullName);
                     reports.Add(AutofocusReport.Parse(json, file.Name, file.FullName));
                 } catch (Exception ex) {
-                    Logger.Warning($"AutofocusGraphs: skipped {file.Name}: {ex.Message}");
+                    Logger.Warning($"AutoFocusGraphs: skipped {file.Name}: {ex.Message}");
                 }
             }
             return reports;

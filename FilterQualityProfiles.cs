@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     /// <summary>
     /// Optional per-filter quality thresholds.
     /// Stored as lines: FilterName,minR2,maxHfr

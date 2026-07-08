@@ -1,6 +1,6 @@
 using System;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     /// <summary>
     /// Tracks live autofocus runs so we can detect endings without a JSON report file.
     /// </summary>

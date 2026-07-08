@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AutofocusGraphs.Destinations {
+namespace AutoFocusGraphs.Destinations {
     /// <summary>
     /// Delivers autofocus graphs and summaries to an external channel (Discord, Telegram, etc.).
     /// </summary>

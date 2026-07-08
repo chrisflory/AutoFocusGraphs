@@ -1,9 +1,9 @@
-using AutofocusGraphs.Properties;
+using AutoFocusGraphs.Properties;
 using System;
 using System.Text.RegularExpressions;
-using Settings = AutofocusGraphs.Properties.Settings;
+using Settings = AutoFocusGraphs.Properties.Settings;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     internal static class DiscordRolePing {
         private static readonly Regex RoleIdPattern = new Regex(@"^\d{17,20}$", RegexOptions.Compiled);
 

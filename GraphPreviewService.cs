@@ -1,4 +1,4 @@
-using AutofocusGraphs.Properties;
+using AutoFocusGraphs.Properties;
 
 using NINA.Core.Utility;
 
@@ -12,11 +12,11 @@ using System.Windows.Media;
 
 using System.Windows.Media.Imaging;
 
-using Settings = AutofocusGraphs.Properties.Settings;
+using Settings = AutoFocusGraphs.Properties.Settings;
 
 
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
 
     /// <summary>
 
@@ -212,7 +212,7 @@ namespace AutofocusGraphs {
 
             if (name == null) {
 
-                Logger.Warning($"AutofocusGraphs: embedded {resourceSuffix} not found.");
+                Logger.Warning($"AutoFocusGraphs: embedded {resourceSuffix} not found.");
 
                 return null;
 

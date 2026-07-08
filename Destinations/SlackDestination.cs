@@ -1,13 +1,13 @@
-using AutofocusGraphs.Properties;
+using AutoFocusGraphs.Properties;
 using NINA.Core.Utility;
 using System;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Settings = AutofocusGraphs.Properties.Settings;
+using Settings = AutoFocusGraphs.Properties.Settings;
 
-namespace AutofocusGraphs.Destinations {
+namespace AutoFocusGraphs.Destinations {
     internal sealed class SlackDestination : IAutofocusDestination {
         public string Name => "Slack";
 
@@ -42,7 +42,7 @@ namespace AutofocusGraphs.Destinations {
                     request.Report?.FileName,
                     token).ConfigureAwait(false);
                 PostStatusTracker.RecordSuccess($"{request.Quality.Outcome} {request.Report?.FileName} (Slack)");
-                Logger.Info($"AutofocusGraphs: posted report to Slack ({request.Quality.Outcome})");
+                Logger.Info($"AutoFocusGraphs: posted report to Slack ({request.Quality.Outcome})");
             } catch (Exception ex) {
                 PostStatusTracker.RecordFailure(ex.Message);
                 throw;
@@ -50,7 +50,7 @@ namespace AutofocusGraphs.Destinations {
         }
 
         public Task PostFailureAsync(FailurePostRequest request, CancellationToken token) {
-            Logger.Info($"AutofocusGraphs: posted failure to Slack ({request.FileName})");
+            Logger.Info($"AutoFocusGraphs: posted failure to Slack ({request.FileName})");
             return SlackBotClient.SendFailureAsync(
                 Settings.Default.SlackBotToken.Trim(),
                 Settings.Default.SlackChannelId.Trim(),
@@ -68,7 +68,7 @@ namespace AutofocusGraphs.Destinations {
                         ordered,
                         Settings.Default.DigestTrendMaxRuns);
                 } catch (Exception ex) {
-                    Logger.Warning($"AutofocusGraphs: Slack digest chart failed: {ex.Message}");
+                    Logger.Warning($"AutoFocusGraphs: Slack digest chart failed: {ex.Message}");
                 }
             }
 
@@ -79,7 +79,7 @@ namespace AutofocusGraphs.Destinations {
                 chart,
                 caption,
                 token).ConfigureAwait(false);
-            Logger.Info($"AutofocusGraphs: posted {request.DigestLabel} digest to Slack ({request.Reports?.Count ?? 0} run(s))");
+            Logger.Info($"AutoFocusGraphs: posted {request.DigestLabel} digest to Slack ({request.Reports?.Count ?? 0} run(s))");
         }
 
         public Task TestConnectionAsync(CancellationToken token) =>

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     /// <summary>
     /// Reads filter names from the active NINA profile's filter wheel configuration.
     /// </summary>
@@ -29,7 +29,7 @@ namespace AutofocusGraphs {
                 }
                 return names;
             } catch (Exception ex) {
-                Logger.Warning($"AutofocusGraphs: could not read filter wheel names from NINA profile: {ex.Message}");
+                Logger.Warning($"AutoFocusGraphs: could not read filter wheel names from NINA profile: {ex.Message}");
                 return Array.Empty<string>();
             }
         }

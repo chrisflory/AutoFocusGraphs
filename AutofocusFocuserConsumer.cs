@@ -2,7 +2,7 @@ using NINA.Equipment.Equipment.MyFocuser;
 using NINA.Equipment.Interfaces.Mediator;
 using OxyPlot;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     /// <summary>
     /// Receives live autofocus lifecycle callbacks from NINA's focuser mediator.
     /// </summary>

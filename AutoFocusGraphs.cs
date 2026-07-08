@@ -1,5 +1,5 @@
-using AutofocusGraphs.Destinations;
-using AutofocusGraphs.Properties;
+using AutoFocusGraphs.Destinations;
+using AutoFocusGraphs.Properties;
 using NINA.Core.Utility;
 using NINA.Equipment.Interfaces.Mediator;
 using NINA.Plugin;
@@ -18,14 +18,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using Settings = AutofocusGraphs.Properties.Settings;
+using Settings = AutoFocusGraphs.Properties.Settings;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     /// <summary>
     /// Watches autofocus JSON reports and posts graphs, quality alerts, and digests to configured destinations.
     /// </summary>
     [Export(typeof(IPluginManifest))]
-    public class AutofocusGraphsPlugin : PluginBase, INotifyPropertyChanged {
+    public class AutoFocusGraphsPlugin : PluginBase, INotifyPropertyChanged {
         private AutofocusFolderWatcher watcher;
         private readonly IProfileService profileService;
         private readonly IFocuserMediator focuserMediator;
@@ -39,6 +39,9 @@ namespace AutofocusGraphs {
         private string telegramTestToolTip = string.Empty;
         private bool? slackTestResult;
         private string slackTestToolTip = string.Empty;
+        private bool? emailTestResult;
+        private string emailTestToolTip = string.Empty;
+        private bool emailTestInProgress;
         private ImageSource graphPreviewImage;
         private CancellationTokenSource graphPreviewRefreshCts;
         private bool suppressGraphPreviewRefresh;
@@ -82,7 +85,7 @@ namespace AutofocusGraphs {
         };
 
         [ImportingConstructor]
-        public AutofocusGraphsPlugin(
+        public AutoFocusGraphsPlugin(
             IProfileService profileService,
             IFocuserMediator focuserMediator,
             ISequenceMediator sequenceMediator) {
@@ -126,7 +129,7 @@ namespace AutofocusGraphs {
             try {
                 this.focuserMediator?.RegisterConsumer(focuserConsumer);
             } catch (Exception ex) {
-                Logger.Warning($"AutofocusGraphs: could not register focuser consumer: {ex.Message}");
+                Logger.Warning($"AutoFocusGraphs: could not register focuser consumer: {ex.Message}");
             }
             watcher = new AutofocusFolderWatcher(PluginRuntimeOptions.FromSettings);
             watcher.Start();
@@ -142,6 +145,37 @@ namespace AutofocusGraphs {
         public ICommand TestWebhookCommand { get; }
         public ICommand TestTelegramCommand { get; }
         public ICommand TestSlackCommand { get; }
+
+        public async Task TestEmailAsync() {
+            if (emailTestInProgress) {
+                return;
+            }
+
+            emailTestInProgress = true;
+            try {
+                if (!EmailEnabled) {
+                    SetEmailTestResult(false, "Enable email posting first.");
+                    return;
+                }
+
+                SetEmailTestResult(null, "Sending test email…");
+                await AutofocusDestinationRouter.TestDestinationAsync("Email", CancellationToken.None).ConfigureAwait(true);
+                var sentAt = DateTime.Now.ToString("h:mm:ss tt");
+                SetEmailTestResult(true, $"Test email sent at {sentAt}.");
+                RaisePropertyChanged(nameof(StatusText));
+                RaisePropertyChanged(nameof(LastPostStatus));
+            } catch (Exception ex) {
+                SetEmailTestResult(false, $"Test failed: {ex.Message}");
+                RaisePropertyChanged(nameof(LastPostStatus));
+                Logger.Error($"AutoFocusGraphs: Email test failed: {ex.Message}");
+                if (ex.InnerException != null) {
+                    Logger.Error($"AutoFocusGraphs: Email test detail: {ex.InnerException.Message}");
+                }
+            } finally {
+                emailTestInProgress = false;
+            }
+        }
+
         public ICommand PostDigestNowCommand { get; }
         public ICommand GraphOverlaysAllOnCommand { get; }
         public ICommand GraphOverlaysAllOffCommand { get; }
@@ -191,6 +225,14 @@ namespace AutofocusGraphs {
 
         public string SlackTestToolTip => slackTestToolTip;
 
+        public Visibility EmailTestSuccessVisible =>
+            emailTestResult == true ? Visibility.Visible : Visibility.Collapsed;
+
+        public Visibility EmailTestFailureVisible =>
+            emailTestResult == false ? Visibility.Visible : Visibility.Collapsed;
+
+        public string EmailTestToolTip => emailTestToolTip;
+
         public string LastPostStatus => PostStatusTracker.LastPostStatus;
 
         public string DigestStatus {
@@ -225,6 +267,17 @@ namespace AutofocusGraphs {
             RaisePropertyChanged(nameof(SlackTestToolTip));
         }
 
+        private void SetEmailTestResult(bool? result, string toolTip = null) {
+            emailTestResult = result;
+            emailTestToolTip = toolTip ?? string.Empty;
+            RaisePropertyChanged(nameof(EmailTestSuccessVisible));
+            RaisePropertyChanged(nameof(EmailTestFailureVisible));
+            RaisePropertyChanged(nameof(EmailTestToolTip));
+            RaisePropertyChanged(nameof(EmailTestStatusText));
+        }
+
+        public string EmailTestStatusText => emailTestToolTip ?? string.Empty;
+
         public override async Task Teardown() {
             sequenceDigestCoordinator?.Stop();
             sequenceDigestCoordinator = null;
@@ -235,7 +288,7 @@ namespace AutofocusGraphs {
                     await SessionDigestService.PostShutdownDigestAsync().ConfigureAwait(false);
                 }
             } catch (Exception ex) {
-                Logger.Error($"AutofocusGraphs: shutdown digest failed: {ex.Message}");
+                Logger.Error($"AutoFocusGraphs: shutdown digest failed: {ex.Message}");
             }
 
             watcher?.Dispose();
@@ -243,7 +296,7 @@ namespace AutofocusGraphs {
             try {
                 focuserMediator?.RemoveConsumer(focuserConsumer);
             } catch (Exception ex) {
-                Logger.Warning($"AutofocusGraphs: could not remove focuser consumer: {ex.Message}");
+                Logger.Warning($"AutoFocusGraphs: could not remove focuser consumer: {ex.Message}");
             }
             await base.Teardown().ConfigureAwait(false);
         }
@@ -268,6 +321,9 @@ namespace AutofocusGraphs {
                         return;
                     }
                     SetSlackTestResult(null);
+                } else if (string.Equals(destinationName, "Email", StringComparison.OrdinalIgnoreCase)) {
+                    await TestEmailAsync().ConfigureAwait(true);
+                    return;
                 }
 
                 await AutofocusDestinationRouter.TestDestinationAsync(destinationName, CancellationToken.None).ConfigureAwait(true);
@@ -275,7 +331,7 @@ namespace AutofocusGraphs {
                     SetWebhookTestResult(true, "Test message posted to Discord.");
                 } else if (string.Equals(destinationName, "Telegram", StringComparison.OrdinalIgnoreCase)) {
                     SetTelegramTestResult(true, "Test message posted to Telegram.");
-                } else {
+                } else if (string.Equals(destinationName, "Slack", StringComparison.OrdinalIgnoreCase)) {
                     SetSlackTestResult(true, "Test message posted to Slack.");
                 }
                 RaisePropertyChanged(nameof(StatusText));
@@ -285,11 +341,14 @@ namespace AutofocusGraphs {
                     SetWebhookTestResult(false, $"Test failed: {ex.Message}");
                 } else if (string.Equals(destinationName, "Telegram", StringComparison.OrdinalIgnoreCase)) {
                     SetTelegramTestResult(false, $"Test failed: {ex.Message}");
-                } else {
+                } else if (string.Equals(destinationName, "Slack", StringComparison.OrdinalIgnoreCase)) {
                     SetSlackTestResult(false, $"Test failed: {ex.Message}");
                 }
                 RaisePropertyChanged(nameof(LastPostStatus));
-                Logger.Error($"AutofocusGraphs: {destinationName} test failed: {ex.Message}");
+                Logger.Error($"AutoFocusGraphs: {destinationName} test failed: {ex.Message}");
+                if (ex.InnerException != null) {
+                    Logger.Error($"AutoFocusGraphs: {destinationName} test detail: {ex.InnerException.Message}");
+                }
             }
         }
 
@@ -325,7 +384,7 @@ namespace AutofocusGraphs {
             } catch (Exception ex) {
                 DigestStatus = $"Digest failed: {ex.Message}";
                 RaisePropertyChanged(nameof(LastPostStatus));
-                Logger.Error($"AutofocusGraphs: digest failed: {ex.Message}");
+                Logger.Error($"AutoFocusGraphs: digest failed: {ex.Message}");
             }
         }
 
@@ -410,6 +469,96 @@ namespace AutofocusGraphs {
                 Save();
                 RaisePropertyChanged();
                 SetSlackTestResult(null);
+            }
+        }
+
+        public bool EmailEnabled {
+            get => Settings.Default.EmailEnabled;
+            set {
+                Settings.Default.EmailEnabled = value;
+                Save();
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(StatusText));
+            }
+        }
+
+        public string EmailSmtpHost {
+            get => Settings.Default.EmailSmtpHost;
+            set {
+                Settings.Default.EmailSmtpHost = (value ?? string.Empty).Trim();
+                Save();
+                RaisePropertyChanged();
+                SetEmailTestResult(null);
+            }
+        }
+
+        public int EmailSmtpPort {
+            get => Settings.Default.EmailSmtpPort;
+            set {
+                Settings.Default.EmailSmtpPort = value;
+                Save();
+                RaisePropertyChanged();
+                SetEmailTestResult(null);
+            }
+        }
+
+        public bool EmailUseSsl {
+            get => Settings.Default.EmailUseSsl;
+            set {
+                Settings.Default.EmailUseSsl = value;
+                Save();
+                RaisePropertyChanged();
+                SetEmailTestResult(null);
+            }
+        }
+
+        public string EmailUsername {
+            get => Settings.Default.EmailUsername;
+            set {
+                Settings.Default.EmailUsername = (value ?? string.Empty).Trim();
+                Save();
+                RaisePropertyChanged();
+                SetEmailTestResult(null);
+            }
+        }
+
+        public string EmailPassword {
+            get => Settings.Default.EmailPassword;
+            set {
+                Settings.Default.EmailPassword = value ?? string.Empty;
+                Save();
+                RaisePropertyChanged();
+                SetEmailTestResult(null);
+            }
+        }
+
+        public string EmailFrom {
+            get => Settings.Default.EmailFrom;
+            set {
+                Settings.Default.EmailFrom = (value ?? string.Empty).Trim();
+                Save();
+                RaisePropertyChanged();
+                SetEmailTestResult(null);
+            }
+        }
+
+        public string EmailTo {
+            get => Settings.Default.EmailTo;
+            set {
+                Settings.Default.EmailTo = (value ?? string.Empty).Trim();
+                Save();
+                RaisePropertyChanged();
+                SetEmailTestResult(null);
+            }
+        }
+
+        public string EmailSubjectTemplate {
+            get => Settings.Default.EmailSubjectTemplate;
+            set {
+                Settings.Default.EmailSubjectTemplate = value ?? string.Empty;
+                Save();
+                RaisePropertyChanged();
+                SetEmailTestResult(null);
             }
         }
 
@@ -928,7 +1077,7 @@ namespace AutofocusGraphs {
                 } catch (OperationCanceledException) {
                     // superseded by a newer preview request
                 } catch (Exception ex) {
-                    Logger.Warning($"AutofocusGraphs: graph preview failed: {ex.Message}");
+                    Logger.Warning($"AutoFocusGraphs: graph preview failed: {ex.Message}");
                 }
             }, token);
         }
@@ -1077,6 +1226,11 @@ namespace AutofocusGraphs {
                 propertyName == nameof(TelegramBotToken) || propertyName == nameof(TelegramChatId) ||
                 propertyName == nameof(SlackEnabled) || propertyName == nameof(SlackBotToken) ||
                 propertyName == nameof(SlackChannelId) ||
+                propertyName == nameof(EmailEnabled) || propertyName == nameof(EmailSmtpHost) ||
+                propertyName == nameof(EmailSmtpPort) || propertyName == nameof(EmailUseSsl) ||
+                propertyName == nameof(EmailUsername) || propertyName == nameof(EmailPassword) ||
+                propertyName == nameof(EmailFrom) || propertyName == nameof(EmailTo) ||
+                propertyName == nameof(EmailSubjectTemplate) ||
                 propertyName == nameof(PostPerRun) || propertyName == nameof(PostDigestOnShutdown) ||
                 propertyName == nameof(PostDigestOnSequenceEnd)) {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(StatusText)));

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     /// <summary>
     /// Rule-based autofocus V-curve observations for graph overlay (not diagnoses).
     /// </summary>
@@ -116,13 +116,13 @@ namespace AutofocusGraphs {
             if (selected.Count > 0) {
                 var ruleList = string.Join(", ", selected.Select(h => h.RuleId));
                 var hintList = string.Join(" | ", selected.Select(h => h.Text));
-                Logger.Info($"AutofocusGraphs: graph analysis [{fileLabel}] rules: {ruleList}");
-                Logger.Info($"AutofocusGraphs: graph analysis [{fileLabel}] hints: {hintList}");
+                Logger.Info($"AutoFocusGraphs: graph analysis [{fileLabel}] rules: {ruleList}");
+                Logger.Info($"AutoFocusGraphs: graph analysis [{fileLabel}] hints: {hintList}");
             }
 
             if (suppressed.Count > 0) {
                 var suppressedRules = string.Join(", ", suppressed.Select(h => h.RuleId).Distinct());
-                Logger.Info($"AutofocusGraphs: graph analysis [{fileLabel}] suppressed: {suppressedRules}");
+                Logger.Info($"AutoFocusGraphs: graph analysis [{fileLabel}] suppressed: {suppressedRules}");
             }
         }
 

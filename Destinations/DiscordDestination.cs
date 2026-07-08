@@ -1,9 +1,9 @@
-using AutofocusGraphs.Properties;
+using AutoFocusGraphs.Properties;
 using System.Threading;
 using System.Threading.Tasks;
-using Settings = AutofocusGraphs.Properties.Settings;
+using Settings = AutoFocusGraphs.Properties.Settings;
 
-namespace AutofocusGraphs.Destinations {
+namespace AutoFocusGraphs.Destinations {
     internal sealed class DiscordDestination : IAutofocusDestination {
         public string Name => "Discord";
 

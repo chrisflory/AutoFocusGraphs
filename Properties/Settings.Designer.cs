@@ -1,4 +1,4 @@
-namespace AutofocusGraphs.Properties {
+namespace AutoFocusGraphs.Properties {
 
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.0.0.0")]
@@ -416,6 +416,78 @@ namespace AutofocusGraphs.Properties {
         public string SlackChannelId {
             get { return ((string)(this["SlackChannelId"])); }
             set { this["SlackChannelId"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EmailEnabled {
+            get { return ((bool)(this["EmailEnabled"])); }
+            set { this["EmailEnabled"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string EmailSmtpHost {
+            get { return ((string)(this["EmailSmtpHost"])); }
+            set { this["EmailSmtpHost"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("587")]
+        public int EmailSmtpPort {
+            get { return ((int)(this["EmailSmtpPort"])); }
+            set { this["EmailSmtpPort"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool EmailUseSsl {
+            get { return ((bool)(this["EmailUseSsl"])); }
+            set { this["EmailUseSsl"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string EmailUsername {
+            get { return ((string)(this["EmailUsername"])); }
+            set { this["EmailUsername"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string EmailPassword {
+            get { return ((string)(this["EmailPassword"])); }
+            set { this["EmailPassword"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string EmailFrom {
+            get { return ((string)(this["EmailFrom"])); }
+            set { this["EmailFrom"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string EmailTo {
+            get { return ((string)(this["EmailTo"])); }
+            set { this["EmailTo"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("NINA AutoFocus Graphs - {sequence} - {date}")]
+        public string EmailSubjectTemplate {
+            get { return ((string)(this["EmailSubjectTemplate"])); }
+            set { this["EmailSubjectTemplate"] = value; }
         }
     }
 }

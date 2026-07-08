@@ -1,13 +1,13 @@
-using AutofocusGraphs.Destinations;
-using AutofocusGraphs.Properties;
+using AutoFocusGraphs.Destinations;
+using AutoFocusGraphs.Properties;
 using NINA.Core.Utility;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Settings = AutofocusGraphs.Properties.Settings;
+using Settings = AutoFocusGraphs.Properties.Settings;
 
-namespace AutofocusGraphs {
+namespace AutoFocusGraphs {
     internal static class SessionDigestService {
         public static IReadOnlyList<AutofocusReport> GetDigestReports() =>
             ReportStore.Instance.GetSessionDigestReports();
@@ -35,7 +35,7 @@ namespace AutofocusGraphs {
         /// <summary>Posts a session digest on NINA exit even if monitoring was disabled before teardown.</summary>
         public static async Task PostShutdownDigestAsync(CancellationToken token = default) {
             if (ShouldSkipAutomaticDigest(out var reason)) {
-                Logger.Info($"AutofocusGraphs: skipping shutdown digest — {reason}");
+                Logger.Info($"AutoFocusGraphs: skipping shutdown digest — {reason}");
                 return;
             }
 
@@ -76,7 +76,7 @@ namespace AutofocusGraphs {
             bool requireMonitoringEnabled,
             string sequenceName = null) {
             if (requireMonitoringEnabled && !Settings.Default.Enabled) {
-                throw new InvalidOperationException("AutofocusGraphs monitoring is disabled.");
+                throw new InvalidOperationException("AutoFocusGraphs monitoring is disabled.");
             }
 
             if (!AutofocusDestinationRouter.AnyActiveDestination()) {
@@ -97,7 +97,7 @@ namespace AutofocusGraphs {
                 SequenceName = sequenceName,
             }, token).ConfigureAwait(false);
 
-            Logger.Info($"AutofocusGraphs: posted {digestLabel} digest ({reports.Count} run(s))");
+            Logger.Info($"AutoFocusGraphs: posted {digestLabel} digest ({reports.Count} run(s))");
         }
     }
 }

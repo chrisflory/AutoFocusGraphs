@@ -1,6 +1,6 @@
 using System;
 
-namespace AutofocusGraphs.Destinations {
+namespace AutoFocusGraphs.Destinations {
     internal static class ReportMessageFormatter {
         public static string BuildReportMessage(AutofocusReport report, string messageTemplate, QualityResult quality) {
             var template = string.IsNullOrWhiteSpace(messageTemplate)

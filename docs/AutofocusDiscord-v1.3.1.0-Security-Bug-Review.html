@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>AutofocusGraphs v1.3.1.0 — Security, Bug &amp; Error Review</title>
+  <title>AutoFocusGraphs v1.3.1.0 — Security, Bug &amp; Error Review</title>
   <style>
     @page { margin: 2cm; size: letter; }
     body {
@@ -35,9 +35,9 @@
 </head>
 <body>
 
-<h1>AutofocusGraphs — Security, Bug &amp; Error Review</h1>
+<h1>AutoFocusGraphs — Security, Bug &amp; Error Review</h1>
 <p class="meta">
-  <strong>Project:</strong> AutofocusGraphs NINA Plugin<br />
+  <strong>Project:</strong> AutoFocusGraphs NINA Plugin<br />
   <strong>Version reviewed:</strong> 1.3.1.0 (release build)<br />
   <strong>Patch applied:</strong> 1.3.1.1 (fixes documented in Section 4)<br />
   <strong>Review date:</strong> July 4, 2026<br />
@@ -133,7 +133,7 @@
     </tr>
     <tr>
       <td class="sev-medium">Medium</td>
-      <td><code>Options.xaml</code> / <code>AutofocusGraphs.cs</code></td>
+      <td><code>Options.xaml</code> / <code>AutoFocusGraphs.cs</code></td>
       <td><strong><code>DiscordEnabled</code> not synced with UI toggle.</strong> Master checkbox bound to <code>Enabled</code> only; if <code>DiscordEnabled</code> was off, status showed “Discord posting is turned off” with no way to fix from UI.</td>
       <td class="ok">Fixed in 1.3.1.1</td>
     </tr>
@@ -203,7 +203,7 @@
 <p><strong>Recommendation:</strong> Use <strong>v1.3.1.1</strong> (or later) for production. v1.3.1.0 is acceptable for typical single-sequence overnight use with per-run posting enabled; the patch is recommended for back-to-back sequences, digest-only + live-failure setups, and shutdown digest reliability.</p>
 
 <div class="footer">
-  Generated for AutofocusGraphs · Chris Flory @starjunkie · MIT License<br />
+  Generated for AutoFocusGraphs · Chris Flory @starjunkie · MIT License<br />
   This report documents automated and manual review findings; it is not a formal penetration test or certification.
 </div>
 
