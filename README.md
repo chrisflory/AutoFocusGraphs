@@ -60,6 +60,35 @@ Message template tokens (per-run posts): `{shortfilename}`, `{filename}`, `{file
 
 Per-run history in NINA is left to NINA's own HFR history; this plugin focuses on outbound notifications.
 
+### V-curve graph overlays
+
+Open **Options → Plugins → AutoFocusGraphs → Graph**. A **live preview** (960×540, HiDPI-aware) at the top uses the same renderer as outbound posts and updates as you toggle options. **Expand preview** opens a larger pop-out window. **All overlays on** / **All overlays off** apply every overlay at once (off = minimal graph mode).
+
+![Graph overlays section in plugin options — sample preview (not interactive)](assets/readme-graph-options-section.png)
+
+| Overlay | What it shows |
+| --- | --- |
+| **Minimal graph** | Points and final HFR only — hides fits, trends, markers, and other overlays |
+| **HFR point labels** | Measured HFR value next to each point on the V-curve |
+| **Hyperbolic fit** | NINA's hyperbolic focus curve; R² in the legend when enabled |
+| **Parabolic fit** | Parabolic (quadratic) least-squares curve through measure points |
+| **Trend lines** | Left and right linear trend segments, split at the calculated focus position |
+| **Trend segment labels** | Left/right trend labels drawn on the graph |
+| **Focus position line** | Vertical dashed line at the calculated focus position |
+| **Context strip** | Top-right overlay: temperature, step size, run duration, and Δ focus vs previous AF |
+| **Previous AF marker** | Gray dotted vertical line at the previous autofocus position |
+| **Trend R² in legend** | R² values for left and right trends in the graph legend |
+| **Initial focus marker** | Cyan diamond and dotted **Start pos** vertical line at the starting focuser position (always drawn, even when close to calculated focus; position label at top when offset) |
+| **HFR error bars** | Vertical bars from each point's HFR uncertainty (JSON `Error` field); off by default |
+| **Graph analysis hints** | Optional rule-based observations on the V-curve (lower-left); conservative mode (default) shows facts/patterns only |
+
+**Graph options** (separate from overlays):
+
+| Option | What it does |
+| --- | --- |
+| **Include filter name in graph title** | Appends filter to the title (e.g. `N.I.N.A. Autofocus Run — Ha`) |
+| **Warn when fit minimum ≠ calculated focus** | Corner annotation when hyperbolic fit minimum and calculated focus differ by more than one step (`Fit Δ N steps`) |
+
 ### Discord
 
 When the **Discord** tab is enabled:
@@ -97,35 +126,6 @@ When the **Email** tab is enabled:
   - In sequence: `NINA AutoFocus Graphs - {sequence} - {date}`
   - Manual AF: `NINA Manual AutoFocus Graphs - {date}`
   - Custom templates supported — tokens: `{sequence}`, `{date}`, `{time}`, `{filter}`, `{shortfilename}`, `{filename}`, `{reason}`
-
-### V-curve graph overlays
-
-Open **Options → Plugins → AutoFocusGraphs → Graph**. A **live preview** (960×540, HiDPI-aware) at the top uses the same renderer as outbound posts and updates as you toggle options. **Expand preview** opens a larger pop-out window. **All overlays on** / **All overlays off** apply every overlay at once (off = minimal graph mode).
-
-![Graph overlays section in plugin options — sample preview (not interactive)](assets/readme-graph-options-section.png)
-
-| Overlay | What it shows |
-| --- | --- |
-| **Minimal graph** | Points and final HFR only — hides fits, trends, markers, and other overlays |
-| **HFR point labels** | Measured HFR value next to each point on the V-curve |
-| **Hyperbolic fit** | NINA's hyperbolic focus curve; R² in the legend when enabled |
-| **Parabolic fit** | Parabolic (quadratic) least-squares curve through measure points |
-| **Trend lines** | Left and right linear trend segments, split at the calculated focus position |
-| **Trend segment labels** | Left/right trend labels drawn on the graph |
-| **Focus position line** | Vertical dashed line at the calculated focus position |
-| **Context strip** | Top-right overlay: temperature, step size, run duration, and Δ focus vs previous AF |
-| **Previous AF marker** | Gray dotted vertical line at the previous autofocus position |
-| **Trend R² in legend** | R² values for left and right trends in the graph legend |
-| **Initial focus marker** | Cyan diamond and dotted **Start pos** vertical line at the starting focuser position (always drawn, even when close to calculated focus; position label at top when offset) |
-| **HFR error bars** | Vertical bars from each point's HFR uncertainty (JSON `Error` field); off by default |
-| **Graph analysis hints** | Optional rule-based observations on the V-curve (lower-left); conservative mode (default) shows facts/patterns only |
-
-**Graph options** (separate from overlays):
-
-| Option | What it does |
-| --- | --- |
-| **Include filter name in graph title** | Appends filter to the title (e.g. `N.I.N.A. Autofocus Run — Ha`) |
-| **Warn when fit minimum ≠ calculated focus** | Corner annotation when hyperbolic fit minimum and calculated focus differ by more than one step (`Fit Δ N steps`) |
 
 ## Requirements
 
