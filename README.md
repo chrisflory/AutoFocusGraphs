@@ -4,6 +4,8 @@ A N.I.N.A. plugin that watches the AutoFocus report folder, renders a **dark-mod
 
 > **Status:** v0.1.0.0 on `develop` — multi-destination autofocus graph delivery for N.I.N.A. 3.3 nightlies.
 
+---
+
 ## How it works
 
 ![AutoFocusGraphs pipeline](assets/flowchart.png)
@@ -23,6 +25,8 @@ Color key: **blue** = NINA trigger · **green** = sequence digest / destination 
 Per-run posting, graphs, and JSON attachments can be turned off individually; **digest-only mode** collects runs locally and posts only a digest when a sequence completes and/or when NINA exits.
 
 Graph overlays, hints, digests, and session tracking are **destination-agnostic**. Per-run posts fan out to every enabled destination independently — one channel failing does not block the others.
+
+---
 
 ## What it does
 
@@ -58,11 +62,15 @@ Message template tokens (per-run posts): `{shortfilename}`, `{filename}`, `{file
 
 Per-run history in NINA is left to NINA's own HFR history; this plugin focuses on outbound notifications.
 
+---
+
 ## Requirements
 
 - N.I.N.A. **3.3** or newer (nightly builds on .NET 10)
 - At least one configured destination (see **Configure** below)
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) to build from source
+
+---
 
 ## Install
 
@@ -86,6 +94,8 @@ Regenerate the README graph-options sample image after graph or options layout c
 ```powershell
 python tools/render_readme_graph_section.py
 ```
+
+---
 
 ## Configure
 
@@ -141,6 +151,8 @@ Monitoring, graph rendering, quality gate, posting, and digests. A **live previe
 
 **Advanced Sequencer:** **Post AF sequence digest** (category **AutoFocusGraphs**) — posts a sequence digest mid-run to all enabled destinations.
 
+---
+
 ### Discord
 
 Channel webhook delivery with rich embeds. No bot token required — posts use the **name and icon configured on your Discord webhook** (Integrations → Webhooks).
@@ -160,6 +172,8 @@ Channel webhook delivery with rich embeds. No bot token required — posts use t
 | **Discord alert role ID** | Optional numeric role ID to ping on warnings or failures |
 | **Ping role on warning / failure** | Adds `<@&roleId>` to webhook content for mobile alerts |
 
+---
+
 ### Telegram
 
 Bot API delivery — per-run graph as a photo; JSON as a document when **Attach JSON** is on. Captions use the shared message template (`**bold**` converted for Telegram).
@@ -171,6 +185,8 @@ Bot API delivery — per-run graph as a photo; JSON as a document when **Attach 
 | **Telegram chat ID** | Numeric chat ID (e.g. `-1001234567890`) or `@channelusername`; bot must be a member |
 | **Test Telegram** | Sends a short test message |
 
+---
+
 ### Slack
 
 Web API delivery — graph uploaded via Slack's external file API. Bot scopes: `chat:write` and `files:write`. Invite the bot to the channel before testing (**Test Slack** sends text only).
@@ -181,6 +197,8 @@ Web API delivery — graph uploaded via Slack's external file API. Bot scopes: `
 | **Slack bot token** | Bot User OAuth Token (`xoxb-...`) from your Slack app |
 | **Slack channel ID** | Channel ID (`C...` or `G...`); bot must be invited |
 | **Test Slack** | Sends a short test message |
+
+---
 
 ### Email
 
@@ -202,12 +220,16 @@ Custom templates supported — tokens: `{sequence}`, `{date}`, `{time}`, `{filte
 | **Email subject** | Blank = built-in defaults; custom template optional |
 | **Test email** | Sends a short test message |
 
+---
+
 ## Security
 
 - Webhook URLs, bot tokens, SMTP passwords, and chat IDs are stored only in local N.I.N.A. user settings.
 - Outbound posts go only to user-configured Discord webhooks, Telegram chats, Slack channels, and SMTP recipients.
 - Only files under the AutoFocus folder are processed, with size and point-count limits.
 - Treat webhook URLs and bot tokens like passwords; regenerate them if they are ever exposed.
+
+---
 
 ## License
 
