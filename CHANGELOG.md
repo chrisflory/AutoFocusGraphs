@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.1.0.1 — 2026-07-09
+
+Patch release — author display fix, security hardening, and UI polish.
+
+- Plugin info page author shows **Chris Flory** (was `Chris Flory @starjunkie` in v0.1.0.0 assembly metadata)
+- Security review fixes: outbound URL validation (SSRF guards), stricter Telegram/Slack API response checks, remote SMTP requires StartTLS, safer failure-post logging, graph preview teardown
+- Options UI: pipeline flowchart and “How it works” moved to the **Graph** tab only (not Discord/Telegram/Slack/Email tabs)
+- Manifest checksum corrected; catalog PR staging and validation tooling added
+- `DigestIncludeTodayFromDisk` setting wired; sequence digest name uses `GetSequenceNameForDigest()`
+
 ## 0.1.0.0 — 2026-07-08
 
 Initial public release — multi-channel autofocus graph delivery for N.I.N.A. 3.3 nightlies.
