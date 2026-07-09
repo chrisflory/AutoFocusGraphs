@@ -77,6 +77,19 @@ namespace AutoFocusGraphs {
             }
         }
 
+        /// <summary>Pending sequence name, or the most recently completed sequence in this session.</summary>
+        public string GetSequenceNameForDigest() {
+            lock (gate) {
+                if (!string.IsNullOrWhiteSpace(pendingSequenceName)) {
+                    return pendingSequenceName;
+                }
+
+                return sessionSequenceNames.Count > 0
+                    ? sessionSequenceNames[sessionSequenceNames.Count - 1]
+                    : null;
+            }
+        }
+
         /// <summary>Records that the sequencer reported a finished run (session digest stat).</summary>
         public string RecordSequenceCompleted() {
             string name;
@@ -163,6 +176,36 @@ namespace AutoFocusGraphs {
         /// <summary>Autofocus runs captured since this NINA process started.</summary>
         public IReadOnlyList<AutofocusReport> GetSessionDigestReports() =>
             OrderDigestReports(SessionReports);
+
+        /// <summary>Merges session reports with disk reports, preferring in-memory session copies on name collision.</summary>
+        public IReadOnlyList<AutofocusReport> MergeDigestReports(
+            IReadOnlyList<AutofocusReport> sessionReports,
+            IReadOnlyList<AutofocusReport> additionalReports) {
+            if (additionalReports == null || additionalReports.Count == 0) {
+                return OrderDigestReports(sessionReports ?? Array.Empty<AutofocusReport>());
+            }
+
+            lock (gate) {
+                var merged = new Dictionary<string, AutofocusReport>(StringComparer.OrdinalIgnoreCase);
+                foreach (var report in additionalReports) {
+                    if (report == null || string.IsNullOrWhiteSpace(report.FileName)) {
+                        continue;
+                    }
+
+                    merged[report.FileName] = report;
+                }
+
+                foreach (var report in sessionReports ?? Array.Empty<AutofocusReport>()) {
+                    if (report == null || string.IsNullOrWhiteSpace(report.FileName)) {
+                        continue;
+                    }
+
+                    merged[report.FileName] = report;
+                }
+
+                return OrderDigestReports(merged.Values);
+            }
+        }
 
         private static IReadOnlyList<AutofocusReport> OrderDigestReports(IEnumerable<AutofocusReport> reports) =>
             reports

@@ -61,30 +61,37 @@ namespace AutoFocusGraphs.Destinations {
             }
         }
 
-        public Task PostFailureAsync(FailurePostRequest request, CancellationToken token) {
+        public async Task PostFailureAsync(FailurePostRequest request, CancellationToken token) {
             var settings = ReadSettings();
             if (!EmailSmtpValidator.TryValidateRecipients(settings.To, out var recipientError)) {
                 throw new InvalidOperationException(recipientError);
             }
 
-            Logger.Info($"AutoFocusGraphs: posted failure to Email ({request.FileName})");
+            Logger.Info($"AutoFocusGraphs: posting failure to Email ({request.FileName})");
             var subject = EmailSubjectFormatter.FormatFailureSubject(
                 request.FileName,
                 request.Reason,
                 request.SequenceName,
                 Settings.Default.EmailSubjectTemplate);
-            return EmailSmtpClient.SendFailureAsync(
-                settings.Host,
-                settings.Port,
-                settings.UseSsl,
-                settings.Username,
-                settings.Password,
-                settings.From,
-                settings.To,
-                subject,
-                request.FileName,
-                EmailSmtpClient.StripMarkdown(request.Reason),
-                token);
+            try {
+                await EmailSmtpClient.SendFailureAsync(
+                    settings.Host,
+                    settings.Port,
+                    settings.UseSsl,
+                    settings.Username,
+                    settings.Password,
+                    settings.From,
+                    settings.To,
+                    subject,
+                    request.FileName,
+                    EmailSmtpClient.StripMarkdown(request.Reason),
+                    token).ConfigureAwait(false);
+                PostStatusTracker.RecordSuccess($"failure {request.FileName} (Email)");
+                Logger.Info($"AutoFocusGraphs: posted failure to Email ({request.FileName})");
+            } catch (Exception ex) {
+                PostStatusTracker.RecordFailure(ex.Message);
+                throw;
+            }
         }
 
         public async Task PostDigestAsync(DigestPostRequest request, CancellationToken token) {

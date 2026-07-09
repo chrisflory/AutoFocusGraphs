@@ -26,7 +26,7 @@ using System.Runtime.InteropServices;
 
 
 
-[assembly: AssemblyCompany("Chris Flory @starjunkie")]
+[assembly: AssemblyCompany("Chris Flory")]
 
 [assembly: AssemblyProduct("AutoFocusGraphs")]
 
@@ -60,33 +60,7 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyMetadata("AltScreenshotURL", "")]
 
-[assembly: AssemblyMetadata("LongDescription", @"## How it works
-
-
-
-![AutoFocusGraphs pipeline](https://raw.githubusercontent.com/chrisflory/AutoFocusGraphs/main/assets/flowchart.png)
-
-
-
-Per-run V-curve posts, sequence digests, and session digests to **Discord**, **Telegram**, **Slack**, and **email**.
-
-
-
-## Setup
-
-1. Enable a destination under Options → Plugins → AutoFocusGraphs
-
-2. Discord: channel webhook URL → Test webhook
-
-3. Telegram: bot token from @BotFather + chat ID → Test Telegram
-
-4. Slack: bot token + channel ID → Test Slack
-
-5. Email: SMTP settings → Test email
-
-
-
-Each destination can be enabled independently. Graph rendering is shared across all channels.")]
+[assembly: AssemblyMetadata("LongDescription", "Multi-destination autofocus V-curve graphs and digests for N.I.N.A. Open the Graph tab for pipeline overview and live preview.")]
 
 
 

@@ -451,7 +451,16 @@
             <TextBox Text="{Binding MessageTemplate, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" MaxWidth="640" Margin="0,0,0,4" />
             <TextBlock Text="Tokens: {shortfilename} (one line), {filename} (truncated), {filenamefull}, {time}, {filter}, {prefix}. Full filename is always in the embed footer; hover works on the JSON attachment if enabled." Margin="0,0,0,12" Opacity="0.7" TextWrapping="Wrap" />
             <TextBlock Text="Watch folder" Margin="0,0,0,4" />
-            <TextBox Text="{Binding WatchFolder, Mode=OneWay}" IsReadOnly="True" HorizontalAlignment="Stretch" MaxWidth="640" />
+            <TextBox Text="{Binding WatchFolder, Mode=OneWay}" IsReadOnly="True" HorizontalAlignment="Stretch" MaxWidth="640" Margin="0,0,0,16" />
+
+            <TextBlock Text="How it works" FontSize="16" FontWeight="Bold" Margin="0,12,0,8" />
+            <TextBlock TextWrapping="Wrap" Margin="0,0,0,8" Opacity="0.85" MaxWidth="960"
+                       Text="When N.I.N.A. writes a new autofocus report, the plugin renders a V-curve graph and posts per-run reports, sequence digests, and session digests to every enabled destination (Discord, Telegram, Slack, email)." />
+            <Image Source="pack://application:,,,/AutoFocusGraphs;component/assets/flowchart.png"
+                   Stretch="Uniform" MaxWidth="960" Margin="0,0,0,8"
+                   RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" ToolTip="AutoFocusGraphs pipeline" />
+            <TextBlock TextWrapping="Wrap" Margin="0,0,0,4" Opacity="0.7" FontSize="12" MaxWidth="960"
+                       Text="Configure one or more destinations on the Discord / Telegram / Slack / Email tabs." />
                     </StackPanel>
             </TabItem>
             <TabItem Header="Discord">

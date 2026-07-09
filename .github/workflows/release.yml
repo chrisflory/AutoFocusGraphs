@@ -1,0 +1,164 @@
+# Build, package, and publish a GitHub Release when a version tag is pushed.
+# Tag format: v0.1.0.0 (leading "v" + Major.Minor.Patch.Build)
+#
+# Optional auto-catalog PR: fork isbeorn/nina.plugin.manifests as chrisflory/nina.plugin.manifests
+# and add a repo secret PAT with repo write access.
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: write
+
+env:
+  PLUGIN_NAME: AutoFocusGraphs
+  PLUGIN_DLL_NAME: AutoFocusGraphs
+  PLUGIN_MANIFEST_PATH: a/AutoFocusGraphs/3.0.0
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Resolve version from tag
+        id: version
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Build .NET assemblies
+        run: |
+          dotnet restore
+          dotnet build -c Release --no-incremental -p:PostBuildEvent=
+
+      - name: Prepare release package
+        shell: pwsh
+        run: |
+          $pkg = "packages/AutoFocusGraphs"
+          New-Item -ItemType Directory -Force -Path $pkg | Out-Null
+          $bin = "bin/Release/net10.0-windows"
+          $files = @(
+            "$bin/AutoFocusGraphs.dll",
+            "$bin/ScottPlot.dll",
+            "$bin/SkiaSharp.dll",
+            "$bin/SkiaSharp.HarfBuzz.dll",
+            "$bin/HarfBuzzSharp.dll",
+            "$bin/MailKit.dll",
+            "$bin/MimeKit.dll",
+            "$bin/BouncyCastle.Cryptography.dll",
+            "$bin/runtimes/win-x64/native/libSkiaSharp.dll",
+            "$bin/runtimes/win-x64/native/libHarfBuzzSharp.dll"
+          )
+          foreach ($f in $files) {
+            Copy-Item $f $pkg -Force
+          }
+
+      - name: Create archive and manifest
+        shell: pwsh
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          curl -LO https://raw.githubusercontent.com/isbeorn/nina.plugin.manifests/refs/heads/main/tools/CreateManifest.ps1
+          $zipName = "AutoFocusGraphs.$env:VERSION.zip"
+          $url = "https://github.com/${{ github.repository }}/releases/download/$env:TAG/$zipName"
+          pwsh CreateManifest.ps1 `
+            -file "packages/AutoFocusGraphs/AutoFocusGraphs.dll" `
+            -installerUrl $url `
+            -createArchive -includeAll -appendVersionToArchive -beta
+          Rename-Item manifest.json "AutoFocusGraphs.$env:VERSION.manifest.json"
+          if (Test-Path AutoFocusGraphs.zip) {
+            Rename-Item AutoFocusGraphs.zip $zipName
+          } elseif (Test-Path "AutoFocusGraphs.$env:VERSION.zip") {
+            # CreateManifest may already append version
+          } else {
+            throw "Expected zip not found after CreateManifest.ps1"
+          }
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: Release ${{ steps.version.outputs.version }}
+          draft: false
+          prerelease: false
+          files: |
+            ./AutoFocusGraphs.${{ steps.version.outputs.version }}.zip
+            ./AutoFocusGraphs.${{ steps.version.outputs.version }}.manifest.json
+
+      - name: Upload manifest artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-manifest
+          path: AutoFocusGraphs.${{ steps.version.outputs.version }}.manifest.json
+
+  check-manifest-fork-exists:
+    runs-on: ubuntu-latest
+    needs: build-and-release
+    outputs:
+      exists: ${{ steps.check.outputs.exists }}
+    steps:
+      - name: Check if nina.plugin.manifests fork exists
+        id: check
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://api.github.com/repos/${{ github.repository_owner }}/nina.plugin.manifests")
+          if [ "$STATUS" = "200" ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  publish-catalog-manifest:
+    runs-on: ubuntu-latest
+    needs: [check-manifest-fork-exists, build-and-release]
+    if: needs.check-manifest-fork-exists.outputs.exists == 'true'
+    steps:
+      - name: Download manifest artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: plugin-manifest
+
+      - name: Resolve version from tag
+        id: version
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Clone manifests fork and add manifest
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          git clone "https://x-access-token:${{ secrets.PAT }}@github.com/${{ github.repository_owner }}/nina.plugin.manifests.git"
+          cd nina.plugin.manifests
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          BRANCH="AutoFocusGraphs/${VERSION}"
+          git checkout -b "$BRANCH"
+          TARGET="manifests/a/AutoFocusGraphs/3.0.0/${VERSION}"
+          mkdir -p "$TARGET"
+          cp "../AutoFocusGraphs.${VERSION}.manifest.json" "$TARGET/manifest.json"
+          git add .
+          git commit -m "Add AutoFocusGraphs manifest ${VERSION}"
+          git push origin "$BRANCH"
+
+      - name: Open catalog pull request
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          echo "${{ secrets.PAT }}" | gh auth login --with-token
+          gh pr create \
+            --title "Add AutoFocusGraphs ${VERSION} (Beta)" \
+            --body "Automatically generated manifest for AutoFocusGraphs ${VERSION}. Beta channel." \
+            --head "${{ github.repository_owner }}:AutoFocusGraphs/${VERSION}" \
+            --base main \
+            --repo isbeorn/nina.plugin.manifests

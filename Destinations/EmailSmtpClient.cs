@@ -207,7 +207,7 @@ namespace AutoFocusGraphs.Destinations {
 
             return IsLocalBridgeHost(host)
                 ? SecureSocketOptions.StartTls
-                : SecureSocketOptions.StartTlsWhenAvailable;
+                : SecureSocketOptions.StartTls;
         }
 
         private static MimeMessage BuildMimeMessage(

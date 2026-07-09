@@ -9,8 +9,14 @@ using Settings = AutoFocusGraphs.Properties.Settings;
 
 namespace AutoFocusGraphs {
     internal static class SessionDigestService {
-        public static IReadOnlyList<AutofocusReport> GetDigestReports() =>
-            ReportStore.Instance.GetSessionDigestReports();
+        public static IReadOnlyList<AutofocusReport> GetDigestReports() {
+            var session = ReportStore.Instance.GetSessionDigestReports();
+            if (!Settings.Default.DigestIncludeTodayFromDisk) {
+                return session;
+            }
+
+            return ReportStore.Instance.MergeDigestReports(session, ReportStore.Instance.LoadTodayFromDisk());
+        }
 
         public static IReadOnlyList<AutofocusReport> GetShutdownDigestReports() =>
             GetDigestReports();
@@ -53,7 +59,7 @@ namespace AutoFocusGraphs {
         }
 
         public static async Task PostSequenceDigestAsync(IReadOnlyList<AutofocusReport> reports, CancellationToken token = default) {
-            var sequenceName = ReportStore.Instance.GetPendingSequenceName();
+            var sequenceName = ReportStore.Instance.GetSequenceNameForDigest();
             await PostSequenceDigestAsync(reports, sequenceName, token).ConfigureAwait(false);
         }
 

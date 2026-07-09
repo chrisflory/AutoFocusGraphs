@@ -49,13 +49,19 @@ namespace AutoFocusGraphs.Destinations {
         }
 
         public async Task PostFailureAsync(FailurePostRequest request, CancellationToken token) {
-            await TelegramBotClient.SendFailureAsync(
-                Settings.Default.TelegramBotToken.Trim(),
-                Settings.Default.TelegramChatId.Trim(),
-                request.FileName,
-                request.Reason,
-                token).ConfigureAwait(false);
-            Logger.Info($"AutoFocusGraphs: posted failure to Telegram ({request.FileName})");
+            try {
+                await TelegramBotClient.SendFailureAsync(
+                    Settings.Default.TelegramBotToken.Trim(),
+                    Settings.Default.TelegramChatId.Trim(),
+                    request.FileName,
+                    request.Reason,
+                    token).ConfigureAwait(false);
+                PostStatusTracker.RecordSuccess($"failure {request.FileName} (Telegram)");
+                Logger.Info($"AutoFocusGraphs: posted failure to Telegram ({request.FileName})");
+            } catch (Exception ex) {
+                PostStatusTracker.RecordFailure(ex.Message);
+                throw;
+            }
         }
 
         public async Task PostDigestAsync(DigestPostRequest request, CancellationToken token) {

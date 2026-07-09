@@ -49,18 +49,18 @@ namespace AutoFocusGraphs {
         }
 
         public bool HasNewReportSince(DateTime startedUtc, int baselineReports) {
-            var reports = ReportStore.Instance.SessionReports;
-            if (reports.Count > baselineReports) {
-                return true;
-            }
-
-            foreach (var report in reports) {
-                if (report?.CapturedUtc >= startedUtc) {
+            lock (gate) {
+                var reports = ReportStore.Instance.SessionReports;
+                if (reports.Count > baselineReports) {
                     return true;
                 }
-            }
 
-            lock (gate) {
+                foreach (var report in reports) {
+                    if (report?.CapturedUtc >= startedUtc) {
+                        return true;
+                    }
+                }
+
                 return lastReportUtc.HasValue && lastReportUtc.Value >= startedUtc;
             }
         }

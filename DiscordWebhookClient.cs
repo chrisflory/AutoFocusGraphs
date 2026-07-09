@@ -232,7 +232,9 @@ namespace AutoFocusGraphs {
             string avatarUrl,
             CancellationToken token) {
             if (!string.IsNullOrWhiteSpace(avatarUrl)) {
-                try {
+                if (!HttpsFetchUrlValidator.TryValidateImageFetchUrl(avatarUrl, out var urlError)) {
+                    Logger.Warning($"AutoFocusGraphs: avatar URL blocked ({urlError}); using built-in icon.");
+                } else try {
                     using var response = await Http.GetAsync(avatarUrl, token).ConfigureAwait(false);
                     if (response.IsSuccessStatusCode) {
                         var bytes = await response.Content.ReadAsByteArrayAsync(token).ConfigureAwait(false);

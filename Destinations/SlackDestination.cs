@@ -50,13 +50,24 @@ namespace AutoFocusGraphs.Destinations {
         }
 
         public Task PostFailureAsync(FailurePostRequest request, CancellationToken token) {
-            Logger.Info($"AutoFocusGraphs: posted failure to Slack ({request.FileName})");
-            return SlackBotClient.SendFailureAsync(
-                Settings.Default.SlackBotToken.Trim(),
-                Settings.Default.SlackChannelId.Trim(),
-                request.FileName,
-                SlackBotClient.ConvertMarkdownForSlack(request.Reason),
-                token);
+            Logger.Info($"AutoFocusGraphs: posting failure to Slack ({request.FileName})");
+            return PostFailureCoreAsync(request, token);
+        }
+
+        private static async Task PostFailureCoreAsync(FailurePostRequest request, CancellationToken token) {
+            try {
+                await SlackBotClient.SendFailureAsync(
+                    Settings.Default.SlackBotToken.Trim(),
+                    Settings.Default.SlackChannelId.Trim(),
+                    request.FileName,
+                    SlackBotClient.ConvertMarkdownForSlack(request.Reason),
+                    token).ConfigureAwait(false);
+                PostStatusTracker.RecordSuccess($"failure {request.FileName} (Slack)");
+                Logger.Info($"AutoFocusGraphs: posted failure to Slack ({request.FileName})");
+            } catch (Exception ex) {
+                PostStatusTracker.RecordFailure(ex.Message);
+                throw;
+            }
         }
 
         public async Task PostDigestAsync(DigestPostRequest request, CancellationToken token) {

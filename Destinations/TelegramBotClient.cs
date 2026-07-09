@@ -109,7 +109,7 @@ namespace AutoFocusGraphs.Destinations {
             } catch (InvalidOperationException) {
                 throw;
             } catch (Exception ex) {
-                Logger.Warning($"AutoFocusGraphs: Telegram response parse warning: {ex.Message}");
+                throw new InvalidOperationException($"Telegram returned an unreadable response: {ex.Message}");
             }
         }
 

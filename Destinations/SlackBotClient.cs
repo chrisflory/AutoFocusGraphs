@@ -138,6 +138,10 @@ namespace AutoFocusGraphs.Destinations {
             byte[] bytes,
             string fileName,
             CancellationToken tokenCt) {
+            if (!HttpsFetchUrlValidator.TryValidateSlackUploadUrl(uploadUrl, out var urlError)) {
+                throw new InvalidOperationException($"Slack upload URL rejected: {urlError}");
+            }
+
             using var content = new MultipartFormDataContent();
             content.Add(new ByteArrayContent(bytes), "file", fileName);
             using var response = await Http.PostAsync(uploadUrl, content, tokenCt).ConfigureAwait(false);
@@ -193,10 +197,8 @@ namespace AutoFocusGraphs.Destinations {
                 }
             } catch (InvalidOperationException) {
                 throw;
-            } catch (JsonReaderException) {
-                // Non-JSON success bodies are unexpected but should not hide HTTP success.
             } catch (Exception ex) {
-                Logger.Warning($"AutoFocusGraphs: Slack response parse warning: {ex.Message}");
+                throw new InvalidOperationException($"Slack returned an unreadable response: {ex.Message}");
             }
 
             return body;

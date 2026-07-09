@@ -39,3 +39,9 @@ secrets.*
 
 # Local release packaging (artifacts are published via GitHub Releases)
 publish/
+
+# Local clone used by tools/validate_catalog_manifest.ps1
+.nina-manifests-ref/
+
+# Temp download from tools/hash_release_zip.py
+tools/_release.zip

@@ -293,6 +293,9 @@ namespace AutoFocusGraphs {
 
             watcher?.Dispose();
             watcher = null;
+            graphPreviewRefreshCts?.Cancel();
+            graphPreviewRefreshCts?.Dispose();
+            graphPreviewRefreshCts = null;
             try {
                 focuserMediator?.RemoveConsumer(focuserConsumer);
             } catch (Exception ex) {
@@ -1053,6 +1056,7 @@ namespace AutoFocusGraphs {
 
         public void ScheduleGraphPreviewRefresh() {
             graphPreviewRefreshCts?.Cancel();
+            graphPreviewRefreshCts?.Dispose();
             graphPreviewRefreshCts = new CancellationTokenSource();
             var token = graphPreviewRefreshCts.Token;
             var dpiScale = graphPreviewDpiScale;

@@ -25,6 +25,7 @@
     <EmbeddedResource Include="assets\avatar.png" />
     <EmbeddedResource Include="assets\graph-preview-sample.json" />
     <EmbeddedResource Include="assets\graph-preview-backlash-sample.json" />
+    <Resource Include="assets\flowchart.png" />
   </ItemGroup>
   <!-- Deploy plugin + ScottPlot/SkiaSharp only (do not ship NINA assemblies into the plugin folder).
        Native Skia/HarfBuzz libs are copied to the plugin root so NINA's ALC can find them. -->
