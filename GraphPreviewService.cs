@@ -4,6 +4,8 @@ using NINA.Core.Utility;
 
 using System;
 
+using System.Collections.Generic;
+
 using System.IO;
 
 using System.Linq;
@@ -29,6 +31,70 @@ namespace AutoFocusGraphs {
         public const string SampleNormal = "Normal";
 
         public const string SampleBacklashTest = "Backlash test";
+
+        public const string SampleLowR2 = "Low R² (erratic curve)";
+
+        public const string SampleHighHfr = "Poor seeing (high HFR)";
+
+        public const string SampleEdgeMinimum = "Minimum near edge";
+
+        public const string SampleOutlier = "Outlier point";
+
+        public const string SampleOvershootBoth = "Overshoot IN+OUT";
+
+        public const string SampleNoisy = "Noisy / wind gusts";
+
+        public const string SampleCoarseStep = "Step too large";
+
+        public const string SampleStepSmall = "Step too small";
+
+        public const string SampleZigzag = "Zigzag / seesaw";
+
+        public const string SampleApproachPlateau = "Flat approach wing";
+
+        public const string SampleMeasurementCliff = "Outer measurement cliff";
+
+        public const string SampleFlatCurve = "Flat scan (seeing)";
+
+
+
+        private static readonly IReadOnlyList<(string Key, string ResourceSuffix)> SampleCatalog = new[] {
+
+            (SampleNormal, "graph-preview-sample.json"),
+
+            (SampleBacklashTest, "graph-preview-backlash-sample.json"),
+
+            (SampleLowR2, "graph-preview-low-r2-sample.json"),
+
+            (SampleHighHfr, "graph-preview-high-hfr-sample.json"),
+
+            (SampleEdgeMinimum, "graph-preview-edge-min-sample.json"),
+
+            (SampleOutlier, "graph-preview-outlier-sample.json"),
+
+            (SampleOvershootBoth, "graph-preview-overshoot-both-sample.json"),
+
+            (SampleNoisy, "graph-preview-noisy-sample.json"),
+
+            (SampleCoarseStep, "graph-preview-coarse-step-sample.json"),
+
+            (SampleStepSmall, "graph-preview-step-small-sample.json"),
+
+            (SampleZigzag, "graph-preview-zigzag-sample.json"),
+
+            (SampleApproachPlateau, "graph-preview-approach-plateau-sample.json"),
+
+            (SampleMeasurementCliff, "graph-preview-measurement-cliff-sample.json"),
+
+            (SampleFlatCurve, "graph-preview-flat-curve-sample.json"),
+
+        };
+
+
+
+        public static IReadOnlyList<string> AllSampleKeys { get; } =
+
+            SampleCatalog.Select(s => s.Key).ToList();
 
 
 
@@ -172,11 +238,7 @@ namespace AutoFocusGraphs {
 
 
 
-            var resourceSuffix = string.Equals(sampleKey, SampleBacklashTest, StringComparison.Ordinal)
-
-                ? "graph-preview-backlash-sample.json"
-
-                : "graph-preview-sample.json";
+            var resourceSuffix = ResolveResourceSuffix(sampleKey);
 
             var fileName = Path.GetFileName(resourceSuffix);
 
@@ -197,6 +259,28 @@ namespace AutoFocusGraphs {
             cachedSample = AutofocusReport.Parse(json, fileName, $"preview:{fileName}");
 
             return cachedSample;
+
+        }
+
+
+
+        private static string ResolveResourceSuffix(string sampleKey) {
+
+            foreach (var entry in SampleCatalog) {
+
+                if (string.Equals(entry.Key, sampleKey, StringComparison.Ordinal)) {
+
+                    return entry.ResourceSuffix;
+
+                }
+
+            }
+
+
+
+            Logger.Warning($"AutoFocusGraphs: unknown graph preview sample '{sampleKey}', using Normal.");
+
+            return SampleCatalog[0].ResourceSuffix;
 
         }
 
@@ -239,6 +323,5 @@ namespace AutoFocusGraphs {
     }
 
 }
-
 
 

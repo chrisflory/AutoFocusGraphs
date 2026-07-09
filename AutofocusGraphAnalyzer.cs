@@ -221,6 +221,37 @@ namespace AutoFocusGraphs {
                 });
             }
 
+            if (TryDetectApproachPlateau(report, out var approachSide, out var approachFlatSteps)) {
+                hints.Add(new Hint {
+                    RuleId = "outer-wing-plateau",
+                    Cluster = WingShapeCluster,
+                    Priority = 11,
+                    Tier = HintTier.Pattern,
+                    Text =
+                        $"{approachSide} wing: nearly flat for {approachFlatSteps} step(s) at scan edge before steep slope — backlash or overshoot on approach"
+                });
+            }
+
+            if (TryDetectZigzag(report, out var zigzagChanges)) {
+                hints.Add(new Hint {
+                    RuleId = "zigzag-wing",
+                    Priority = 16,
+                    Tier = HintTier.Pattern,
+                    Text =
+                        $"HFR reverses direction {zigzagChanges} time(s) along scan — step size vs seeing, guiding, or backlash"
+                });
+            }
+
+            if (TryDetectOuterMeasurementCliff(report, out var cliffSide)) {
+                hints.Add(new Hint {
+                    RuleId = "outer-measurement-cliff",
+                    Priority = 17,
+                    Tier = HintTier.Pattern,
+                    Text =
+                        $"{cliffSide} scan edge: HFR drops sharply on outermost point — stars may be too defocused to measure"
+                });
+            }
+
             if (TryGetWingAsymmetry(report, out var asymmetry)) {
                 var pct = (int)Math.Round(asymmetry * 100);
                 if (pct >= 35) {
@@ -302,6 +333,15 @@ namespace AutoFocusGraphs {
                     Priority = 40,
                     Tier = HintTier.Pattern,
                     Text = $"Best focus near scan edge (point {minIdx + 1}/{count})"
+                });
+            } else if (TryGetSteepVBothWings(report, out var steepHint)) {
+                hints.Add(steepHint);
+            } else if (TryDetectFlatCurve(report)) {
+                hints.Add(new Hint {
+                    RuleId = "flat-curve",
+                    Priority = 33,
+                    Tier = HintTier.Pattern,
+                    Text = "HFR barely changes across scan — poor seeing or step size too small to resolve focus"
                 });
             } else if (TryGetShallowWing(report, out var shallowSide, out var shallowRatio)) {
                 hints.Add(new Hint {
@@ -481,6 +521,80 @@ namespace AutoFocusGraphs {
         }
 
         private const double ShallowWingRatioThreshold = 1.85;
+        private const double SteepWingEdgeRatioThreshold = 2.2;
+        private const double SteepWingEdgeRatioMax = 9.0;
+        private const double SteepWingOuterDropMinFactor = 0.35;
+        private const double SteepWingNearMinFactor = 1.08;
+        private const int SteepWingMinReportedStep = 160;
+
+        private static bool TryGetSteepVBothWings(AutofocusReport report, out Hint hint) {
+            hint = null;
+            var points = report.MeasurePoints;
+            var count = points.Count;
+            if (count < 5 || count > 9) {
+                return false;
+            }
+
+            var step = report.StepSize ?? EstimateStepSize(points);
+            if (step < SteepWingMinReportedStep) {
+                return false;
+            }
+
+            var minIdx = 0;
+            for (var i = 1; i < count; i++) {
+                if (points[i].Value < points[minIdx].Value) {
+                    minIdx = i;
+                }
+            }
+
+            if (minIdx < 2 || minIdx > count - 3) {
+                return false;
+            }
+
+            var minHfr = points[minIdx].Value;
+            if (minHfr <= 0.01) {
+                return false;
+            }
+
+            var leftEdge = points[0].Value;
+            var leftInner = points[1].Value;
+            var rightEdge = points[count - 1].Value;
+            var rightInner = points[count - 2].Value;
+            var leftEdgeRatio = leftEdge / minHfr;
+            var rightEdgeRatio = rightEdge / minHfr;
+            if (leftEdgeRatio < SteepWingEdgeRatioThreshold ||
+                rightEdgeRatio < SteepWingEdgeRatioThreshold ||
+                leftEdgeRatio > SteepWingEdgeRatioMax ||
+                rightEdgeRatio > SteepWingEdgeRatioMax) {
+                return false;
+            }
+
+            var leftDrop = leftEdge - leftInner;
+            var rightDrop = rightEdge - rightInner;
+            var minDrop = Math.Min(leftDrop, rightDrop);
+            if (leftDrop <= 0 || rightDrop <= 0 || minDrop < minHfr * SteepWingOuterDropMinFactor) {
+                return false;
+            }
+
+            var nearMinThreshold = minHfr * SteepWingNearMinFactor;
+            var nearMinCount = points.Count(p => p.Value <= nearMinThreshold);
+            if (nearMinCount > 2) {
+                return false;
+            }
+
+            var wingMultiple = (int)Math.Round((leftEdgeRatio + rightEdgeRatio) * 0.5);
+            var stepLabel = step > 0 ? step.ToString(CultureInfo.InvariantCulture) : "n";
+
+            hint = new Hint {
+                RuleId = "steep-v-both-wings",
+                Cluster = WingShapeCluster,
+                Priority = 29,
+                Tier = HintTier.Pattern,
+                Text =
+                    $"Coarse V (step {stepLabel}): wings ~{wingMultiple}× min HFR with steep outer steps; only {nearMinCount} point(s) near bottom — typical when step size is large vs offset"
+            };
+            return true;
+        }
 
         private static bool TryGetShallowWing(AutofocusReport report, out string side, out double ratio) {
             side = null;
@@ -545,6 +659,190 @@ namespace AutoFocusGraphs {
             }
 
             return minIdx <= 1 || minIdx >= points.Count - 2;
+        }
+
+        private static bool TryDetectZigzag(AutofocusReport report, out int signChanges) {
+            signChanges = CountMeaningfulSignChanges(report.MeasurePoints);
+            return report.MeasurePoints.Count >= 7 && signChanges >= 3;
+        }
+
+        private static int CountMeaningfulSignChanges(IReadOnlyList<AutofocusReport.MeasurePoint> points) {
+            if (points.Count < 4) {
+                return 0;
+            }
+
+            var values = points.Select(p => p.Value).ToList();
+            var range = values.Max() - values.Min();
+            if (range < 0.2) {
+                return 0;
+            }
+
+            var noise = Math.Max(0.06, range * 0.04);
+            int? lastSign = null;
+            var changes = 0;
+            for (var i = 1; i < points.Count; i++) {
+                var delta = points[i].Value - points[i - 1].Value;
+                if (Math.Abs(delta) < noise) {
+                    continue;
+                }
+
+                var sign = delta > 0 ? 1 : -1;
+                if (lastSign.HasValue && sign != lastSign.Value) {
+                    changes++;
+                }
+
+                lastSign = sign;
+            }
+
+            return changes;
+        }
+
+        private static bool TryDetectOuterMeasurementCliff(AutofocusReport report, out string side) {
+            side = null;
+            var points = report.MeasurePoints;
+            if (points.Count < 5) {
+                return false;
+            }
+
+            var minHfr = points.Min(p => p.Value);
+            if (minHfr <= 0.01) {
+                return false;
+            }
+
+            if (points[1].Value > minHfr * 1.8 &&
+                points[0].Value < points[1].Value * 0.70) {
+                side = "Left";
+                return true;
+            }
+
+            var last = points.Count - 1;
+            if (points[last - 1].Value > minHfr * 1.8 &&
+                points[last].Value < points[last - 1].Value * 0.70) {
+                side = "Right";
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool TryDetectApproachPlateau(AutofocusReport report, out string side, out int flatSteps) {
+            side = null;
+            flatSteps = 0;
+            var points = report.MeasurePoints;
+            if (points.Count < 6) {
+                return false;
+            }
+
+            var minIdx = 0;
+            for (var i = 1; i < points.Count; i++) {
+                if (points[i].Value < points[minIdx].Value) {
+                    minIdx = i;
+                }
+            }
+
+            var minHfr = points[minIdx].Value;
+            if (minHfr <= 0.01) {
+                return false;
+            }
+
+            if (minIdx >= 3 &&
+                TryCheckOuterApproachPlateau(points, 0, minIdx - 1, minHfr, out flatSteps)) {
+                side = "Left";
+                return true;
+            }
+
+            if (points.Count - minIdx >= 4 &&
+                TryCheckOuterApproachPlateau(points, minIdx + 1, points.Count - 1, minHfr, out flatSteps)) {
+                side = "Right";
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool TryCheckOuterApproachPlateau(
+            IReadOnlyList<AutofocusReport.MeasurePoint> points,
+            int startIdx,
+            int endIdx,
+            double minHfr,
+            out int flatSteps) {
+            flatSteps = 0;
+            if (endIdx - startIdx < 3) {
+                return false;
+            }
+
+            var outerIdx = points[startIdx].Position < points[endIdx].Position ? startIdx : endIdx;
+            var innerIdx = outerIdx == startIdx ? endIdx : startIdx;
+            var outward = outerIdx < innerIdx;
+
+            var earlySlopes = new List<double>();
+            var lateSlopes = new List<double>();
+            if (outward) {
+                for (var i = outerIdx + 1; i <= Math.Min(outerIdx + 2, innerIdx); i++) {
+                    var dx = points[i].Position - points[i - 1].Position;
+                    if (dx > 0) {
+                        earlySlopes.Add(Math.Abs(points[i].Value - points[i - 1].Value) / dx);
+                    }
+                }
+
+                for (var i = outerIdx + 3; i <= innerIdx; i++) {
+                    var dx = points[i].Position - points[i - 1].Position;
+                    if (dx > 0) {
+                        lateSlopes.Add(Math.Abs(points[i].Value - points[i - 1].Value) / dx);
+                    }
+                }
+
+                flatSteps = Math.Min(2, innerIdx - outerIdx);
+            } else {
+                for (var i = outerIdx; i >= Math.Max(outerIdx - 1, innerIdx + 1); i--) {
+                    var dx = points[i].Position - points[i - 1].Position;
+                    if (dx > 0) {
+                        earlySlopes.Add(Math.Abs(points[i].Value - points[i - 1].Value) / dx);
+                    }
+                }
+
+                for (var i = outerIdx - 2; i > innerIdx; i--) {
+                    var dx = points[i].Position - points[i - 1].Position;
+                    if (dx > 0) {
+                        lateSlopes.Add(Math.Abs(points[i].Value - points[i - 1].Value) / dx);
+                    }
+                }
+
+                flatSteps = Math.Min(2, outerIdx - innerIdx);
+            }
+
+            if (earlySlopes.Count < 2 || lateSlopes.Count < 1) {
+                return false;
+            }
+
+            var earlyAvg = earlySlopes.Average();
+            var lateAvg = lateSlopes.Average();
+            if (lateAvg <= 0.0001 || earlyAvg > lateAvg * 0.30) {
+                return false;
+            }
+
+            var outerHfr = points[outerIdx].Value;
+            if (outerHfr < minHfr * 1.8) {
+                return false;
+            }
+
+            var flatSpanHfr = Math.Abs(points[Math.Min(outerIdx + flatSteps, innerIdx)].Value - outerHfr);
+            return flatSpanHfr < outerHfr * 0.10;
+        }
+
+        private static bool TryDetectFlatCurve(AutofocusReport report) {
+            var points = report.MeasurePoints;
+            if (points.Count < 7) {
+                return false;
+            }
+
+            var minHfr = points.Min(p => p.Value);
+            var maxHfr = points.Max(p => p.Value);
+            if (minHfr <= 0.5) {
+                return false;
+            }
+
+            return (maxHfr - minHfr) / minHfr < 0.22;
         }
 
         private static bool TryDetectPostMinimumPlateau(

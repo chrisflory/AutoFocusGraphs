@@ -1,0 +1,74 @@
+{
+  "FinalHFR": 4.42,
+  "Region": null,
+  "Version": 2,
+  "Filter": "L",
+  "AutoFocuserName": "Hocus Focus",
+  "StarDetectorName": "Hocus Focus",
+  "Timestamp": "2026-07-09T19:30:00.0000000-05:00",
+  "Temperature": 9.5,
+  "Method": "STARHFR",
+  "Fitting": "HYPERBOLIC",
+  "InitialFocusPoint": { "Position": 8420.0, "Value": 4.35, "Error": 0.0 },
+  "CalculatedFocusPoint": { "Position": 8405.0, "Value": 3.48, "Error": 0.0 },
+  "PreviousFocusPoint": { "Position": 8390.0, "Value": 4.10, "Error": 0.0 },
+  "MeasurePoints": [
+    { "Position": 8020.0, "Value": 14.20, "Error": 0.55 },
+    { "Position": 8120.0, "Value": 10.80, "Error": 0.48 },
+    { "Position": 8220.0, "Value": 7.60, "Error": 0.40 },
+    { "Position": 8320.0, "Value": 5.10, "Error": 0.32 },
+    { "Position": 8420.0, "Value": 4.35, "Error": 0.18 },
+    { "Position": 8520.0, "Value": 4.90, "Error": 0.25 },
+    { "Position": 8620.0, "Value": 6.80, "Error": 0.38 },
+    { "Position": 8720.0, "Value": 9.40, "Error": 0.45 },
+    { "Position": 8820.0, "Value": 12.60, "Error": 0.52 }
+  ],
+  "Intersections": {
+    "TrendLineIntersection": { "Position": 8408.0, "Value": 0.20, "Error": 0.0 },
+    "HyperbolicMinimum": { "Position": 8402.0, "Value": 3.45, "Error": 0.0 },
+    "QuadraticMinimum": { "Position": 8404.0, "Value": 3.47, "Error": 0.0 },
+    "GaussianMaximum": null
+  },
+  "Fittings": {
+    "Quadratic": "synthetic-high-hfr",
+    "Hyperbolic": "synthetic-high-hfr",
+    "Gaussian": "",
+    "LeftTrend": "y = -0.028 * x + 238.0",
+    "RightTrend": "y = 0.024 * x + -198.0"
+  },
+  "RSquares": {
+    "Quadratic": 0.97,
+    "Hyperbolic": 0.98,
+    "LeftTrend": 0.99,
+    "RightTrend": 0.98
+  },
+  "BacklashCompensation": {
+    "BacklashCompensationModel": "OVERSHOOT",
+    "BacklashIN": 0,
+    "BacklashOUT": 150
+  },
+  "Duration": "00:03:05.0000000",
+  "FocuserOptions": {
+    "Id": "ASCOM.SyntheticFocuser",
+    "UseFilterWheelOffsets": true,
+    "AutoFocusStepSize": 100,
+    "AutoFocusInitialOffsetSteps": 4,
+    "AutoFocusExposureTime": 8.0,
+    "AutoFocusMethod": 0,
+    "ContrastDetectionMethod": 2,
+    "AutoFocusDisableGuiding": true,
+    "FocuserSettleTime": 2,
+    "AutoFocusTotalNumberOfAttempts": 2,
+    "AutoFocusNumberOfFramesPerPoint": 1,
+    "AutoFocusInnerCropRatio": 1.0,
+    "AutoFocusOuterCropRatio": 1.0,
+    "BacklashIn": 0,
+    "BacklashOut": 150,
+    "AutoFocusBinning": 1,
+    "AutoFocusUseBrightestStars": 0,
+    "AutoFocusCurveFitting": 3,
+    "BacklashCompensationModel": 1,
+    "AutoFocusTimeoutSeconds": 600,
+    "RSquaredThreshold": 0.9
+  }
+}

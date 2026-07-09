@@ -195,10 +195,8 @@ namespace AutoFocusGraphs {
         };
 
         public string[] EmbedModeOptions { get; } = { "Detailed", "Compact" };
-        public string[] GraphPreviewSampleOptions { get; } = {
-            GraphPreviewService.SampleNormal,
-            GraphPreviewService.SampleBacklashTest
-        };
+        public string[] GraphPreviewSampleOptions { get; } =
+            GraphPreviewService.AllSampleKeys.ToArray();
         public string[] AttachModeOptions { get; } = { "Both", "GraphOnly", "EmbedOnly" };
 
         public Visibility WebhookTestSuccessVisible =>

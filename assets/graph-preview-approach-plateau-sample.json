@@ -1,0 +1,77 @@
+{
+  "FinalHFR": 2.06,
+  "Region": null,
+  "Version": 2,
+  "Filter": "L",
+  "AutoFocuserName": "Hocus Focus",
+  "StarDetectorName": "Hocus Focus",
+  "Timestamp": "2026-07-09T23:55:00.0000000-05:00",
+  "Temperature": 12.0,
+  "Method": "STARHFR",
+  "Fitting": "HYPERBOLIC",
+  "InitialFocusPoint": { "Position": 4950.0, "Value": 2.10, "Error": 0.0 },
+  "CalculatedFocusPoint": { "Position": 4948.0, "Value": 2.04, "Error": 0.0 },
+  "PreviousFocusPoint": { "Position": 4930.0, "Value": 2.18, "Error": 0.0 },
+  "MeasurePoints": [
+    { "Position": 4600.0, "Value": 7.60, "Error": 0.30 },
+    { "Position": 4650.0, "Value": 7.55, "Error": 0.29 },
+    { "Position": 4700.0, "Value": 7.50, "Error": 0.28 },
+    { "Position": 4750.0, "Value": 7.45, "Error": 0.28 },
+    { "Position": 4800.0, "Value": 5.20, "Error": 0.22 },
+    { "Position": 4850.0, "Value": 3.05, "Error": 0.14 },
+    { "Position": 4900.0, "Value": 2.12, "Error": 0.07 },
+    { "Position": 4950.0, "Value": 2.04, "Error": 0.05 },
+    { "Position": 5000.0, "Value": 2.15, "Error": 0.08 },
+    { "Position": 5050.0, "Value": 3.10, "Error": 0.14 },
+    { "Position": 5100.0, "Value": 5.25, "Error": 0.22 },
+    { "Position": 5150.0, "Value": 7.40, "Error": 0.28 }
+  ],
+  "Intersections": {
+    "TrendLineIntersection": { "Position": 4945.0, "Value": 0.10, "Error": 0.0 },
+    "HyperbolicMinimum": { "Position": 4942.0, "Value": 2.02, "Error": 0.0 },
+    "QuadraticMinimum": { "Position": 4948.0, "Value": 2.04, "Error": 0.0 },
+    "GaussianMaximum": null
+  },
+  "Fittings": {
+    "Quadratic": "synthetic-approach-plateau-cn-928536",
+    "Hyperbolic": "synthetic-approach-plateau-cn-928536",
+    "Gaussian": "",
+    "LeftTrend": "y = -0.0035 * x + 23.8",
+    "RightTrend": "y = 0.0035 * x + -15.2"
+  },
+  "RSquares": {
+    "Quadratic": 0.86,
+    "Hyperbolic": 0.84,
+    "LeftTrend": 0.62,
+    "RightTrend": 0.95
+  },
+  "BacklashCompensation": {
+    "BacklashCompensationModel": "OVERSHOOT",
+    "BacklashIN": 0,
+    "BacklashOUT": 200
+  },
+  "Duration": "00:02:35.0000000",
+  "FocuserOptions": {
+    "Id": "ASCOM.SyntheticFocuser",
+    "UseFilterWheelOffsets": true,
+    "AutoFocusStepSize": 50,
+    "AutoFocusInitialOffsetSteps": 4,
+    "AutoFocusExposureTime": 4.0,
+    "AutoFocusMethod": 0,
+    "ContrastDetectionMethod": 2,
+    "AutoFocusDisableGuiding": true,
+    "FocuserSettleTime": 2,
+    "AutoFocusTotalNumberOfAttempts": 2,
+    "AutoFocusNumberOfFramesPerPoint": 1,
+    "AutoFocusInnerCropRatio": 0.8,
+    "AutoFocusOuterCropRatio": 1.0,
+    "BacklashIn": 0,
+    "BacklashOut": 200,
+    "AutoFocusBinning": 1,
+    "AutoFocusUseBrightestStars": 0,
+    "AutoFocusCurveFitting": 3,
+    "BacklashCompensationModel": 1,
+    "AutoFocusTimeoutSeconds": 600,
+    "RSquaredThreshold": 0.9
+  }
+}

@@ -25,6 +25,18 @@
     <EmbeddedResource Include="assets\avatar.png" />
     <EmbeddedResource Include="assets\graph-preview-sample.json" />
     <EmbeddedResource Include="assets\graph-preview-backlash-sample.json" />
+    <EmbeddedResource Include="assets\graph-preview-low-r2-sample.json" />
+    <EmbeddedResource Include="assets\graph-preview-high-hfr-sample.json" />
+    <EmbeddedResource Include="assets\graph-preview-edge-min-sample.json" />
+    <EmbeddedResource Include="assets\graph-preview-outlier-sample.json" />
+    <EmbeddedResource Include="assets\graph-preview-overshoot-both-sample.json" />
+    <EmbeddedResource Include="assets\graph-preview-noisy-sample.json" />
+    <EmbeddedResource Include="assets\graph-preview-coarse-step-sample.json" />
+    <EmbeddedResource Include="assets\graph-preview-step-small-sample.json" />
+    <EmbeddedResource Include="assets\graph-preview-zigzag-sample.json" />
+    <EmbeddedResource Include="assets\graph-preview-approach-plateau-sample.json" />
+    <EmbeddedResource Include="assets\graph-preview-measurement-cliff-sample.json" />
+    <EmbeddedResource Include="assets\graph-preview-flat-curve-sample.json" />
     <Resource Include="assets\flowchart.png" />
   </ItemGroup>
   <!-- Deploy plugin + ScottPlot/SkiaSharp only (do not ship NINA assemblies into the plugin folder).
