@@ -2,7 +2,7 @@
 
 A N.I.N.A. plugin that watches the AutoFocus report folder, renders a **dark-mode V-curve graph**, and posts per-run reports and digests to **Discord**, **Telegram**, **Slack**, **email**, or any combination.
 
-> **Latest release:** [v0.1.0.0](https://github.com/chrisflory/AutoFocusGraphs/releases/tag/v0.1.0.0) — multi-destination autofocus graph delivery for N.I.N.A. 3.3 nightlies.
+> **Latest release:** [v0.1.0.1](https://github.com/chrisflory/AutoFocusGraphs/releases/tag/v0.1.0.1) — multi-destination autofocus graph delivery for N.I.N.A. 3.3 nightlies.
 
 ---
 
@@ -76,7 +76,7 @@ Per-run history in NINA is left to NINA's own HFR history; this plugin focuses o
 
 **From a release (recommended):**
 
-Download [AutoFocusGraphs.0.1.0.0.zip](https://github.com/chrisflory/AutoFocusGraphs/releases/download/v0.1.0.0/AutoFocusGraphs.0.1.0.0.zip) and extract into:
+Download [AutoFocusGraphs.0.1.0.1.zip](https://github.com/chrisflory/AutoFocusGraphs/releases/download/v0.1.0.1/AutoFocusGraphs.0.1.0.1.zip) and extract into:
 
 `%localappdata%\NINA\Plugins\3.0.0\AutoFocusGraphs\`
 
@@ -119,6 +119,25 @@ Monitoring, graph rendering, quality gate, posting, and digests. A **live previe
 
 ![Graph overlays section in plugin options — sample preview (not interactive)](assets/readme-graph-options-section.png)
 
+**Preview sample** — dropdown of synthetic V-curves modeled on common Cloudy Nights / NINA forum patterns. Use it with **Graph analysis hints** on to see which rules fire before you rely on live runs.
+
+| Preview sample | What it models |
+| --- | --- |
+| **Normal** | Clean V-curve (baseline) |
+| **Backlash test** | Right-wing plateau after the minimum (overshoot / backlash) |
+| **Low R² (erratic curve)** | Poor fit / weak trend on one side |
+| **Poor seeing (high HFR)** | High absolute HFR with an otherwise usable shape |
+| **Minimum near edge** | Best focus at the first or last scan points |
+| **Outlier point** | One measure point flagged as an outlier |
+| **Overshoot IN+OUT** | Both backlash directions set (NINA allows one) |
+| **Noisy / wind gusts** | High point-to-point HFR scatter |
+| **Step too large** | Coarse V: wings ~4× min HFR, steep sides, 1–2 points at the bottom |
+| **Step too small** | Narrow scan; edge HFR only ~1.5× min |
+| **Zigzag / seesaw** | Alternating HFR on the approach wing (step vs seeing / guiding) |
+| **Flat approach wing** | Flat HFR at the scan edge, then a steep drop into focus |
+| **Outer measurement cliff** | Outermost point HFR collapses (stars too defocused to measure) |
+| **Flat scan (seeing)** | Almost no HFR change across the whole run |
+
 | Overlay | What it shows |
 | --- | --- |
 | **Minimal graph** | Points and final HFR only — hides fits, trends, markers, and other overlays |
@@ -133,7 +152,17 @@ Monitoring, graph rendering, quality gate, posting, and digests. A **live previe
 | **Trend R² in legend** | R² values for left and right trends in the graph legend |
 | **Initial focus marker** | Cyan diamond and dotted **Start pos** vertical line at the starting focuser position |
 | **HFR error bars** | Vertical bars from each point's HFR uncertainty (JSON `Error` field); off by default |
-| **Graph analysis hints** | Optional rule-based observations on the V-curve (lower-left); conservative mode (default) shows facts/patterns only |
+| **Graph analysis hints** | Optional rule-based observations on the V-curve (lower-left); same rules on live AF runs and preview |
+
+**Graph analysis hints** — when enabled, up to three short observations are drawn on the PNG (live runs and preview). They describe measured facts and curve shape (not diagnoses). **Conservative graph hints** (default on) hides suggestion-tier text.
+
+Examples of patterns the analyzer can surface:
+
+- Post-minimum wing plateau / outer approach plateau
+- Steep coarse V (step too large) or shallow wings (step / scan too small)
+- Zigzag / seesaw HFR, flat overall scan, outer measurement cliff
+- Minimum near scan edge, low R², weak trend side, outliers, noisy points
+- Overshoot set on both IN and OUT; large focus shift vs previous run
 
 **Graph options** (separate from overlays):
 
@@ -152,7 +181,7 @@ Monitoring, graph rendering, quality gate, posting, and digests. A **live previe
 | **Post each autofocus run** | Per-run posts on/off (off = digest-only mode) |
 | **Include V-curve graph on each run** | Attach the PNG to each per-run post |
 | **Attach JSON** | Attach the raw AutoFocus JSON file to each per-run post |
-| **Graph analysis hints / Conservative hints** | Optional V-curve observations; conservative (default) = facts and patterns only |
+| **Graph analysis hints / Conservative hints** | Optional V-curve observations on live graphs and preview; conservative (default) = facts and patterns only |
 | **Post digest when sequencer sequence completes** | Sequence digest after the last per-run post (default on) |
 | **Post session digest when NINA exits** | Full-session digest on shutdown |
 | **Post sequence digest now** | Manual digest: current sequence first, then full session if the sequence is empty |

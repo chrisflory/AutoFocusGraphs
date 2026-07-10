@@ -50,7 +50,7 @@
             <TextBlock Text="Preview sample" Margin="0,0,0,4" Opacity="0.7" FontSize="12" />
             <ComboBox ItemsSource="{Binding GraphPreviewSampleOptions}" SelectedItem="{Binding GraphPreviewSample}"
                       Width="320" HorizontalAlignment="Left" Margin="0,0,0,8"
-                      ToolTip="Synthetic curves from common CN / NINA forum patterns. Step too large = offset-4 scan with big step (wings ~4× min HFR, steep sides, 1–2 points at bottom) per IceInSpace + NINA docs. Toggle graph analysis hints to compare with Normal (step 100)." />
+                      ToolTip="Synthetic V-curves from common CN / NINA forum patterns (14 samples). Examples: Step too large = coarse steep V (~4× wing HFR); Zigzag / Flat approach wing / Outer measurement cliff / Flat scan. Enable Graph analysis hints to see which rules fire vs Normal." />
             <Border Background="#36393F" CornerRadius="4" Margin="0,0,0,8" Padding="6" HorizontalAlignment="Left" MaxWidth="960"
                     SnapsToDevicePixels="True" UseLayoutRounding="True">
                 <Image Source="{Binding GraphPreviewImage}" Stretch="Uniform" MaxHeight="540" MaxWidth="960"
@@ -478,7 +478,7 @@
 
             <TextBlock Text="How it works" FontSize="16" FontWeight="Bold" Margin="0,12,0,8" />
             <TextBlock TextWrapping="Wrap" Margin="0,0,0,8" Opacity="0.85" MaxWidth="960"
-                       Text="When N.I.N.A. writes a new autofocus report, the plugin renders a V-curve graph and posts per-run reports, sequence digests, and session digests to every enabled destination (Discord, Telegram, Slack, email)." />
+                       Text="When N.I.N.A. writes a new autofocus report, the plugin renders a V-curve graph (optional analysis hints) and posts per-run reports, sequence digests, and session digests to every enabled destination (Discord, Telegram, Slack, email). Use Preview sample on this tab to try CN-style curve shapes before a live run." />
             <Image Source="pack://application:,,,/AutoFocusGraphs;component/assets/flowchart.png"
                    Stretch="Uniform" MaxWidth="960" Margin="0,0,0,8"
                    RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" ToolTip="AutoFocusGraphs pipeline" />

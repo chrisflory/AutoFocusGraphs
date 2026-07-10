@@ -2,17 +2,17 @@
 
 Step-by-step guide for opening a pull request to [isbeorn/nina.plugin.manifests](https://github.com/isbeorn/nina.plugin.manifests).
 
-## Prerequisites (already done for v0.1.0.0)
+## Prerequisites (already done for v0.1.0.1)
 
 | Item | Status |
 | --- | --- |
 | Public source repo | https://github.com/chrisflory/AutoFocusGraphs |
 | Open-source license (MIT) | Yes |
-| GitHub Release with zip asset | [v0.1.0.0](https://github.com/chrisflory/AutoFocusGraphs/releases/tag/v0.1.0.0) |
-| Manifest matches assembly metadata | GUID `b8d4f02a-5c3e-499b-0f2d-7e6b9c1d4e38`, Name `AutoFocusGraphs` |
-| Installer checksum matches release zip | SHA256 of `AutoFocusGraphs.0.1.0.0.zip` |
+| GitHub Release with zip asset | [v0.1.0.1](https://github.com/chrisflory/AutoFocusGraphs/releases/tag/v0.1.0.1) |
+| Manifest matches assembly metadata | GUID `b8d4f02a-5c3e-499b-0f2d-7e6b9c1d4e38`, Name `AutoFocusGraphs`, Author **Chris Flory** |
+| Installer checksum matches release zip | SHA256 `14d6e26d8dc00a1437024bb8001b34865c0e2ac639ad60c07580f075d55e6a79` |
 
-**Do not rebuild or re-zip the release asset after the checksum is recorded.** Any byte change invalidates the manifest.
+**Do not rebuild or re-zip the release asset after the checksum is recorded.** Any byte change invalidates the manifest. Documentation and LongDescription text in the manifest may be updated in-repo for the next catalog PR; the Installer URL/Checksum must still match the published zip.
 
 ## Manifest location in the catalog repo
 
@@ -22,10 +22,10 @@ Per the [official README](https://github.com/isbeorn/nina.plugin.manifests/blob/
 manifests/<first-letter>/<PluginName>/<nina-version-band>/<plugin-version>/manifest.json
 ```
 
-For AutoFocusGraphs v0.1.0.0:
+For AutoFocusGraphs v0.1.0.1:
 
 ```
-manifests/a/AutoFocusGraphs/3.0.0/0.1.0.0/manifest.json
+manifests/a/AutoFocusGraphs/3.0.0/0.1.0.1/manifest.json
 ```
 
 A ready-to-copy tree lives in [`manifests/catalog-pr/`](../manifests/catalog-pr/).
@@ -68,7 +68,7 @@ Look for `Manifest valid at ...AutoFocusGraphs...` and no `INVALID MANIFEST!` li
 ## Open the pull request
 
 1. **Fork** https://github.com/isbeorn/nina.plugin.manifests
-2. **Clone your fork** and create a branch, e.g. `AutoFocusGraphs/0.1.0.0`
+2. **Clone your fork** and create a branch, e.g. `AutoFocusGraphs/0.1.0.1`
 3. **Copy** the catalog-pr tree:
 
    ```powershell
@@ -83,28 +83,29 @@ Look for `Manifest valid at ...AutoFocusGraphs...` and no `INVALID MANIFEST!` li
 ### Suggested PR title
 
 ```
-Add AutoFocusGraphs 0.1.0.0 (Beta)
+Add AutoFocusGraphs 0.1.0.1 (Beta)
 ```
 
 ### Suggested PR body
 
 ```markdown
 ## Summary
-- Adds manifest for **AutoFocusGraphs** v0.1.0.0
+- Adds manifest for **AutoFocusGraphs** v0.1.0.1
 - Posts autofocus V-curve graphs to Discord, Telegram, Slack, and email
+- Graph analysis hints + 14 CN-style preview samples on the Graph tab
 - Targets N.I.N.A. 3.3 nightlies (MinimumApplicationVersion 3.3.0.1047)
 - Beta channel (`"Channel": "Beta"`)
 
 ## Links
 - Source: https://github.com/chrisflory/AutoFocusGraphs
-- Release: https://github.com/chrisflory/AutoFocusGraphs/releases/tag/v0.1.0.0
+- Release: https://github.com/chrisflory/AutoFocusGraphs/releases/tag/v0.1.0.1
 - Installer: ARCHIVE zip with SHA256 checksum in manifest
 
 ## Test plan
 - [ ] `node gather.js` passes in manifest repo
 - [ ] Beta repo URL added in N.I.N.A. Options → Plugin Repositories
 - [ ] Plugin appears in Plugin Manager and installs from catalog
-- [ ] Installed version matches 0.1.0.0; checksum verifies
+- [ ] Installed version matches 0.1.0.1; checksum verifies
 ```
 
 6. **Respond to review feedback** — maintainers may ask for screenshots, description tweaks, or stable-channel timing.

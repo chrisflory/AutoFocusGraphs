@@ -60,7 +60,7 @@ using System.Runtime.InteropServices;
 
 [assembly: AssemblyMetadata("AltScreenshotURL", "")]
 
-[assembly: AssemblyMetadata("LongDescription", "Multi-destination autofocus V-curve graphs and digests for N.I.N.A. Open the Graph tab for pipeline overview and live preview.")]
+[assembly: AssemblyMetadata("LongDescription", "Multi-destination autofocus V-curve graphs and digests for N.I.N.A. Graph tab: live preview with CN-style sample curves, overlay toggles, and optional analysis hints on live runs.")]
 
 
 
