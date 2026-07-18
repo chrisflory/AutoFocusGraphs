@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **Per-run send** controls on the Graph tab: Every run (default), Every Nth run (2–50; warnings/failures always post), or Problems only. Digests and failure hooks are unchanged; skipped runs stay in ReportStore.
+
 ## 0.1.0.1 — 2026-07-09
 
 Patch release — author display fix, security hardening, UI polish, and expanded graph analysis.

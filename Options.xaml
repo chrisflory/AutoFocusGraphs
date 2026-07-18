@@ -372,6 +372,23 @@
             </Grid>
             <TextBlock Text="Turn off for digest-only mode: runs are still tracked for the session summary, but nothing is posted after each AF." Margin="0,0,0,10" Opacity="0.7" TextWrapping="Wrap" />
 
+            <TextBlock Text="Per-run send" Margin="0,0,0,4" Opacity="0.7" FontSize="12" />
+            <ComboBox ItemsSource="{Binding PerRunSendModeOptions}" SelectedItem="{Binding PerRunSendMode}"
+                      Width="220" HorizontalAlignment="Left" Margin="0,0,0,8"
+                      IsEnabled="{Binding PerRunSendControlsEnabled}"
+                      ToolTip="Throttle or filter per-run posts. Digests and failure alerts are unchanged. Every Nth still always posts warnings and failures." />
+            <TextBlock Text="Send every N runs" Margin="0,0,0,4" Opacity="0.7" FontSize="12"
+                       Visibility="{Binding PerRunSendEveryNVisible}" />
+            <TextBox Text="{Binding PerRunSendEveryN}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,4"
+                     IsEnabled="{Binding PerRunSendControlsEnabled}"
+                     Visibility="{Binding PerRunSendEveryNVisible}"
+                     ToolTip="Post every Nth successful run (2–50). Warnings and failures always send and do not count toward N." />
+            <TextBlock Text="Warnings and failures always send; only successful runs count toward N."
+                       Margin="0,0,0,10" Opacity="0.7" TextWrapping="Wrap" MaxWidth="640" HorizontalAlignment="Left"
+                       Visibility="{Binding PerRunSendEveryNVisible}" />
+            <TextBlock Text="Good runs are tracked for digests only." Margin="0,0,0,10" Opacity="0.7" TextWrapping="Wrap"
+                       Visibility="{Binding PerRunSendProblemsOnlyHintVisible}" />
+
             <Grid Margin="0,0,0,10" ToolTip="Attach the V-curve PNG to each per-run Discord post. Respects graph overlay settings above.">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -478,7 +495,7 @@
 
             <TextBlock Text="How it works" FontSize="16" FontWeight="Bold" Margin="0,12,0,8" />
             <TextBlock TextWrapping="Wrap" Margin="0,0,0,8" Opacity="0.85" MaxWidth="960"
-                       Text="When N.I.N.A. writes a new autofocus report, the plugin renders a V-curve graph (optional analysis hints) and posts per-run reports, sequence digests, and session digests to every enabled destination (Discord, Telegram, Slack, email). Use Preview sample on this tab to try CN-style curve shapes before a live run." />
+                       Text="When N.I.N.A. writes a new autofocus report, the plugin renders a V-curve graph (optional analysis hints) and posts per-run reports, sequence digests, and session digests to every enabled destination (Discord, Telegram, Slack, email). Use Per-run send to throttle good runs or post problems only. Use Preview sample on this tab to try CN-style curve shapes before a live run." />
             <Image Source="pack://application:,,,/AutoFocusGraphs;component/assets/flowchart.png"
                    Stretch="Uniform" MaxWidth="960" Margin="0,0,0,8"
                    RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" ToolTip="AutoFocusGraphs pipeline" />

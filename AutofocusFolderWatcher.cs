@@ -41,6 +41,7 @@ namespace AutoFocusGraphs {
             var folder = AutoFocusFolder;
             Directory.CreateDirectory(folder);
 
+            PerRunSendGate.ResetSession();
             cts = new CancellationTokenSource();
             watcher = new FileSystemWatcher(folder) {
                 Filter = "*.json",
@@ -193,6 +194,11 @@ namespace AutoFocusGraphs {
                 return;
             }
 
+            if (!PerRunSendGate.ShouldPost(quality, options.PerRunSendMode, options.PerRunSendEveryN, out var skipReason)) {
+                Logger.Info($"AutoFocusGraphs: skipping per-run post ({skipReason}) ({info.Name})");
+                return;
+            }
+
             SequenceRunPostTracker.BeginPost();
             try {
                 var delaySeconds = Math.Max(0, Math.Min(options.UploadDelaySeconds, 60));
@@ -328,6 +334,8 @@ namespace AutoFocusGraphs {
         public string MessageTemplate { get; init; }
         public bool AttachJson { get; init; }
         public bool PostPerRun { get; init; }
+        public string PerRunSendMode { get; init; }
+        public int PerRunSendEveryN { get; init; }
         public bool IncludePerRunGraph { get; init; }
         public bool QualityGateEnabled { get; init; }
         public double MinR2 { get; init; }
@@ -376,6 +384,8 @@ namespace AutoFocusGraphs {
                 MessageTemplate = Settings.Default.MessageTemplate,
                 AttachJson = Settings.Default.AttachJson,
                 PostPerRun = Settings.Default.PostPerRun,
+                PerRunSendMode = Settings.Default.PerRunSendMode,
+                PerRunSendEveryN = Settings.Default.PerRunSendEveryN,
                 IncludePerRunGraph = Settings.Default.IncludePerRunGraph,
                 QualityGateEnabled = Settings.Default.QualityGateEnabled,
                 MinR2 = Settings.Default.MinR2,

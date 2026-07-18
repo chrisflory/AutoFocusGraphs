@@ -198,6 +198,11 @@ namespace AutoFocusGraphs {
         public string[] GraphPreviewSampleOptions { get; } =
             GraphPreviewService.AllSampleKeys.ToArray();
         public string[] AttachModeOptions { get; } = { "Both", "GraphOnly", "EmbedOnly" };
+        public string[] PerRunSendModeOptions { get; } = {
+            PerRunSendGate.DisplayEveryRun,
+            PerRunSendGate.DisplayEveryNth,
+            PerRunSendGate.DisplayProblemsOnly
+        };
 
         public Visibility WebhookTestSuccessVisible =>
             webhookTestResult == true ? Visibility.Visible : Visibility.Collapsed;
@@ -658,8 +663,45 @@ namespace AutoFocusGraphs {
                 Save();
                 RaisePropertyChanged();
                 RaisePropertyChanged(nameof(StatusText));
+                RaisePropertyChanged(nameof(PerRunSendControlsEnabled));
+                RaisePropertyChanged(nameof(PerRunSendEveryNVisible));
+                RaisePropertyChanged(nameof(PerRunSendProblemsOnlyHintVisible));
             }
         }
+
+        public string PerRunSendMode {
+            get => PerRunSendGate.ToDisplay(Settings.Default.PerRunSendMode);
+            set {
+                Settings.Default.PerRunSendMode = PerRunSendGate.NormalizeMode(value);
+                Save();
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(StatusText));
+                RaisePropertyChanged(nameof(PerRunSendEveryNVisible));
+                RaisePropertyChanged(nameof(PerRunSendProblemsOnlyHintVisible));
+            }
+        }
+
+        public int PerRunSendEveryN {
+            get => PerRunSendGate.ClampEveryN(Settings.Default.PerRunSendEveryN);
+            set {
+                Settings.Default.PerRunSendEveryN = PerRunSendGate.ClampEveryN(value);
+                Save();
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(StatusText));
+            }
+        }
+
+        public bool PerRunSendControlsEnabled => PostPerRun;
+
+        public Visibility PerRunSendEveryNVisible =>
+            PostPerRun && PerRunSendGate.NormalizeMode(Settings.Default.PerRunSendMode) == PerRunSendGate.ModeEveryNth
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
+        public Visibility PerRunSendProblemsOnlyHintVisible =>
+            PostPerRun && PerRunSendGate.NormalizeMode(Settings.Default.PerRunSendMode) == PerRunSendGate.ModeProblemsOnly
+                ? Visibility.Visible
+                : Visibility.Collapsed;
 
         public bool IncludePerRunGraph {
             get => Settings.Default.IncludePerRunGraph;
@@ -1197,7 +1239,11 @@ namespace AutoFocusGraphs {
                     ? "digest-only"
                     : !PostPerRun
                         ? "collecting only"
-                        : "watching";
+                        : PerRunSendGate.NormalizeMode(Settings.Default.PerRunSendMode) switch {
+                            PerRunSendGate.ModeProblemsOnly => "watching (problems only)",
+                            PerRunSendGate.ModeEveryNth => $"watching (every {PerRunSendEveryN})",
+                            _ => "watching"
+                        };
                 var seqCount = ReportStore.Instance.SequenceReports.Count;
                 var sessionCount = ReportStore.Instance.SessionReports.Count;
                 var destinations = string.Join(" + ", AutofocusDestinationRouter.GetActiveDestinations().Select(d => d.Name));
@@ -1233,7 +1279,8 @@ namespace AutoFocusGraphs {
                 propertyName == nameof(EmailUsername) || propertyName == nameof(EmailPassword) ||
                 propertyName == nameof(EmailFrom) || propertyName == nameof(EmailTo) ||
                 propertyName == nameof(EmailSubjectTemplate) ||
-                propertyName == nameof(PostPerRun) || propertyName == nameof(PostDigestOnShutdown) ||
+                propertyName == nameof(PostPerRun) || propertyName == nameof(PerRunSendMode) ||
+                propertyName == nameof(PerRunSendEveryN) || propertyName == nameof(PostDigestOnShutdown) ||
                 propertyName == nameof(PostDigestOnSequenceEnd)) {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(StatusText)));
             }

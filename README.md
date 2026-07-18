@@ -58,6 +58,8 @@ Digests include stats (min/avg/max HFR, best/worst, warnings, by-filter breakdow
 
 **Digest-only mode:** turn off **Post each autofocus run**, enable **Post digest when sequencer sequence completes** and/or **Post session digest when NINA exits** — runs are collected locally and only the digest(s) are posted.
 
+**Per-run send** (when per-run posts are on): post every AF, every Nth successful run, or only quality warnings/failures. Digests still include skipped runs.
+
 Message template tokens (per-run posts): `{shortfilename}`, `{filename}`, `{filenamefull}`, `{time}`, `{filter}`, `{prefix}`. On Discord, the full filename always appears in the embed footer.
 
 Per-run history in NINA is left to NINA's own HFR history; this plugin focuses on outbound notifications.
@@ -179,6 +181,7 @@ Examples of patterns the analyzer can surface:
 | **Post when autofocus ends without a JSON report** | Live hook for cancelled or failed autofocus runs |
 | **Post failures / unreadable reports** | Alert when a report file exists but cannot be parsed |
 | **Post each autofocus run** | Per-run posts on/off (off = digest-only mode) |
+| **Per-run send** | When per-run posts are on: **Every run**, **Every Nth run** (N = 2–50; warnings/failures always send), or **Problems only** |
 | **Include V-curve graph on each run** | Attach the PNG to each per-run post |
 | **Attach JSON** | Attach the raw AutoFocus JSON file to each per-run post |
 | **Graph analysis hints / Conservative hints** | Optional V-curve observations on live graphs and preview; conservative (default) = facts and patterns only |

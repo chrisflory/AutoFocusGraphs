@@ -23,6 +23,12 @@
     <Setting Name="PostPerRun" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="PerRunSendMode" Type="System.String" Scope="User">
+      <Value Profile="(Default)">EveryRun</Value>
+    </Setting>
+    <Setting Name="PerRunSendEveryN" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">5</Value>
+    </Setting>
     <Setting Name="IncludePerRunGraph" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>

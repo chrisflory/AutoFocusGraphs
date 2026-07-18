@@ -68,6 +68,22 @@ namespace AutoFocusGraphs.Properties {
 
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("EveryRun")]
+        public string PerRunSendMode {
+            get { return ((string)(this["PerRunSendMode"])); }
+            set { this["PerRunSendMode"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public int PerRunSendEveryN {
+            get { return ((int)(this["PerRunSendEveryN"])); }
+            set { this["PerRunSendEveryN"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool IncludePerRunGraph {
             get { return ((bool)(this["IncludePerRunGraph"])); }
