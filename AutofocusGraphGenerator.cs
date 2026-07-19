@@ -9,6 +9,17 @@ namespace AutoFocusGraphs {
     /// Builds a dark-mode autofocus V-curve PNG (replaces the matplotlib Discord bot graph).
     /// </summary>
     internal static class AutofocusGraphGenerator {
+        /// <summary>Logical (1×) size for V-curve exports; pixels = logical × <see cref="ExportRenderScale"/>.</summary>
+        public const int LogicalGraphWidth = 1200;
+        public const int LogicalGraphHeight = 720;
+
+        /// <summary>Logical (1×) size for digest trend / focus-drift charts.</summary>
+        public const int LogicalDigestWidth = 1200;
+        public const int LogicalDigestHeight = 640;
+
+        /// <summary>HiDPI multiplier for posted/exported PNGs (fonts/lines via <see cref="Plot.ScaleFactor"/>).</summary>
+        public const double ExportRenderScale = 2.0;
+
         public static byte[] CreatePng(
             AutofocusReport report,
             bool showHyperbolicFit = true,
@@ -30,8 +41,14 @@ namespace AutoFocusGraphs {
             double hintMinR2 = 0.90,
             double hintMaxFinalHfr = 3.0,
             bool showCompareToLastCurve = false,
-            int pixelWidth = 1200,
-            int pixelHeight = 720) {
+            int pixelWidth = 0,
+            int pixelHeight = 0) {
+            if (pixelWidth <= 0) {
+                pixelWidth = (int)Math.Round(LogicalGraphWidth * ExportRenderScale);
+            }
+            if (pixelHeight <= 0) {
+                pixelHeight = (int)Math.Round(LogicalGraphHeight * ExportRenderScale);
+            }
             var positions = report.MeasurePoints.Select(p => p.Position).ToArray();
             var values = report.MeasurePoints.Select(p => p.Value).ToArray();
             var errors = report.MeasurePoints.Select(p => p.Error).ToArray();
@@ -255,7 +272,24 @@ namespace AutoFocusGraphs {
                     showInitialFocusMarker);
             }
 
+            ApplyRenderScale(plot, pixelWidth, LogicalGraphWidth);
             return plot.GetImageBytes(pixelWidth, pixelHeight, ImageFormat.Png);
+        }
+
+        /// <summary>
+        /// Match ScottPlot ScaleFactor to pixel/logical width so HiDPI exports stay sharp without tiny fonts.
+        /// </summary>
+        private static void ApplyRenderScale(Plot plot, int pixelWidth, int logicalWidth) {
+            if (logicalWidth <= 0 || pixelWidth <= 0) {
+                return;
+            }
+
+            var scale = pixelWidth / (double)logicalWidth;
+            if (scale < 1.0) {
+                scale = 1.0;
+            }
+
+            plot.ScaleFactor = scale;
         }
 
         private static void AddFocusAndStartMarkers(
@@ -541,7 +575,10 @@ namespace AutoFocusGraphs {
             plot.Legend.ShadowColor = Colors.Transparent;
             plot.Grid.MajorLineColor = Color.FromHex("#555555");
 
-            return plot.GetImageBytes(1200, 640, ImageFormat.Png);
+            var width = (int)Math.Round(LogicalDigestWidth * ExportRenderScale);
+            var height = (int)Math.Round(LogicalDigestHeight * ExportRenderScale);
+            ApplyRenderScale(plot, width, LogicalDigestWidth);
+            return plot.GetImageBytes(width, height, ImageFormat.Png);
         }
 
         /// <summary>
@@ -684,7 +721,10 @@ namespace AutoFocusGraphs {
             plot.Legend.ShadowColor = Colors.Transparent;
             plot.Grid.MajorLineColor = Color.FromHex("#555555");
 
-            return plot.GetImageBytes(1200, 640, ImageFormat.Png);
+            var width = (int)Math.Round(LogicalDigestWidth * ExportRenderScale);
+            var height = (int)Math.Round(LogicalDigestHeight * ExportRenderScale);
+            ApplyRenderScale(plot, width, LogicalDigestWidth);
+            return plot.GetImageBytes(width, height, ImageFormat.Png);
         }
 
         private static bool TryFitLinear(double[] xs, double[] ys, out double slope, out double intercept) {

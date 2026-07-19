@@ -483,8 +483,13 @@
             </Grid>
             <TextBlock Text="Example focus drift chart (position vs temperature) included with digests when the toggle above is on."
                        Margin="0,0,0,4" Opacity="0.7" FontSize="12" TextWrapping="Wrap" MaxWidth="960"
+                       HorizontalAlignment="Left"
                        Visibility="{Binding DriftChartPreviewVisible}" />
             <StackPanel Orientation="Horizontal" Margin="0,0,0,8" Visibility="{Binding DriftChartPreviewVisible}">
+                <Button Content="All overlays on" Command="{Binding DriftOverlaysAllOnCommand}" Padding="10,4" Margin="0,0,8,0"
+                        ToolTip="Enable every focus-drift overlay (summary, labels, trend line)." />
+                <Button Content="All overlays off" Command="{Binding DriftOverlaysAllOffCommand}" Padding="10,4" Margin="0,0,8,0"
+                        ToolTip="Bare drift chart — position and temperature series only." />
                 <Button Content="Expand preview" Command="{Binding ExpandDriftPreviewCommand}" Padding="10,4"
                         ToolTip="Open a larger focus-drift preview that updates as you toggle overlays." />
             </StackPanel>

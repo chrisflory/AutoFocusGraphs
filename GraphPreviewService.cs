@@ -100,9 +100,9 @@ namespace AutoFocusGraphs {
 
 
 
-        private const int LogicalPreviewWidth = 1200;
+        private const int LogicalPreviewWidth = AutofocusGraphGenerator.LogicalGraphWidth;
 
-        private const int LogicalPreviewHeight = 720;
+        private const int LogicalPreviewHeight = AutofocusGraphGenerator.LogicalGraphHeight;
 
         private const double MaxDpiScale = 2.5;
 

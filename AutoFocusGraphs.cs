@@ -127,6 +127,8 @@ namespace AutoFocusGraphs {
             ExportNightPackCommand = new RelayCommand(async _ => await ExportNightPackAsync());
             GraphOverlaysAllOnCommand = new RelayCommand(_ => SetAllGraphOverlays(allOn: true));
             GraphOverlaysAllOffCommand = new RelayCommand(_ => SetAllGraphOverlays(allOn: false));
+            DriftOverlaysAllOnCommand = new RelayCommand(_ => SetAllDriftOverlays(allOn: true));
+            DriftOverlaysAllOffCommand = new RelayCommand(_ => SetAllDriftOverlays(allOn: false));
             ExpandGraphPreviewCommand = new RelayCommand(_ => ShowExpandedGraphPreview());
             ExpandDriftPreviewCommand = new RelayCommand(_ => ShowExpandedDriftPreview());
             ExpandFlowchartCommand = new RelayCommand(_ => ShowExpandedFlowchart());
@@ -163,7 +165,6 @@ namespace AutoFocusGraphs {
         public ICommand TestWebhookCommand { get; }
         public ICommand TestTelegramCommand { get; }
         public ICommand TestSlackCommand { get; }
-
         public async Task TestEmailAsync() {
             if (emailTestInProgress) {
                 return;
@@ -198,6 +199,8 @@ namespace AutoFocusGraphs {
         public ICommand ExportNightPackCommand { get; }
         public ICommand GraphOverlaysAllOnCommand { get; }
         public ICommand GraphOverlaysAllOffCommand { get; }
+        public ICommand DriftOverlaysAllOnCommand { get; }
+        public ICommand DriftOverlaysAllOffCommand { get; }
         public ICommand ExpandGraphPreviewCommand { get; }
         public ICommand ExpandDriftPreviewCommand { get; }
         public ICommand ExpandFlowchartCommand { get; }
@@ -1366,6 +1369,26 @@ namespace AutoFocusGraphs {
             }
 
             ScheduleGraphPreviewRefresh();
+        }
+
+        private void SetAllDriftOverlays(bool allOn) {
+            Settings.Default.ShowDriftSummaryStrip = allOn;
+            Settings.Default.ShowDriftPointLabels = allOn;
+            Settings.Default.ShowDriftFilterLabels = allOn;
+            Settings.Default.ShowDriftHfrLabels = allOn;
+            Settings.Default.ShowDriftTrendLine = allOn;
+            Save();
+
+            suppressGraphPreviewRefresh = true;
+            try {
+                foreach (var name in DriftChartPreviewPropertyNames) {
+                    RaisePropertyChanged(name);
+                }
+            } finally {
+                suppressGraphPreviewRefresh = false;
+            }
+
+            ScheduleDriftChartPreviewRefresh();
         }
 
         private void ShowExpandedGraphPreview() {
