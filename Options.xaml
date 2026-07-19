@@ -50,7 +50,7 @@
             <TextBlock Text="Preview sample" Margin="0,0,0,4" Opacity="0.7" FontSize="12" />
             <ComboBox ItemsSource="{Binding GraphPreviewSampleOptions}" SelectedItem="{Binding GraphPreviewSample}"
                       Width="320" HorizontalAlignment="Left" Margin="0,0,0,8"
-                      ToolTip="Synthetic V-curves from common CN / NINA forum patterns (14 samples). Examples: Step too large = coarse steep V (~4× wing HFR); Zigzag / Flat approach wing / Outer measurement cliff / Flat scan. Enable Graph analysis hints to see which rules fire vs Normal." />
+                      ToolTip="Synthetic curves from CN / NINA patterns, plus Focus drift radar (digest-style position vs temperature chart). Enable Graph analysis hints on V-curve samples to compare rules." />
             <Border Background="#36393F" CornerRadius="4" Margin="0,0,0,8" Padding="6" HorizontalAlignment="Left" MaxWidth="960"
                     SnapsToDevicePixels="True" UseLayoutRounding="True">
                 <Image Source="{Binding GraphPreviewImage}" Stretch="Uniform" MaxHeight="540" MaxWidth="960"

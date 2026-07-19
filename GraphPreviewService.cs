@@ -56,6 +56,8 @@ namespace AutoFocusGraphs {
 
         public const string SampleFlatCurve = "Flat scan (seeing)";
 
+        public const string SampleFocusDrift = "Focus drift radar";
+
 
 
         private static readonly IReadOnlyList<(string Key, string ResourceSuffix)> SampleCatalog = new[] {
@@ -94,7 +96,7 @@ namespace AutoFocusGraphs {
 
         public static IReadOnlyList<string> AllSampleKeys { get; } =
 
-            SampleCatalog.Select(s => s.Key).ToList();
+            SampleCatalog.Select(s => s.Key).Append(SampleFocusDrift).ToList();
 
 
 
@@ -145,6 +147,22 @@ namespace AutoFocusGraphs {
             var width = (int)Math.Round(LogicalPreviewWidth * scale);
 
             var height = (int)Math.Round(LogicalPreviewHeight * scale);
+
+            var sampleKey = Settings.Default.GraphPreviewSample ?? SampleNormal;
+
+            if (string.Equals(sampleKey, SampleFocusDrift, StringComparison.Ordinal)) {
+
+                var driftPng = AutofocusGraphGenerator.CreateDriftPng(BuildFocusDriftPreviewReports(), maxRuns: 20);
+
+                if (driftPng == null || driftPng.Length == 0) {
+
+                    throw new InvalidOperationException("Focus drift preview chart could not be rendered.");
+
+                }
+
+                return driftPng;
+
+            }
 
             var settings = Settings.Default;
 
@@ -319,6 +337,72 @@ namespace AutoFocusGraphs {
             using var reader = new StreamReader(stream);
 
             return reader.ReadToEnd();
+
+        }
+
+
+
+        /// <summary>
+        /// Synthetic session runs with clear focus chase vs cooling — used only by the preview dropdown.
+        /// </summary>
+        private static IReadOnlyList<AutofocusReport> BuildFocusDriftPreviewReports() {
+
+            // Temp drops ~4°C while focus climbs ~280 steps (~70 steps/°C → "large drift" territory).
+            var points = new (string Stamp, double Pos, double Temp, double Hfr)[] {
+
+                ("2026-07-18--21-00-00", 11200, 14.5, 1.72),
+
+                ("2026-07-18--21-30-00", 11240, 13.8, 1.70),
+
+                ("2026-07-18--22-00-00", 11285, 13.1, 1.68),
+
+                ("2026-07-18--22-30-00", 11330, 12.4, 1.69),
+
+                ("2026-07-18--23-00-00", 11380, 11.8, 1.71),
+
+                ("2026-07-18--23-30-00", 11425, 11.2, 1.73),
+
+                ("2026-07-19--00-00-00", 11470, 10.7, 1.74),
+
+                ("2026-07-19--00-30-00", 11480, 10.5, 1.72),
+
+            };
+
+
+
+            var reports = new List<AutofocusReport>(points.Length);
+
+            for (var i = 0; i < points.Length; i++) {
+
+                var p = points[i];
+
+                var local = DateTime.ParseExact(p.Stamp, "yyyy-MM-dd--HH-mm-ss", System.Globalization.CultureInfo.InvariantCulture);
+
+                reports.Add(new AutofocusReport {
+
+                    FileName = $"preview-drift-{i + 1:00}.json",
+
+                    Filter = "L",
+
+                    FinalHfr = p.Hfr,
+
+                    Temperature = p.Temp,
+
+                    CalculatedPosition = p.Pos,
+
+                    FormattedTimestamp = p.Stamp,
+
+                    CapturedUtc = DateTime.SpecifyKind(local, DateTimeKind.Local).ToUniversalTime(),
+
+                    MeasurePoints = Array.Empty<AutofocusReport.MeasurePoint>(),
+
+                });
+
+            }
+
+
+
+            return reports;
 
         }
 
