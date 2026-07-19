@@ -49,6 +49,7 @@ namespace AutoFocusGraphs {
         private bool suppressGraphPreviewRefresh;
         private GraphPreviewWindow expandedGraphPreviewWindow;
         private GraphPreviewWindow expandedDriftPreviewWindow;
+        private GraphPreviewWindow expandedFlowchartWindow;
         private double graphPreviewDpiScale = 1.0;
 
         private static readonly string[] GraphOverlayPropertyNames = {
@@ -128,6 +129,7 @@ namespace AutoFocusGraphs {
             GraphOverlaysAllOffCommand = new RelayCommand(_ => SetAllGraphOverlays(allOn: false));
             ExpandGraphPreviewCommand = new RelayCommand(_ => ShowExpandedGraphPreview());
             ExpandDriftPreviewCommand = new RelayCommand(_ => ShowExpandedDriftPreview());
+            ExpandFlowchartCommand = new RelayCommand(_ => ShowExpandedFlowchart());
             AddFilterProfileCommand = new RelayCommand(_ => AddFilterProfile());
             RemoveFilterProfileCommand = new RelayCommand(p => RemoveFilterProfile(p as FilterProfileRow));
             LoadFilterProfileRows();
@@ -198,6 +200,7 @@ namespace AutoFocusGraphs {
         public ICommand GraphOverlaysAllOffCommand { get; }
         public ICommand ExpandGraphPreviewCommand { get; }
         public ICommand ExpandDriftPreviewCommand { get; }
+        public ICommand ExpandFlowchartCommand { get; }
         public ICommand AddFilterProfileCommand { get; }
         public ICommand RemoveFilterProfileCommand { get; }
 
@@ -1402,6 +1405,45 @@ namespace AutoFocusGraphs {
                 "AutoFocusGraphs — focus drift preview");
             expandedDriftPreviewWindow.Closed += (_, _) => expandedDriftPreviewWindow = null;
             expandedDriftPreviewWindow.Show();
+        }
+
+        private void ShowExpandedFlowchart() {
+            var image = LoadFlowchartImage();
+            if (image == null) {
+                Logger.Warning("AutoFocusGraphs: flowchart image could not be loaded.");
+                return;
+            }
+
+            if (expandedFlowchartWindow != null) {
+                expandedFlowchartWindow.UpdateImage(image);
+                expandedFlowchartWindow.Activate();
+                return;
+            }
+
+            expandedFlowchartWindow = new GraphPreviewWindow(
+                image,
+                "AutoFocusGraphs — pipeline flowchart",
+                enableZoom: true);
+            expandedFlowchartWindow.Closed += (_, _) => expandedFlowchartWindow = null;
+            expandedFlowchartWindow.Show();
+        }
+
+        private static ImageSource LoadFlowchartImage() {
+            try {
+                var uri = new Uri(
+                    "pack://application:,,,/AutoFocusGraphs;component/assets/flowchart.png",
+                    UriKind.Absolute);
+                var bitmap = new System.Windows.Media.Imaging.BitmapImage();
+                bitmap.BeginInit();
+                bitmap.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+                bitmap.UriSource = uri;
+                bitmap.EndInit();
+                bitmap.Freeze();
+                return bitmap;
+            } catch (Exception ex) {
+                Logger.Warning($"AutoFocusGraphs: flowchart load failed: {ex.Message}");
+                return null;
+            }
         }
 
         public bool NotifyOnQualityWarning {

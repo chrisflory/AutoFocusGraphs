@@ -8,9 +8,9 @@ A N.I.N.A. plugin that watches the AutoFocus report folder, renders a **dark-mod
 
 ## How it works
 
-![AutoFocusGraphs pipeline](assets/flowchart.png)
+[![AutoFocusGraphs pipeline](assets/flowchart.png)](assets/flowchart.png)
 
-Color key: **blue** = NINA trigger · **green** = sequence digest / destination post · **purple** = session digest · **red** = failure posts · **amber** = quality gate · **cyan** = V-curve graph.
+*Click the diagram to open full size.* Color key: **blue** = NINA trigger · **green** = sequence digest / destination post · **purple** = session digest · **blue outline** = AF night pack · **red** = failure posts · **amber** = quality gate · **cyan** = V-curve graph.
 
 1. **NINA writes AF JSON** — Hocus Focus / built-in autofocus saves a report under `%localappdata%\NINA\AutoFocus`.
 2. **Folder watcher** — detects new `*.json` files in that folder.

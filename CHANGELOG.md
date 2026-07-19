@@ -8,7 +8,7 @@
 - **Quiet hours**: suppress successful per-run posts in a local time window (default 22:00–07:00); warnings, failures, and digests still send
 - **Focus drift radar** sample chart under **Include trend chart in session digest** on the Graph tab, with expand preview and toggles for summary strip, position/filter/HFR labels, and position trend line
 - **Export AF night pack** — zip session V-curve PNGs, runs.csv, trend/drift charts, README, and original AF JSON for forums/support
-- Pipeline flowchart updated with **AF night pack** branch (Graph tab + README)
+- Pipeline flowchart updated with **AF night pack** branch (Graph tab + README); expand / click-to-zoom on the Graph tab, click-to-enlarge on GitHub
 
 ## 0.1.0.1 — 2026-07-09
 

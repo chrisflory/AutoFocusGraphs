@@ -1,6 +1,7 @@
 using System.ComponentModel.Composition;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace AutoFocusGraphs {
     [Export(typeof(ResourceDictionary))]
@@ -18,6 +19,14 @@ namespace AutoFocusGraphs {
                 plugin.ScheduleGraphPreviewRefresh();
                 plugin.EnsureDriftChartPreview();
                 plugin.ScheduleDriftChartPreviewRefresh();
+            }
+        }
+
+        private void FlowchartImage_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+            if (sender is FrameworkElement element && element.DataContext is AutoFocusGraphsPlugin plugin) {
+                if (plugin.ExpandFlowchartCommand?.CanExecute(null) == true) {
+                    plugin.ExpandFlowchartCommand.Execute(null);
+                }
             }
         }
 
