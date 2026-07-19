@@ -231,7 +231,7 @@
                 <CheckBox Grid.Column="1" IsChecked="{Binding ConservativeGraphHints}" IsEnabled="{Binding ShowGraphAnalysisHints}" VerticalAlignment="Center" />
             </Grid>
 
-            <TextBlock Text="Quality &amp; posting" FontSize="16" FontWeight="Bold" Margin="0,16,0,10" />
+            <TextBlock Text="Quality" FontSize="16" FontWeight="Bold" Margin="0,16,0,10" />
 
             <Grid Margin="0,0,0,10" ToolTip="Evaluate hyperbolic R² and final HFR against thresholds; flagged runs show a warning in the Discord embed.">
                 <Grid.ColumnDefinitions>
@@ -264,23 +264,6 @@
                     <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
                 </Grid>
                 <CheckBox Grid.Column="1" IsChecked="{Binding NotifyOnQualityWarning}" VerticalAlignment="Center" />
-            </Grid>
-
-            <Grid Margin="0,0,0,10" ToolTip="Hooks NINA autofocus lifecycle events. Posts a failure embed when a run ends but no AutoFocus JSON appears on disk (cancelled, timed out, or failed early).">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="Post when autofocus ends without a JSON report" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
-                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
-                </Grid>
-                <CheckBox Grid.Column="1" IsChecked="{Binding PostLiveAfFailures}" VerticalAlignment="Center" />
             </Grid>
 
             <TextBlock Text="Minimum hyperbolic R²" Margin="0,0,0,4" />
@@ -343,6 +326,25 @@
                 Padding="12,4"
                 Margin="0,0,0,12" />
 
+            <TextBlock Text="Posting" FontSize="16" FontWeight="Bold" Margin="0,12,0,10" />
+
+            <Grid Margin="0,0,0,10" ToolTip="Hooks NINA autofocus lifecycle events. Posts a failure embed when a run ends but no AutoFocus JSON appears on disk (cancelled, timed out, or failed early).">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Post when autofocus ends without a JSON report" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding PostLiveAfFailures}" VerticalAlignment="Center" />
+            </Grid>
+
             <Grid Margin="0,0,0,10" ToolTip="Post to enabled destinations when a report file exists but cannot be parsed or has no measure points.">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -359,8 +361,6 @@
                 </Grid>
                 <CheckBox Grid.Column="1" IsChecked="{Binding PostFailures}" VerticalAlignment="Center" />
             </Grid>
-
-            <TextBlock Text="What to post" FontSize="16" FontWeight="Bold" Margin="0,12,0,10" />
 
             <Grid Margin="0,0,0,10" ToolTip="Post each autofocus run to enabled destinations as it completes. Turn off for digest-only mode — runs are still tracked locally for session summaries.">
                 <Grid.ColumnDefinitions>
@@ -430,6 +430,38 @@
                 </Grid>
                 <CheckBox Grid.Column="1" IsChecked="{Binding AttachJson}" VerticalAlignment="Center" />
             </Grid>
+
+            <Grid Margin="0,0,0,10" ToolTip="During quiet hours, successful per-run posts are skipped. Warnings, failures, and digests still send to all enabled destinations.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Quiet hours" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding QuietHoursEnabled}" VerticalAlignment="Center" />
+            </Grid>
+            <TextBlock Text="Quiet hours start (local HH:mm)" Margin="0,0,0,4" Opacity="0.7" FontSize="12" />
+            <TextBox Text="{Binding QuietHoursStart, UpdateSourceTrigger=PropertyChanged}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,8"
+                     IsEnabled="{Binding QuietHoursEnabled}"
+                     ToolTip="Local start time. Window may wrap midnight (e.g. 22:00 → 07:00)." />
+            <TextBlock Text="Quiet hours end (local HH:mm)" Margin="0,0,0,4" Opacity="0.7" FontSize="12" />
+            <TextBox Text="{Binding QuietHoursEnd, UpdateSourceTrigger=PropertyChanged}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,12"
+                     IsEnabled="{Binding QuietHoursEnabled}"
+                     ToolTip="Local end time. Successful per-run posts resume after this time." />
+            <Rectangle Style="{StaticResource OptionsSettingSeparator}" />
+            <TextBlock Text="Upload delay (seconds)" Margin="0,0,0,4" />
+            <TextBox Text="{Binding UploadDelaySeconds}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,12" />
+            <Rectangle Style="{StaticResource OptionsSettingSeparator}" />
+            <TextBlock Text="Message template" Margin="0,0,0,4" />
+            <TextBox Text="{Binding MessageTemplate, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource OptionsSettingField}" />
+            <TextBlock Text="Tokens: {shortfilename} (one line), {filename} (truncated), {filenamefull}, {time}, {filter}, {prefix}. Full filename is always in the embed footer; hover works on the JSON attachment if enabled." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" MaxWidth="640" HorizontalAlignment="Left" />
 
             <TextBlock Text="Session digest" FontSize="16" FontWeight="Bold" Margin="0,12,0,10" />
 
@@ -554,38 +586,6 @@
             <TextBlock Text="Includes stats (min/avg/max HFR, best/worst, warnings, by filter), full run list, HFR trend, and focus-drift chart when enough runs have temp+position. Session digest covers only runs since NINA opened. Night pack exports the same session report set to a local zip." Margin="0,0,0,4" TextWrapping="Wrap" Opacity="0.7" />
             <TextBlock Text="{Binding DigestStatus}" Margin="0,0,0,12" TextWrapping="Wrap" Opacity="0.8" />
 
-            <TextBlock Text="Posting" FontSize="16" FontWeight="Bold" Margin="0,12,0,10" />
-            <Grid Margin="0,0,0,10" ToolTip="During quiet hours, successful per-run posts are skipped. Warnings, failures, and digests still send to all enabled destinations.">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="Quiet hours" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
-                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
-                </Grid>
-                <CheckBox Grid.Column="1" IsChecked="{Binding QuietHoursEnabled}" VerticalAlignment="Center" />
-            </Grid>
-            <TextBlock Text="Quiet hours start (local HH:mm)" Margin="0,0,0,4" Opacity="0.7" FontSize="12" />
-            <TextBox Text="{Binding QuietHoursStart, UpdateSourceTrigger=PropertyChanged}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,8"
-                     IsEnabled="{Binding QuietHoursEnabled}"
-                     ToolTip="Local start time. Window may wrap midnight (e.g. 22:00 → 07:00)." />
-            <TextBlock Text="Quiet hours end (local HH:mm)" Margin="0,0,0,4" Opacity="0.7" FontSize="12" />
-            <TextBox Text="{Binding QuietHoursEnd, UpdateSourceTrigger=PropertyChanged}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,12"
-                     IsEnabled="{Binding QuietHoursEnabled}"
-                     ToolTip="Local end time. Successful per-run posts resume after this time." />
-            <Rectangle Style="{StaticResource OptionsSettingSeparator}" />
-            <TextBlock Text="Upload delay (seconds)" Margin="0,0,0,4" />
-            <TextBox Text="{Binding UploadDelaySeconds}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,12" />
-            <Rectangle Style="{StaticResource OptionsSettingSeparator}" />
-            <TextBlock Text="Message template" Margin="0,0,0,4" />
-            <TextBox Text="{Binding MessageTemplate, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource OptionsSettingField}" />
-            <TextBlock Text="Tokens: {shortfilename} (one line), {filename} (truncated), {filenamefull}, {time}, {filter}, {prefix}. Full filename is always in the embed footer; hover works on the JSON attachment if enabled." Margin="0,0,0,8" Opacity="0.7" TextWrapping="Wrap" MaxWidth="640" HorizontalAlignment="Left" />
             <Rectangle Style="{StaticResource OptionsSettingSeparator}" />
             <TextBlock Text="Watch folder" Margin="0,0,0,4" />
             <TextBox Text="{Binding WatchFolder, Mode=OneWay}" IsReadOnly="True" Style="{StaticResource OptionsSettingField}" Margin="0,0,0,16" />
