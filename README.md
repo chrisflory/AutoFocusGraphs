@@ -193,8 +193,9 @@ Examples of patterns the analyzer can surface:
 | **Graph analysis hints / Conservative hints** | Optional V-curve observations on live graphs and preview; conservative (default) = facts and patterns only |
 | **Post digest when sequencer sequence completes** | Sequence digest after the last per-run post (default on) |
 | **Post session digest when NINA exits** | Full-session digest on shutdown |
-| **Include trend chart in digests** | HFR trend PNG plus focus-drift chart (position vs temperature) when enough runs have both |
+| **Include trend chart in digests** | HFR trend PNG plus focus-drift chart (position vs temperature) when enough runs have both; optional drift overlays (summary strip, position/filter/HFR labels, trend line) with expand preview |
 | **Post sequence digest now** | Manual digest: current sequence first, then full session if the sequence is empty |
+| **Export AF night pack** | Zip of this session: V-curve PNGs, `runs.csv`, trend/drift charts, README, and original AF JSON (forums / support) |
 | **Upload delay / message template** | Timing and template tokens |
 | **Watch folder** | Read-only AutoFocus path |
 

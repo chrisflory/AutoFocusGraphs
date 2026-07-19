@@ -260,6 +260,46 @@ namespace AutoFocusGraphs.Properties {
 
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowDriftSummaryStrip {
+            get { return ((bool)(this["ShowDriftSummaryStrip"])); }
+            set { this["ShowDriftSummaryStrip"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowDriftPointLabels {
+            get { return ((bool)(this["ShowDriftPointLabels"])); }
+            set { this["ShowDriftPointLabels"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowDriftFilterLabels {
+            get { return ((bool)(this["ShowDriftFilterLabels"])); }
+            set { this["ShowDriftFilterLabels"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ShowDriftHfrLabels {
+            get { return ((bool)(this["ShowDriftHfrLabels"])); }
+            set { this["ShowDriftHfrLabels"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowDriftTrendLine {
+            get { return ((bool)(this["ShowDriftTrendLine"])); }
+            set { this["ShowDriftTrendLine"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool QuietHoursEnabled {
             get { return ((bool)(this["QuietHoursEnabled"])); }

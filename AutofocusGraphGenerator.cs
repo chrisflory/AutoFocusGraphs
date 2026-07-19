@@ -547,7 +547,14 @@ namespace AutoFocusGraphs {
         /// <summary>
         /// Focus position (left) and temperature (right) across recent runs. Returns null when &lt;3 usable points.
         /// </summary>
-        public static byte[] CreateDriftPng(IReadOnlyList<AutofocusReport> reports, int maxRuns = 20) {
+        public static byte[] CreateDriftPng(
+            IReadOnlyList<AutofocusReport> reports,
+            int maxRuns = 20,
+            bool showDriftSummaryStrip = true,
+            bool showDriftPointLabels = true,
+            bool showDriftFilterLabels = true,
+            bool showDriftHfrLabels = false,
+            bool showDriftTrendLine = true) {
             var usable = FocusDriftAnalyzer.SelectUsable(reports).ToList();
             if (usable.Count < 3) {
                 return null;
@@ -571,6 +578,18 @@ namespace AutoFocusGraphs {
             plot.FigureBackground.Color = Color.FromHex("#36393F");
             plot.DataBackground.Color = Color.FromHex("#36393F");
 
+            if (showDriftTrendLine && TryFitLinear(xs, positions, out var slope, out var intercept)) {
+                var fitXs = new[] { xs[0], xs[count - 1] };
+                var fitYs = new[] { slope * fitXs[0] + intercept, slope * fitXs[1] + intercept };
+                var trend = plot.Add.Scatter(fitXs, fitYs);
+                trend.Color = Color.FromHex("#1ABC9C");
+                trend.LineWidth = 2;
+                trend.LinePattern = LinePattern.Dashed;
+                trend.MarkerSize = 0;
+                trend.LegendText = "Pos trend";
+                trend.Axes.YAxis = plot.Axes.Left;
+            }
+
             var posSeries = plot.Add.Scatter(xs, positions);
             posSeries.Color = Color.FromHex("#2ECC71");
             posSeries.LineWidth = 3;
@@ -584,6 +603,35 @@ namespace AutoFocusGraphs {
             tempSeries.MarkerSize = 10;
             tempSeries.LegendText = "Temp °C";
             tempSeries.Axes.YAxis = plot.Axes.Right;
+
+            if (showDriftPointLabels || showDriftFilterLabels || showDriftHfrLabels) {
+                for (var i = 0; i < count; i++) {
+                    var parts = new List<string>();
+                    if (showDriftPointLabels) {
+                        parts.Add(((int)Math.Round(positions[i])).ToString(CultureInfo.InvariantCulture));
+                    }
+                    if (showDriftFilterLabels) {
+                        var filter = usable[i].Report.Filter;
+                        if (!string.IsNullOrWhiteSpace(filter) &&
+                            !string.Equals(filter, "N/A", StringComparison.OrdinalIgnoreCase)) {
+                            parts.Add(filter.Trim());
+                        }
+                    }
+                    if (showDriftHfrLabels) {
+                        parts.Add(usable[i].Report.FormatFinalHfr());
+                    }
+                    if (parts.Count == 0) {
+                        continue;
+                    }
+
+                    var label = plot.Add.Text(string.Join("\n", parts), xs[i], positions[i]);
+                    label.LabelFontColor = Color.FromHex("#DCDDDE");
+                    label.LabelFontSize = 11;
+                    label.LabelAlignment = Alignment.LowerCenter;
+                    label.OffsetY = -12;
+                    label.Axes.YAxis = plot.Axes.Left;
+                }
+            }
 
             var tickPositions = xs.ToArray();
             var tickLabels = xs.Select(x => ((int)x).ToString()).ToArray();
@@ -611,6 +659,23 @@ namespace AutoFocusGraphs {
             plot.Axes.Right.Label.ForeColor = Color.FromHex("#F1C40F");
             plot.Axes.Title.Label.ForeColor = Colors.White;
             plot.Axes.Title.Label.FontSize = 18;
+
+            if (showDriftSummaryStrip) {
+                var summary = FocusDriftAnalyzer.Summarize(usable.Select(u => u.Report).ToList());
+                if (summary != null && !string.IsNullOrWhiteSpace(summary.Text)) {
+                    var limits = plot.Axes.GetLimits();
+                    var annotation = plot.Add.Text(summary.Text, limits.Right, limits.Top);
+                    annotation.LabelFontColor = summary.IsLargeDrift
+                        ? Color.FromHex("#FAA61A")
+                        : Color.FromHex("#DCDDDE");
+                    annotation.LabelFontSize = 13;
+                    annotation.LabelAlignment = Alignment.UpperRight;
+                    annotation.OffsetX = -12;
+                    annotation.OffsetY = 12;
+                    annotation.Axes.YAxis = plot.Axes.Left;
+                }
+            }
+
             plot.ShowLegend(Edge.Bottom);
             plot.Legend.Orientation = Orientation.Horizontal;
             plot.Legend.FontColor = Colors.White;
@@ -620,6 +685,32 @@ namespace AutoFocusGraphs {
             plot.Grid.MajorLineColor = Color.FromHex("#555555");
 
             return plot.GetImageBytes(1200, 640, ImageFormat.Png);
+        }
+
+        private static bool TryFitLinear(double[] xs, double[] ys, out double slope, out double intercept) {
+            slope = 0;
+            intercept = 0;
+            if (xs == null || ys == null || xs.Length < 2 || xs.Length != ys.Length) {
+                return false;
+            }
+
+            var n = xs.Length;
+            double sumX = 0, sumY = 0, sumXy = 0, sumXx = 0;
+            for (var i = 0; i < n; i++) {
+                sumX += xs[i];
+                sumY += ys[i];
+                sumXy += xs[i] * ys[i];
+                sumXx += xs[i] * xs[i];
+            }
+
+            var denom = (n * sumXx) - (sumX * sumX);
+            if (Math.Abs(denom) < 1e-12) {
+                return false;
+            }
+
+            slope = ((n * sumXy) - (sumX * sumY)) / denom;
+            intercept = (sumY - (slope * sumX)) / n;
+            return true;
         }
 
         /// <summary>

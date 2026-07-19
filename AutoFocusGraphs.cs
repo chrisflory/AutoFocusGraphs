@@ -45,8 +45,10 @@ namespace AutoFocusGraphs {
         private ImageSource graphPreviewImage;
         private ImageSource driftChartPreviewImage;
         private CancellationTokenSource graphPreviewRefreshCts;
+        private CancellationTokenSource driftChartPreviewRefreshCts;
         private bool suppressGraphPreviewRefresh;
         private GraphPreviewWindow expandedGraphPreviewWindow;
+        private GraphPreviewWindow expandedDriftPreviewWindow;
         private double graphPreviewDpiScale = 1.0;
 
         private static readonly string[] GraphOverlayPropertyNames = {
@@ -87,6 +89,15 @@ namespace AutoFocusGraphs {
             nameof(GraphPreviewSample),
         };
 
+        private static readonly HashSet<string> DriftChartPreviewPropertyNames = new HashSet<string>(StringComparer.Ordinal) {
+            nameof(ShowDriftSummaryStrip),
+            nameof(ShowDriftPointLabels),
+            nameof(ShowDriftFilterLabels),
+            nameof(ShowDriftHfrLabels),
+            nameof(ShowDriftTrendLine),
+            nameof(DigestTrendMaxRuns),
+        };
+
         [ImportingConstructor]
         public AutoFocusGraphsPlugin(
             IProfileService profileService,
@@ -112,9 +123,11 @@ namespace AutoFocusGraphs {
             TestTelegramCommand = new RelayCommand(async _ => await TestDestinationAsync("Telegram"));
             TestSlackCommand = new RelayCommand(async _ => await TestDestinationAsync("Slack"));
             PostDigestNowCommand = new RelayCommand(async _ => await PostDigestNowAsync());
+            ExportNightPackCommand = new RelayCommand(async _ => await ExportNightPackAsync());
             GraphOverlaysAllOnCommand = new RelayCommand(_ => SetAllGraphOverlays(allOn: true));
             GraphOverlaysAllOffCommand = new RelayCommand(_ => SetAllGraphOverlays(allOn: false));
             ExpandGraphPreviewCommand = new RelayCommand(_ => ShowExpandedGraphPreview());
+            ExpandDriftPreviewCommand = new RelayCommand(_ => ShowExpandedDriftPreview());
             AddFilterProfileCommand = new RelayCommand(_ => AddFilterProfile());
             RemoveFilterProfileCommand = new RelayCommand(p => RemoveFilterProfile(p as FilterProfileRow));
             LoadFilterProfileRows();
@@ -180,9 +193,11 @@ namespace AutoFocusGraphs {
         }
 
         public ICommand PostDigestNowCommand { get; }
+        public ICommand ExportNightPackCommand { get; }
         public ICommand GraphOverlaysAllOnCommand { get; }
         public ICommand GraphOverlaysAllOffCommand { get; }
         public ICommand ExpandGraphPreviewCommand { get; }
+        public ICommand ExpandDriftPreviewCommand { get; }
         public ICommand AddFilterProfileCommand { get; }
         public ICommand RemoveFilterProfileCommand { get; }
 
@@ -397,6 +412,47 @@ namespace AutoFocusGraphs {
             }
         }
 
+        private async Task ExportNightPackAsync() {
+            try {
+                var reports = SessionDigestService.GetDigestReports();
+                if (reports == null || reports.Count == 0) {
+                    DigestStatus = "No autofocus reports found for a night pack.";
+                    return;
+                }
+
+                var dialog = new Microsoft.Win32.SaveFileDialog {
+                    Title = "Export AF night pack",
+                    Filter = "Zip archive (*.zip)|*.zip",
+                    FileName = AfNightPackExporter.SuggestFileName(),
+                    AddExtension = true,
+                    DefaultExt = ".zip",
+                    OverwritePrompt = true
+                };
+
+                if (dialog.ShowDialog() != true) {
+                    DigestStatus = "Night pack export cancelled.";
+                    return;
+                }
+
+                DigestStatus = $"Building night pack ({reports.Count} run(s))…";
+                var zipPath = dialog.FileName;
+                var result = await Task.Run(() => AfNightPackExporter.Export(zipPath, reports)).ConfigureAwait(true);
+                var extras = new List<string>();
+                if (result.HasTrend) {
+                    extras.Add("trend");
+                }
+                if (result.HasDrift) {
+                    extras.Add("drift");
+                }
+
+                var chartNote = extras.Count > 0 ? $" · charts: {string.Join("+", extras)}" : string.Empty;
+                DigestStatus =
+                    $"Night pack saved: {result.RunCount} run(s), {result.GraphCount} graph(s), {result.JsonCount} JSON → {result.ZipPath}{chartNote}";
+            } catch (Exception ex) {
+                DigestStatus = $"Night pack failed: {ex.Message}";
+                Logger.Error($"AutoFocusGraphs: night pack export failed: {ex.Message}");
+            }
+        }
 
         private void Save() => CoreUtil.SaveSettings(Settings.Default);
 
@@ -892,7 +948,7 @@ namespace AutoFocusGraphs {
                 RaisePropertyChanged();
                 RaisePropertyChanged(nameof(DriftChartPreviewVisible));
                 if (value) {
-                    EnsureDriftChartPreview();
+                    ScheduleDriftChartPreviewRefresh(immediate: true);
                 }
             }
         }
@@ -1009,6 +1065,51 @@ namespace AutoFocusGraphs {
             get => Settings.Default.ShowCompareToLastCurve;
             set {
                 Settings.Default.ShowCompareToLastCurve = value;
+                Save();
+                RaisePropertyChanged();
+            }
+        }
+
+        public bool ShowDriftSummaryStrip {
+            get => Settings.Default.ShowDriftSummaryStrip;
+            set {
+                Settings.Default.ShowDriftSummaryStrip = value;
+                Save();
+                RaisePropertyChanged();
+            }
+        }
+
+        public bool ShowDriftPointLabels {
+            get => Settings.Default.ShowDriftPointLabels;
+            set {
+                Settings.Default.ShowDriftPointLabels = value;
+                Save();
+                RaisePropertyChanged();
+            }
+        }
+
+        public bool ShowDriftFilterLabels {
+            get => Settings.Default.ShowDriftFilterLabels;
+            set {
+                Settings.Default.ShowDriftFilterLabels = value;
+                Save();
+                RaisePropertyChanged();
+            }
+        }
+
+        public bool ShowDriftHfrLabels {
+            get => Settings.Default.ShowDriftHfrLabels;
+            set {
+                Settings.Default.ShowDriftHfrLabels = value;
+                Save();
+                RaisePropertyChanged();
+            }
+        }
+
+        public bool ShowDriftTrendLine {
+            get => Settings.Default.ShowDriftTrendLine;
+            set {
+                Settings.Default.ShowDriftTrendLine = value;
                 Save();
                 RaisePropertyChanged();
             }
@@ -1136,16 +1237,55 @@ namespace AutoFocusGraphs {
             IncludeDigestTrendChart ? Visibility.Visible : Visibility.Collapsed;
 
         public void EnsureDriftChartPreview() {
-            try {
-                if (DriftChartPreviewImage == null) {
-                    var png = GraphPreviewService.RenderFocusDriftPreviewPng();
-                    DriftChartPreviewImage = GraphPreviewService.PngBytesToImageSource(png);
-                }
-            } catch (Exception ex) {
-                Logger.Warning($"AutoFocusGraphs: focus drift preview failed: {ex.Message}");
+            if (!IncludeDigestTrendChart) {
+                RaisePropertyChanged(nameof(DriftChartPreviewVisible));
+                return;
+            }
+
+            if (DriftChartPreviewImage == null) {
+                ScheduleDriftChartPreviewRefresh(immediate: true);
             }
 
             RaisePropertyChanged(nameof(DriftChartPreviewVisible));
+        }
+
+        public void ScheduleDriftChartPreviewRefresh(bool immediate = false) {
+            if (!IncludeDigestTrendChart) {
+                return;
+            }
+
+            driftChartPreviewRefreshCts?.Cancel();
+            driftChartPreviewRefreshCts?.Dispose();
+            driftChartPreviewRefreshCts = new CancellationTokenSource();
+            var token = driftChartPreviewRefreshCts.Token;
+            var delayMs = immediate ? 0 : 150;
+
+            Task.Run(async () => {
+                try {
+                    if (delayMs > 0) {
+                        await Task.Delay(delayMs, token).ConfigureAwait(false);
+                    }
+
+                    var png = GraphPreviewService.RenderFocusDriftPreviewPng();
+                    token.ThrowIfCancellationRequested();
+                    var image = GraphPreviewService.PngBytesToImageSource(png);
+                    var dispatcher = Application.Current?.Dispatcher;
+                    if (dispatcher == null) {
+                        return;
+                    }
+
+                    _ = dispatcher.BeginInvoke(new Action(() => {
+                        if (!token.IsCancellationRequested) {
+                            DriftChartPreviewImage = image;
+                            expandedDriftPreviewWindow?.UpdateImage(image);
+                        }
+                    }));
+                } catch (OperationCanceledException) {
+                    // superseded by a newer preview request
+                } catch (Exception ex) {
+                    Logger.Warning($"AutoFocusGraphs: focus drift preview failed: {ex.Message}");
+                }
+            }, token);
         }
 
         public void UpdateGraphPreviewDpiScale(Visual visual) {
@@ -1240,6 +1380,28 @@ namespace AutoFocusGraphs {
             expandedGraphPreviewWindow.Loaded += (_, _) => UpdateGraphPreviewDpiScale(expandedGraphPreviewWindow);
             expandedGraphPreviewWindow.Closed += (_, _) => expandedGraphPreviewWindow = null;
             expandedGraphPreviewWindow.Show();
+        }
+
+        private void ShowExpandedDriftPreview() {
+            if (!IncludeDigestTrendChart) {
+                return;
+            }
+
+            if (DriftChartPreviewImage == null) {
+                ScheduleDriftChartPreviewRefresh(immediate: true);
+            }
+
+            if (expandedDriftPreviewWindow != null) {
+                expandedDriftPreviewWindow.UpdateImage(DriftChartPreviewImage);
+                expandedDriftPreviewWindow.Activate();
+                return;
+            }
+
+            expandedDriftPreviewWindow = new GraphPreviewWindow(
+                DriftChartPreviewImage,
+                "AutoFocusGraphs — focus drift preview");
+            expandedDriftPreviewWindow.Closed += (_, _) => expandedDriftPreviewWindow = null;
+            expandedDriftPreviewWindow.Show();
         }
 
         public bool NotifyOnQualityWarning {
@@ -1343,6 +1505,11 @@ namespace AutoFocusGraphs {
                 propertyName != null &&
                 GraphPreviewPropertyNames.Contains(propertyName)) {
                 ScheduleGraphPreviewRefresh();
+            }
+            if (!suppressGraphPreviewRefresh &&
+                propertyName != null &&
+                DriftChartPreviewPropertyNames.Contains(propertyName)) {
+                ScheduleDriftChartPreviewRefresh();
             }
             if (propertyName == nameof(Enabled) || propertyName == nameof(WebhookUrl) ||
                 propertyName == nameof(DiscordEnabled) || propertyName == nameof(TelegramEnabled) ||

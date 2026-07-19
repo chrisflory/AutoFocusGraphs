@@ -9,8 +9,10 @@ namespace AutoFocusGraphs {
     internal sealed class GraphPreviewWindow : Window {
         private readonly Image previewImage;
 
-        public GraphPreviewWindow(ImageSource source) {
-            Title = "AutoFocusGraphs — graph preview";
+        public GraphPreviewWindow(ImageSource source, string title = null) {
+            Title = string.IsNullOrWhiteSpace(title)
+                ? "AutoFocusGraphs — graph preview"
+                : title;
             Background = new SolidColorBrush(Color.FromRgb(54, 57, 63));
             Width = 1240;
             Height = 780;

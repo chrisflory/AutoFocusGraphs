@@ -1,74 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="920" height="720" viewBox="0 0 920 720" role="img" aria-label="AutoFocusGraphs pipeline">
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="520" viewBox="0 0 1180 520" role="img" aria-label="AutoFocusGraphs pipeline">
   <defs>
     <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
       <polygon points="0 0, 10 4, 0 8" fill="#b9bbbe"/>
     </marker>
     <style>
-      .title { font: 700 22px Segoe UI, Arial, sans-serif; fill: #ffffff; }
-      .box { fill: #36393f; stroke: #72767d; stroke-width: 2; rx: 10; }
+      .title { font: 700 14px Segoe UI, Arial, sans-serif; fill: #b9bbbe; }
+      .box { fill: #36393f; stroke: #72767d; stroke-width: 2; rx: 8; }
       .nina { fill: #5865f2; stroke: #4752c4; }
-      .dest { fill: #57f287; stroke: #3ba55d; }
-      .optional { stroke-dasharray: 6 4; fill: #4f545c; }
-      .label { font: 600 14px Segoe UI, Arial, sans-serif; fill: #ffffff; }
-      .sublabel { font: 400 12px Segoe UI, Arial, sans-serif; fill: #dcddde; }
+      .label { font: 600 12px Segoe UI, Arial, sans-serif; fill: #ffffff; }
+      .sub { font: 400 10px Segoe UI, Arial, sans-serif; fill: #b9bbbe; }
       .line { stroke: #b9bbbe; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .sequence { stroke: #57f287; stroke-width: 3; }
+      .session { stroke: #9b59b6; stroke-width: 3; }
+      .pack { stroke: #3498db; stroke-width: 3; }
+      .failure { stroke: #ed4245; stroke-width: 3; }
+      .dest { stroke: #57f287; stroke-width: 3; }
+      .graph { stroke: #00d4ff; stroke-width: 3; }
+      .quality { stroke: #f39c12; stroke-width: 3; }
     </style>
   </defs>
-  <rect width="920" height="720" fill="#2f3136"/>
-  <text x="460" y="36" text-anchor="middle" class="title">AutoFocusGraphs pipeline</text>
+  <rect width="1180" height="520" fill="#2f3136"/>
+  <rect x="72" y="28" width="1092" height="476" fill="none" stroke="#72767d" stroke-width="2" rx="12"/>
+  <text x="88" y="48" class="title">v0.1.0.1+</text>
 
-  <!-- Row 1: NINA -->
-  <rect x="310" y="58" width="300" height="44" class="box nina"/>
-  <text x="460" y="86" text-anchor="middle" class="label">NINA writes AF JSON</text>
+  <rect x="8" y="208" width="64" height="64" class="box nina"/>
+  <text x="40" y="230" text-anchor="middle" class="label">NINA</text>
+  <text x="40" y="246" text-anchor="middle" class="label">writes</text>
+  <text x="40" y="262" text-anchor="middle" class="label">AF JSON</text>
+  <line x1="72" y1="240" x2="88" y2="240" class="line"/>
 
-  <line x1="460" y1="102" x2="460" y2="128" class="line"/>
+  <rect x="88" y="212" width="110" height="56" class="box"/>
+  <text x="143" y="244" text-anchor="middle" class="label">Folder watcher</text>
+  <line x1="198" y1="240" x2="208" y2="240" class="line"/>
 
-  <!-- Row 2: Watcher -->
-  <rect x="250" y="128" width="420" height="52" class="box"/>
-  <text x="460" y="152" text-anchor="middle" class="label">Folder watcher</text>
-  <text x="460" y="170" text-anchor="middle" class="sublabel">file settle � parse � ReportStore</text>
+  <rect x="208" y="212" width="110" height="56" class="box"/>
+  <text x="263" y="236" text-anchor="middle" class="label">File settle</text>
+  <text x="263" y="252" text-anchor="middle" class="sub">wait for JSON</text>
+  <line x1="318" y1="240" x2="328" y2="240" class="line"/>
 
-  <line x1="460" y1="180" x2="460" y2="210" class="line"/>
+  <rect x="328" y="212" width="150" height="56" class="box"/>
+  <text x="403" y="236" text-anchor="middle" class="label">Parse + ReportStore</text>
+  <text x="403" y="252" text-anchor="middle" class="sub">session + sequence</text>
 
-  <!-- Row 3: Branch -->
-  <rect x="70" y="210" width="340" height="88" class="box"/>
-  <text x="240" y="236" text-anchor="middle" class="label">Per-run post (optional)</text>
-  <text x="240" y="256" text-anchor="middle" class="sublabel">upload delay � quality gate</text>
-  <text x="240" y="274" text-anchor="middle" class="sublabel">V-curve PNG � enabled destinations</text>
+  <rect x="960" y="48" width="190" height="52" class="box sequence"/>
+  <text x="1055" y="70" text-anchor="middle" class="label">Sequence digest</text>
+  <text x="1055" y="86" text-anchor="middle" class="sub">at sequence end</text>
 
-  <rect x="510" y="210" width="340" height="88" class="box"/>
-  <text x="680" y="236" text-anchor="middle" class="label">Digest tracking</text>
-  <text x="680" y="256" text-anchor="middle" class="sublabel">session + per-sequence lists</text>
-  <text x="680" y="274" text-anchor="middle" class="sublabel">Options live graph preview</text>
+  <rect x="960" y="112" width="190" height="52" class="box session"/>
+  <text x="1055" y="134" text-anchor="middle" class="label">Session digest</text>
+  <text x="1055" y="150" text-anchor="middle" class="sub">NINA exit / this session</text>
 
-  <line x1="460" y1="210" x2="240" y2="210" class="line"/>
-  <line x1="460" y1="210" x2="680" y2="210" class="line"/>
+  <rect x="960" y="176" width="190" height="52" class="box pack"/>
+  <text x="1055" y="198" text-anchor="middle" class="label">AF night pack</text>
+  <text x="1055" y="214" text-anchor="middle" class="sub">manual zip / PNG / CSV / JSON</text>
 
-  <!-- Row 4: Sequence digest -->
-  <rect x="170" y="360" width="580" height="72" class="box optional"/>
-  <text x="460" y="388" text-anchor="middle" class="label">Sequence digest (sequencer run ends)</text>
-  <text x="460" y="408" text-anchor="middle" class="sublabel">wait for last AF JSON + per-run post, then all enabled destinations</text>
+  <rect x="960" y="240" width="190" height="52" class="box failure"/>
+  <text x="1055" y="262" text-anchor="middle" class="label">Failure posts</text>
+  <text x="1055" y="278" text-anchor="middle" class="sub">bad JSON / live AF</text>
 
-  <line x1="680" y1="298" x2="680" y2="330" class="line"/>
-  <line x1="680" y1="330" x2="460" y2="330" class="line"/>
-  <line x1="460" y1="330" x2="460" y2="360" class="line"/>
+  <path d="M478 240 H514 V74 H960" class="line"/>
+  <path d="M514 74 V138 H960" class="line"/>
+  <path d="M514 138 V202 H960" class="line"/>
+  <path d="M514 202 V266 H960" class="line"/>
 
-  <!-- Row 5: Session digest -->
-  <rect x="170" y="470" width="580" height="72" class="box optional"/>
-  <text x="460" y="498" text-anchor="middle" class="label">Session digest (NINA exit / manual / sequencer instruction)</text>
-  <text x="460" y="518" text-anchor="middle" class="sublabel">stats, run list, optional trend chart + disk merge</text>
+  <rect x="328" y="360" width="120" height="56" class="box"/>
+  <text x="388" y="384" text-anchor="middle" class="label">Upload delay</text>
+  <text x="388" y="400" text-anchor="middle" class="sub">optional</text>
+  <path d="M478 240 H514 V388 H328" class="line"/>
 
-  <line x1="460" y1="432" x2="460" y2="470" class="line"/>
+  <rect x="468" y="360" width="120" height="56" class="box quality"/>
+  <text x="528" y="384" text-anchor="middle" class="label">Quality gate</text>
+  <text x="528" y="400" text-anchor="middle" class="sub">R2 / HFR</text>
+  <line x1="448" y1="388" x2="468" y2="388" class="line"/>
 
-  <!-- Row 6: Failure -->
-  <rect x="170" y="580" width="580" height="56" class="box optional"/>
-  <text x="460" y="612" text-anchor="middle" class="label">Live failure post when AF ends without JSON (optional)</text>
+  <rect x="608" y="360" width="160" height="56" class="box graph"/>
+  <text x="688" y="384" text-anchor="middle" class="label">V-curve PNG</text>
+  <text x="688" y="400" text-anchor="middle" class="sub">overlays / hints / preview</text>
+  <line x1="588" y1="388" x2="608" y2="388" class="line"/>
 
-  <line x1="240" y1="298" x2="240" y2="608" class="line"/>
-  <line x1="240" y1="608" x2="170" y2="608" class="line"/>
-
-  <!-- Destinations legend -->
-  <rect x="170" y="650" width="580" height="44" class="box dest"/>
-  <text x="460" y="678" text-anchor="middle" class="label">Discord � Telegram � Slack � Email</text>
+  <rect x="788" y="360" width="362" height="56" class="box dest"/>
+  <text x="969" y="384" text-anchor="middle" class="label">Per-run destination post</text>
+  <text x="969" y="400" text-anchor="middle" class="sub">Discord / Telegram / Slack / Email</text>
+  <line x1="768" y1="388" x2="788" y2="388" class="line"/>
 </svg>

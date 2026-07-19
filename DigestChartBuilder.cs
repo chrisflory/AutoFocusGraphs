@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Settings = AutoFocusGraphs.Properties.Settings;
 
 namespace AutoFocusGraphs {
     /// <summary>
@@ -34,7 +35,15 @@ namespace AutoFocusGraphs {
 
             byte[] drift = null;
             try {
-                drift = AutofocusGraphGenerator.CreateDriftPng(ordered, maxRuns);
+                var s = Settings.Default;
+                drift = AutofocusGraphGenerator.CreateDriftPng(
+                    ordered,
+                    maxRuns,
+                    showDriftSummaryStrip: s.ShowDriftSummaryStrip,
+                    showDriftPointLabels: s.ShowDriftPointLabels,
+                    showDriftFilterLabels: s.ShowDriftFilterLabels,
+                    showDriftHfrLabels: s.ShowDriftHfrLabels,
+                    showDriftTrendLine: s.ShowDriftTrendLine);
             } catch {
                 // optional
             }

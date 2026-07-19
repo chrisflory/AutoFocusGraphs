@@ -205,7 +205,15 @@ namespace AutoFocusGraphs {
         /// </summary>
         public static byte[] RenderFocusDriftPreviewPng() {
 
-            var driftPng = AutofocusGraphGenerator.CreateDriftPng(BuildFocusDriftPreviewReports(), maxRuns: 20);
+            var s = Settings.Default;
+            var driftPng = AutofocusGraphGenerator.CreateDriftPng(
+                BuildFocusDriftPreviewReports(),
+                maxRuns: 20,
+                showDriftSummaryStrip: s.ShowDriftSummaryStrip,
+                showDriftPointLabels: s.ShowDriftPointLabels,
+                showDriftFilterLabels: s.ShowDriftFilterLabels,
+                showDriftHfrLabels: s.ShowDriftHfrLabels,
+                showDriftTrendLine: s.ShowDriftTrendLine);
 
             if (driftPng == null || driftPng.Length == 0) {
 
@@ -353,23 +361,23 @@ namespace AutoFocusGraphs {
         private static IReadOnlyList<AutofocusReport> BuildFocusDriftPreviewReports() {
 
             // Temp drops ~4°C while focus climbs ~280 steps (~70 steps/°C → "large drift" territory).
-            var points = new (string Stamp, double Pos, double Temp, double Hfr)[] {
+            var points = new (string Stamp, string Filter, double Pos, double Temp, double Hfr)[] {
 
-                ("2026-07-18--21-00-00", 11200, 14.5, 1.72),
+                ("2026-07-18--21-00-00", "L", 11200, 14.5, 1.72),
 
-                ("2026-07-18--21-30-00", 11240, 13.8, 1.70),
+                ("2026-07-18--21-30-00", "R", 11240, 13.8, 1.70),
 
-                ("2026-07-18--22-00-00", 11285, 13.1, 1.68),
+                ("2026-07-18--22-00-00", "G", 11285, 13.1, 1.68),
 
-                ("2026-07-18--22-30-00", 11330, 12.4, 1.69),
+                ("2026-07-18--22-30-00", "B", 11330, 12.4, 1.69),
 
-                ("2026-07-18--23-00-00", 11380, 11.8, 1.71),
+                ("2026-07-18--23-00-00", "L", 11380, 11.8, 1.71),
 
-                ("2026-07-18--23-30-00", 11425, 11.2, 1.73),
+                ("2026-07-18--23-30-00", "Ha", 11425, 11.2, 1.73),
 
-                ("2026-07-19--00-00-00", 11470, 10.7, 1.74),
+                ("2026-07-19--00-00-00", "L", 11470, 10.7, 1.74),
 
-                ("2026-07-19--00-30-00", 11480, 10.5, 1.72),
+                ("2026-07-19--00-30-00", "OIII", 11480, 10.5, 1.72),
 
             };
 
@@ -387,7 +395,7 @@ namespace AutoFocusGraphs {
 
                     FileName = $"preview-drift-{i + 1:00}.json",
 
-                    Filter = "L",
+                    Filter = p.Filter,
 
                     FinalHfr = p.Hfr,
 

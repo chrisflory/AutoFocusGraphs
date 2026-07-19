@@ -4,6 +4,7 @@ flowchart LR
     classDef core fill:#36393f,stroke:#72767d,color:#fff
     classDef sequence stroke:#57f287,stroke-width:3px,fill:#36393f,color:#fff
     classDef session stroke:#9b59b6,stroke-width:3px,fill:#36393f,color:#fff
+    classDef pack stroke:#3498db,stroke-width:3px,fill:#36393f,color:#fff
     classDef failure stroke:#ed4245,stroke-width:3px,fill:#36393f,color:#fff
     classDef dest stroke:#57f287,stroke-width:3px,fill:#36393f,color:#fff
     classDef graph stroke:#00d4ff,stroke-width:3px,fill:#36393f,color:#fff
@@ -17,6 +18,7 @@ flowchart LR
 
     P --> SEQ["Sequence digest<br/>at sequence end · name"]:::sequence
     P --> SES["Session digest<br/>NINA exit · this session only"]:::session
+    P --> PACK["AF night pack<br/>manual zip · PNG · CSV · JSON"]:::pack
     P --> FAIL["Failure posts<br/>bad JSON · live AF"]:::failure
     P --> D["Upload delay"]:::core
     D --> QG["Quality gate<br/>R² · HFR"]:::quality

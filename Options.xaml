@@ -484,6 +484,53 @@
             <TextBlock Text="Example focus drift chart (position vs temperature) included with digests when the toggle above is on."
                        Margin="0,0,0,4" Opacity="0.7" FontSize="12" TextWrapping="Wrap" MaxWidth="960"
                        Visibility="{Binding DriftChartPreviewVisible}" />
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8" Visibility="{Binding DriftChartPreviewVisible}">
+                <Button Content="Expand preview" Command="{Binding ExpandDriftPreviewCommand}" Padding="10,4"
+                        ToolTip="Open a larger focus-drift preview that updates as you toggle overlays." />
+            </StackPanel>
+            <UniformGrid Columns="2" MaxWidth="960" HorizontalAlignment="Left" Margin="0,0,0,8"
+                         Visibility="{Binding DriftChartPreviewVisible}">
+                <Grid Margin="0,2,16,2" ToolTip="Δpos / ΔT / steps/°C annotation (amber when drift is large).">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Drift summary strip" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <CheckBox Grid.Column="1" IsChecked="{Binding ShowDriftSummaryStrip}" VerticalAlignment="Center" />
+                </Grid>
+                <Grid Margin="0,2,16,2" ToolTip="Focus position value above each green point.">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Position labels" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <CheckBox Grid.Column="1" IsChecked="{Binding ShowDriftPointLabels}" VerticalAlignment="Center" />
+                </Grid>
+                <Grid Margin="0,2,16,2" ToolTip="Filter name stacked with other point labels.">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Filter labels" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <CheckBox Grid.Column="1" IsChecked="{Binding ShowDriftFilterLabels}" VerticalAlignment="Center" />
+                </Grid>
+                <Grid Margin="0,2,16,2" ToolTip="Final HFR stacked with other point labels (can get busy).">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="HFR labels" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <CheckBox Grid.Column="1" IsChecked="{Binding ShowDriftHfrLabels}" VerticalAlignment="Center" />
+                </Grid>
+                <Grid Margin="0,2,16,2" ToolTip="Dashed linear trend through focus position over run number.">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Position trend line" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <CheckBox Grid.Column="1" IsChecked="{Binding ShowDriftTrendLine}" VerticalAlignment="Center" />
+                </Grid>
+            </UniformGrid>
             <Border Background="#36393F" CornerRadius="4" Margin="0,0,0,10" Padding="6" HorizontalAlignment="Left" MaxWidth="960"
                     SnapsToDevicePixels="True" UseLayoutRounding="True"
                     Visibility="{Binding DriftChartPreviewVisible}">
@@ -493,9 +540,13 @@
             <TextBlock Text="Trend chart max runs" Margin="0,0,0,4" />
             <TextBox Text="{Binding DigestTrendMaxRuns}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,8" />
 
-            <Button Content="Post sequence digest now" Command="{Binding PostDigestNowCommand}" HorizontalAlignment="Left" Padding="12,4" Margin="0,0,0,4"
-                    ToolTip="Post a digest for the current sequence (runs since the last sequence start). If none, falls back to session digest (runs since NINA opened)." />
-            <TextBlock Text="Includes stats (min/avg/max HFR, best/worst, warnings, by filter), full run list, HFR trend, and focus-drift chart when enough runs have temp+position. Session digest covers only runs since NINA opened." Margin="0,0,0,4" TextWrapping="Wrap" Opacity="0.7" />
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                <Button Content="Post sequence digest now" Command="{Binding PostDigestNowCommand}" HorizontalAlignment="Left" Padding="12,4" Margin="0,0,8,0"
+                        ToolTip="Post a digest for the current sequence (runs since the last sequence start). If none, falls back to session digest (runs since NINA opened)." />
+                <Button Content="Export AF night pack" Command="{Binding ExportNightPackCommand}" HorizontalAlignment="Left" Padding="12,4"
+                        ToolTip="Save a zip of this session: V-curve PNGs, runs.csv, trend/drift charts, README, and original AF JSON (for forums / support)." />
+            </StackPanel>
+            <TextBlock Text="Includes stats (min/avg/max HFR, best/worst, warnings, by filter), full run list, HFR trend, and focus-drift chart when enough runs have temp+position. Session digest covers only runs since NINA opened. Night pack exports the same session report set to a local zip." Margin="0,0,0,4" TextWrapping="Wrap" Opacity="0.7" />
             <TextBlock Text="{Binding DigestStatus}" Margin="0,0,0,12" TextWrapping="Wrap" Opacity="0.8" />
 
             <TextBlock Text="Posting" FontSize="16" FontWeight="Bold" Margin="0,12,0,10" />
