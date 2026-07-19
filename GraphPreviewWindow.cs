@@ -6,12 +6,14 @@ using System.Windows.Media;
 
 namespace AutoFocusGraphs {
     /// <summary>
-    /// Larger preview window (graph overlays or flowchart). Optional scroll + mouse-wheel zoom.
+    /// Larger preview window (graph overlays or flowchart). Optional Ctrl+wheel zoom with scroll pan.
     /// </summary>
     internal sealed class GraphPreviewWindow : Window {
         private readonly Image previewImage;
-        private readonly ScaleTransform scaleTransform;
         private readonly bool enableZoom;
+        private readonly ScaleTransform scaleTransform;
+        private readonly Grid host;
+        private readonly ScrollViewer scrollViewer;
         private double zoom = 1.0;
 
         public GraphPreviewWindow(ImageSource source, string title = null, bool enableZoom = false) {
@@ -41,24 +43,48 @@ namespace AutoFocusGraphs {
             }
 
             scaleTransform = new ScaleTransform(1.0, 1.0);
-            previewImage.LayoutTransform = scaleTransform;
-            previewImage.Stretch = Stretch.None;
-            previewImage.HorizontalAlignment = HorizontalAlignment.Left;
-            previewImage.VerticalAlignment = VerticalAlignment.Top;
+            host = new Grid {
+                LayoutTransform = scaleTransform,
+                ClipToBounds = false,
+            };
+            host.Children.Add(previewImage);
 
-            var scroll = new ScrollViewer {
-                Content = previewImage,
+            scrollViewer = new ScrollViewer {
+                Content = host,
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-                Padding = new Thickness(4),
+                Padding = new Thickness(0),
             };
-            scroll.PreviewMouseWheel += OnPreviewMouseWheel;
-            Content = scroll;
-            ToolTip = "Scroll to pan · Ctrl+mouse wheel to zoom";
+            scrollViewer.SizeChanged += (_, _) => FitHostToViewport();
+            scrollViewer.PreviewMouseWheel += OnPreviewMouseWheel;
+            Content = scrollViewer;
+            ToolTip = "Resize window to scale · Ctrl+mouse wheel to zoom · scroll to pan when zoomed";
+            Loaded += (_, _) => FitHostToViewport();
         }
 
         public void UpdateImage(ImageSource source) {
             previewImage.Source = source;
+            if (enableZoom) {
+                FitHostToViewport();
+            }
+        }
+
+        private void FitHostToViewport() {
+            if (!enableZoom || scrollViewer == null || host == null) {
+                return;
+            }
+
+            // Layout box tracks the viewport so Stretch.Uniform fills the window.
+            // LayoutTransform zoom then enlarges that fitted result (scrollbars appear when zoom > 1).
+            var w = Math.Max(32, scrollViewer.ViewportWidth);
+            var h = Math.Max(32, scrollViewer.ViewportHeight);
+            if (scrollViewer.ViewportWidth <= 0 || scrollViewer.ViewportHeight <= 0) {
+                w = Math.Max(32, scrollViewer.ActualWidth);
+                h = Math.Max(32, scrollViewer.ActualHeight);
+            }
+
+            host.Width = w;
+            host.Height = h;
         }
 
         private void OnPreviewMouseWheel(object sender, MouseWheelEventArgs e) {
@@ -71,6 +97,7 @@ namespace AutoFocusGraphs {
             zoom = Math.Max(0.5, Math.Min(4.0, zoom * factor));
             scaleTransform.ScaleX = zoom;
             scaleTransform.ScaleY = zoom;
+            FitHostToViewport();
         }
     }
 }
