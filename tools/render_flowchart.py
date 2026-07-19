@@ -138,9 +138,16 @@ def main():
     arrow_h(draw, delay[2], chain_y + 28, qg[0], chain_y + 28)
     styled_box(draw, qg, "Quality gate", "R2 / HFR", outline=BORDER_QUALITY, width=3)
     arrow_h(draw, qg[2], chain_y + 28, vc[0], chain_y + 28)
-    styled_box(draw, vc, "V-curve PNG", "overlays / hints / preview", outline=BORDER_GRAPH, width=3)
+    styled_box(draw, vc, "V-curve PNG", "overlays / hints / 2x export", outline=BORDER_GRAPH, width=3)
     arrow_h(draw, vc[2], chain_y + 28, pr[0], chain_y + 28)
-    styled_box(draw, pr, "Per-run destination post", "Discord / Telegram / Slack / Email", outline=BORDER_DEST, width=3)
+    styled_box(
+        draw,
+        pr,
+        "Per-run destination post",
+        "Discord / Telegram / Slack / Email\nper-run send · quiet hours",
+        outline=BORDER_DEST,
+        width=3,
+    )
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     img.save(OUT, format="PNG", optimize=True)

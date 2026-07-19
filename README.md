@@ -17,7 +17,7 @@ A N.I.N.A. plugin that watches the AutoFocus report folder, renders a **dark-mod
 3. **File settle** — waits until the file is fully written and readable.
 4. **Parse + ReportStore** — parses the report and tracks it for the session and current sequencer run.
 5. From there:
-   - **Per-run destination post** (optional) — upload delay → quality gate → **V-curve PNG** → every enabled destination.
+   - **Per-run destination post** (optional) — upload delay → quality gate → **2× V-curve PNG** → every enabled destination (subject to **Per-run send** and **Quiet hours**).
    - **Sequence digest** — when a sequencer run finishes; includes sequence name; or via **Post sequence digest now** / **Post AF sequence digest**.
    - **Session digest** — runs since NINA opened only (**Post session digest when NINA exits**), or via **Post sequence digest now** when no sequence runs are tracked.
    - **Failure posts** — optional alert when a report is empty or unreadable, or when autofocus ends without a JSON file (live AF hook).
@@ -34,7 +34,7 @@ When N.I.N.A. writes a new `*.json` autofocus report under `%localappdata%\NINA\
 
 1. Waits for the JSON file to finish writing, then parses and tracks the run immediately (before any upload delay)
 2. Evaluates optional quality gates (R² / final HFR), including per-filter profiles
-3. Optionally renders a V-curve graph and posts to every enabled destination after the upload delay
+3. Optionally renders a **2×** V-curve graph (sharp fonts/lines for Discord, Telegram, Slack, email, and night packs) and posts to every enabled destination after the upload delay
 
 Reports are always stored for digests even when per-run posting is disabled.
 
@@ -91,13 +91,14 @@ Restart N.I.N.A.
 ```powershell
 git clone https://github.com/chrisflory/AutoFocusGraphs.git
 cd AutoFocusGraphs
-git checkout develop
 dotnet build -c Release
 ```
 
-A successful build copies the plugin into `%localappdata%\NINA\Plugins\3.0.0\AutoFocusGraphs\`. Close N.I.N.A. before rebuilding, then restart it.
+Default branch is **main**. Close N.I.N.A. before rebuilding so the deploy copy can overwrite the plugin DLL.
 
-Regenerate the pipeline diagram after flow changes:
+A successful build copies the plugin into `%localappdata%\NINA\Plugins\3.0.0\AutoFocusGraphs\`. Restart N.I.N.A. after installing or rebuilding.
+
+Regenerate the pipeline diagram after flow changes (`assets/flowchart.mmd`, `tools/render_flowchart.py`, and `assets/flowchart.svg` should stay in sync):
 
 ```powershell
 python tools/render_flowchart.py
@@ -188,14 +189,14 @@ Examples of patterns the analyzer can surface:
 | **Post each autofocus run** | Per-run posts on/off (off = digest-only mode) |
 | **Per-run send** | When per-run posts are on: **Every run**, **Every Nth run** (N = 2–50; warnings/failures always send), or **Problems only** |
 | **Quiet hours** | Local start/end window; successful per-run posts are skipped (warnings/failures/digests still send) |
-| **Include V-curve graph on each run** | Attach the PNG to each per-run post |
+| **Include V-curve graph on each run** | Attach the 2× PNG to each per-run post |
 | **Attach JSON** | Attach the raw AutoFocus JSON file to each per-run post |
 | **Graph analysis hints / Conservative hints** | Optional V-curve observations on live graphs and preview; conservative (default) = facts and patterns only |
 | **Post digest when sequencer sequence completes** | Sequence digest after the last per-run post (default on) |
 | **Post session digest when NINA exits** | Full-session digest on shutdown |
-| **Include trend chart in digests** | HFR trend PNG plus focus-drift chart (position vs temperature) when enough runs have both; optional drift overlays (summary strip, position/filter/HFR labels, trend line) with expand preview |
+| **Include trend chart in digests** | 2× HFR trend PNG plus focus-drift chart (position vs temperature) when enough runs have both; drift overlays (summary strip, position/filter/HFR labels, trend line) with **All overlays on/off**, expand preview |
 | **Post sequence digest now** | Manual digest: current sequence first, then full session if the sequence is empty |
-| **Export AF night pack** | Zip of this session: V-curve PNGs, `runs.csv`, trend/drift charts, README, and original AF JSON (forums / support) |
+| **Export AF night pack** | Zip of this session: 2× V-curve PNGs, `runs.csv`, trend/drift charts, README, and original AF JSON (forums / support) |
 | **Upload delay / message template** | Timing and template tokens |
 | **Watch folder** | Read-only AutoFocus path |
 

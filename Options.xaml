@@ -592,7 +592,7 @@
 
             <TextBlock Text="How it works" FontSize="16" FontWeight="Bold" Margin="0,12,0,8" />
             <TextBlock TextWrapping="Wrap" Margin="0,0,0,8" Opacity="0.85" MaxWidth="960"
-                       Text="When N.I.N.A. writes a new autofocus report, the plugin renders a V-curve graph (optional analysis hints) and posts per-run reports, sequence digests, and session digests to every enabled destination (Discord, Telegram, Slack, email). Use Per-run send and Quiet hours to cut overnight noise. Digests can include HFR trend and focus-drift charts. Export AF night pack for a local zip. Use Preview sample on this tab to try CN-style curve shapes before a live run." />
+                       Text="When N.I.N.A. writes a new autofocus report, the plugin renders a 2× V-curve graph (optional analysis hints) and posts per-run reports, sequence digests, and session digests to every enabled destination (Discord, Telegram, Slack, email). Use Per-run send and Quiet hours to cut overnight noise. Digests can include HFR trend and focus-drift charts. Export AF night pack for a local zip. Use Preview sample on this tab to try CN-style curve shapes before a live run." />
             <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
                 <Button Content="Expand flowchart" Command="{Binding ExpandFlowchartCommand}" Padding="10,4"
                         ToolTip="Open a larger flowchart window (Ctrl+mouse wheel to zoom, scroll to pan)." />

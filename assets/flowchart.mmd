@@ -22,5 +22,5 @@ flowchart LR
     P --> FAIL["Failure posts<br/>bad JSON · live AF"]:::failure
     P --> D["Upload delay"]:::core
     D --> QG["Quality gate<br/>R² · HFR"]:::quality
-    QG --> VC["V-curve PNG<br/>overlays · hints · preview"]:::graph
-    VC --> PR["Per-run post<br/>Discord · Telegram · Slack · Email"]:::dest
+    QG --> VC["V-curve PNG<br/>overlays · hints · 2× export"]:::graph
+    VC --> PR["Per-run post<br/>Discord · Telegram · Slack · Email<br/>per-run send · quiet hours"]:::dest

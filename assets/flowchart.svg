@@ -76,11 +76,12 @@
 
   <rect x="608" y="360" width="160" height="56" class="box graph"/>
   <text x="688" y="384" text-anchor="middle" class="label">V-curve PNG</text>
-  <text x="688" y="400" text-anchor="middle" class="sub">overlays / hints / preview</text>
+  <text x="688" y="400" text-anchor="middle" class="sub">overlays / hints / 2× export</text>
   <line x1="588" y1="388" x2="608" y2="388" class="line"/>
 
   <rect x="788" y="360" width="362" height="56" class="box dest"/>
-  <text x="969" y="384" text-anchor="middle" class="label">Per-run destination post</text>
-  <text x="969" y="400" text-anchor="middle" class="sub">Discord / Telegram / Slack / Email</text>
+  <text x="969" y="378" text-anchor="middle" class="label">Per-run destination post</text>
+  <text x="969" y="394" text-anchor="middle" class="sub">Discord / Telegram / Slack / Email</text>
+  <text x="969" y="408" text-anchor="middle" class="sub">per-run send · quiet hours</text>
   <line x1="768" y1="388" x2="788" y2="388" class="line"/>
 </svg>
