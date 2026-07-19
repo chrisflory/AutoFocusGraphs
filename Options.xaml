@@ -50,7 +50,7 @@
             <TextBlock Text="Preview sample" Margin="0,0,0,4" Opacity="0.7" FontSize="12" />
             <ComboBox ItemsSource="{Binding GraphPreviewSampleOptions}" SelectedItem="{Binding GraphPreviewSample}"
                       Width="320" HorizontalAlignment="Left" Margin="0,0,0,8"
-                      ToolTip="Synthetic curves from CN / NINA patterns, plus Focus drift radar (digest-style position vs temperature chart). Enable Graph analysis hints on V-curve samples to compare rules." />
+                      ToolTip="Synthetic V-curves from common CN / NINA forum patterns. Focus drift chart preview is under Session digest → Include trend chart." />
             <Border Background="#36393F" CornerRadius="4" Margin="0,0,0,8" Padding="6" HorizontalAlignment="Left" MaxWidth="960"
                     SnapsToDevicePixels="True" UseLayoutRounding="True">
                 <Image Source="{Binding GraphPreviewImage}" Stretch="Uniform" MaxHeight="540" MaxWidth="960"
@@ -481,6 +481,15 @@
                 </Grid>
                 <CheckBox Grid.Column="1" IsChecked="{Binding IncludeDigestTrendChart}" VerticalAlignment="Center" />
             </Grid>
+            <TextBlock Text="Example focus drift chart (position vs temperature) included with digests when the toggle above is on."
+                       Margin="0,0,0,4" Opacity="0.7" FontSize="12" TextWrapping="Wrap" MaxWidth="960"
+                       Visibility="{Binding DriftChartPreviewVisible}" />
+            <Border Background="#36393F" CornerRadius="4" Margin="0,0,0,10" Padding="6" HorizontalAlignment="Left" MaxWidth="960"
+                    SnapsToDevicePixels="True" UseLayoutRounding="True"
+                    Visibility="{Binding DriftChartPreviewVisible}">
+                <Image Source="{Binding DriftChartPreviewImage}" Stretch="Uniform" MaxHeight="360" MaxWidth="960"
+                       RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" UseLayoutRounding="True" />
+            </Border>
             <TextBlock Text="Trend chart max runs" Margin="0,0,0,4" />
             <TextBox Text="{Binding DigestTrendMaxRuns}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,8" />
 

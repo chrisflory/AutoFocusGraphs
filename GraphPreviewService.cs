@@ -96,7 +96,7 @@ namespace AutoFocusGraphs {
 
         public static IReadOnlyList<string> AllSampleKeys { get; } =
 
-            SampleCatalog.Select(s => s.Key).Append(SampleFocusDrift).ToList();
+            SampleCatalog.Select(s => s.Key).ToList();
 
 
 
@@ -148,22 +148,6 @@ namespace AutoFocusGraphs {
 
             var height = (int)Math.Round(LogicalPreviewHeight * scale);
 
-            var sampleKey = Settings.Default.GraphPreviewSample ?? SampleNormal;
-
-            if (string.Equals(sampleKey, SampleFocusDrift, StringComparison.Ordinal)) {
-
-                var driftPng = AutofocusGraphGenerator.CreateDriftPng(BuildFocusDriftPreviewReports(), maxRuns: 20);
-
-                if (driftPng == null || driftPng.Length == 0) {
-
-                    throw new InvalidOperationException("Focus drift preview chart could not be rendered.");
-
-                }
-
-                return driftPng;
-
-            }
-
             var settings = Settings.Default;
 
             return AutofocusGraphGenerator.CreatePng(
@@ -211,6 +195,27 @@ namespace AutoFocusGraphs {
                 pixelWidth: width,
 
                 pixelHeight: height);
+
+        }
+
+
+
+        /// <summary>
+        /// Sample focus-drift digest chart for the Session digest options section.
+        /// </summary>
+        public static byte[] RenderFocusDriftPreviewPng() {
+
+            var driftPng = AutofocusGraphGenerator.CreateDriftPng(BuildFocusDriftPreviewReports(), maxRuns: 20);
+
+            if (driftPng == null || driftPng.Length == 0) {
+
+                throw new InvalidOperationException("Focus drift preview chart could not be rendered.");
+
+            }
+
+
+
+            return driftPng;
 
         }
 

@@ -16,6 +16,7 @@ namespace AutoFocusGraphs {
                 plugin.UpdateGraphPreviewDpiScale(element);
                 plugin.RefreshFilterList();
                 plugin.ScheduleGraphPreviewRefresh();
+                plugin.EnsureDriftChartPreview();
             }
         }
 

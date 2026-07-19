@@ -6,7 +6,7 @@
 - **Compare to last (same filter)** graph overlay: ghosts the previous session V-curve behind the current measure points
 - **Focus drift radar** on digests: dual-axis focus position vs temperature chart plus a Δpos / ΔT / steps/°C summary line (with HFR trend when chart toggle is on)
 - **Quiet hours**: suppress successful per-run posts in a local time window (default 22:00–07:00); warnings, failures, and digests still send
-- **Focus drift radar** preview sample on the Graph tab (synthetic night of position vs temperature)
+- **Focus drift radar** sample chart under **Include trend chart in session digest** on the Graph tab
 
 ## 0.1.0.1 — 2026-07-09
 

@@ -141,7 +141,8 @@ Monitoring, graph rendering, quality gate, posting, and digests. A **live previe
 | **Flat approach wing** | Flat HFR at the scan edge, then a steep drop into focus |
 | **Outer measurement cliff** | Outermost point HFR collapses (stars too defocused to measure) |
 | **Flat scan (seeing)** | Almost no HFR change across the whole run |
-| **Focus drift radar** | Digest-style dual-axis chart: focus position vs temperature across a synthetic night |
+
+Focus drift chart example lives under **Session digest → Include trend chart in session digest** (not in this dropdown).
 
 | Overlay | What it shows |
 | --- | --- |

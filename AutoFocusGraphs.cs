@@ -43,6 +43,7 @@ namespace AutoFocusGraphs {
         private string emailTestToolTip = string.Empty;
         private bool emailTestInProgress;
         private ImageSource graphPreviewImage;
+        private ImageSource driftChartPreviewImage;
         private CancellationTokenSource graphPreviewRefreshCts;
         private bool suppressGraphPreviewRefresh;
         private GraphPreviewWindow expandedGraphPreviewWindow;
@@ -889,6 +890,10 @@ namespace AutoFocusGraphs {
                 Settings.Default.IncludeDigestTrendChart = value;
                 Save();
                 RaisePropertyChanged();
+                RaisePropertyChanged(nameof(DriftChartPreviewVisible));
+                if (value) {
+                    EnsureDriftChartPreview();
+                }
             }
         }
 
@@ -1117,6 +1122,30 @@ namespace AutoFocusGraphs {
                 graphPreviewImage = value;
                 RaisePropertyChanged();
             }
+        }
+
+        public ImageSource DriftChartPreviewImage {
+            get => driftChartPreviewImage;
+            private set {
+                driftChartPreviewImage = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public Visibility DriftChartPreviewVisible =>
+            IncludeDigestTrendChart ? Visibility.Visible : Visibility.Collapsed;
+
+        public void EnsureDriftChartPreview() {
+            try {
+                if (DriftChartPreviewImage == null) {
+                    var png = GraphPreviewService.RenderFocusDriftPreviewPng();
+                    DriftChartPreviewImage = GraphPreviewService.PngBytesToImageSource(png);
+                }
+            } catch (Exception ex) {
+                Logger.Warning($"AutoFocusGraphs: focus drift preview failed: {ex.Message}");
+            }
+
+            RaisePropertyChanged(nameof(DriftChartPreviewVisible));
         }
 
         public void UpdateGraphPreviewDpiScale(Visual visual) {
