@@ -92,6 +92,18 @@
     <Setting Name="ShowPreviousFocusMarker" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="ShowCompareToLastCurve" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="QuietHoursEnabled" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="QuietHoursStart" Type="System.String" Scope="User">
+      <Value Profile="(Default)">22:00</Value>
+    </Setting>
+    <Setting Name="QuietHoursEnd" Type="System.String" Scope="User">
+      <Value Profile="(Default)">07:00</Value>
+    </Setting>
     <Setting Name="ShowTrendR2InLegend" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>

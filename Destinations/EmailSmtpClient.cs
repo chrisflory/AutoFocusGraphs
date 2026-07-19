@@ -100,6 +100,37 @@ namespace AutoFocusGraphs.Destinations {
             return SendAsync(host, port, useSsl, username, password, from, to, subject, body, attachments, token);
         }
 
+        public static Task SendDigestAsync(
+            string host,
+            int port,
+            bool useSsl,
+            string username,
+            string password,
+            string from,
+            string to,
+            IReadOnlyList<(byte[] Bytes, string FileName)> charts,
+            string subject,
+            string body,
+            CancellationToken token) {
+            List<EmailAttachment> attachments = null;
+            if (charts != null) {
+                attachments = new List<EmailAttachment>();
+                foreach (var chart in charts) {
+                    if (chart.Bytes == null || chart.Bytes.Length == 0 || string.IsNullOrWhiteSpace(chart.FileName)) {
+                        continue;
+                    }
+
+                    attachments.Add(new EmailAttachment(chart.Bytes, SanitizeFileName(chart.FileName), "image/png"));
+                }
+
+                if (attachments.Count == 0) {
+                    attachments = null;
+                }
+            }
+
+            return SendAsync(host, port, useSsl, username, password, from, to, subject, body, attachments, token);
+        }
+
         internal static string StripMarkdown(string text) {
             if (string.IsNullOrEmpty(text)) {
                 return string.Empty;

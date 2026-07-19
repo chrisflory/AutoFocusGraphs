@@ -188,6 +188,8 @@ namespace AutoFocusGraphs {
 
                 settings.MaxFinalHfr,
 
+                settings.ShowCompareToLastCurve,
+
                 pixelWidth: width,
 
                 pixelHeight: height);

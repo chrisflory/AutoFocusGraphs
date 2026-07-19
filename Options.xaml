@@ -139,6 +139,14 @@
                     <TextBlock Text="Previous AF marker" VerticalAlignment="Center" TextWrapping="Wrap" />
                     <CheckBox Grid.Column="1" IsChecked="{Binding ShowPreviousFocusMarker}" VerticalAlignment="Center" />
                 </Grid>
+                <Grid Margin="0,2,16,2" ToolTip="Ghost the previous same-filter V-curve behind the current measure points (session history only).">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Compare to last (same filter)" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <CheckBox Grid.Column="1" IsChecked="{Binding ShowCompareToLastCurve}" VerticalAlignment="Center" />
+                </Grid>
                 <Grid Margin="0,2,16,2" ToolTip="Include R² values for left and right trends in the graph legend.">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -457,7 +465,7 @@
                 </Grid>
                 <CheckBox Grid.Column="1" IsChecked="{Binding PostDigestOnShutdown}" VerticalAlignment="Center" />
             </Grid>
-            <Grid Margin="0,0,0,10" ToolTip="Include an HFR-over-time trend chart in session and sequence digests (most recent N runs; see Trend chart max runs).">
+            <Grid Margin="0,0,0,10" ToolTip="Include HFR trend and focus-drift (position vs temperature) charts in session and sequence digests (most recent N runs; see Trend chart max runs).">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
@@ -478,10 +486,34 @@
 
             <Button Content="Post sequence digest now" Command="{Binding PostDigestNowCommand}" HorizontalAlignment="Left" Padding="12,4" Margin="0,0,0,4"
                     ToolTip="Post a digest for the current sequence (runs since the last sequence start). If none, falls back to session digest (runs since NINA opened)." />
-            <TextBlock Text="Includes stats (min/avg/max HFR, best/worst, warnings, by filter), full run list, and a trend chart. Session digest covers only runs since NINA opened." Margin="0,0,0,4" TextWrapping="Wrap" Opacity="0.7" />
+            <TextBlock Text="Includes stats (min/avg/max HFR, best/worst, warnings, by filter), full run list, HFR trend, and focus-drift chart when enough runs have temp+position. Session digest covers only runs since NINA opened." Margin="0,0,0,4" TextWrapping="Wrap" Opacity="0.7" />
             <TextBlock Text="{Binding DigestStatus}" Margin="0,0,0,12" TextWrapping="Wrap" Opacity="0.8" />
 
             <TextBlock Text="Posting" FontSize="16" FontWeight="Bold" Margin="0,12,0,10" />
+            <Grid Margin="0,0,0,10" ToolTip="During quiet hours, successful per-run posts are skipped. Warnings, failures, and digests still send to all enabled destinations.">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="ToggleLabel" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Quiet hours" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+                    <Line Grid.Column="1" Stretch="Fill" X1="0" Y1="0" X2="1" Y2="0" Stroke="#666666" StrokeThickness="1" StrokeDashArray="1 3" VerticalAlignment="Center" Margin="6,0" />
+                </Grid>
+                <CheckBox Grid.Column="1" IsChecked="{Binding QuietHoursEnabled}" VerticalAlignment="Center" />
+            </Grid>
+            <TextBlock Text="Quiet hours start (local HH:mm)" Margin="0,0,0,4" Opacity="0.7" FontSize="12" />
+            <TextBox Text="{Binding QuietHoursStart, UpdateSourceTrigger=PropertyChanged}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,8"
+                     IsEnabled="{Binding QuietHoursEnabled}"
+                     ToolTip="Local start time. Window may wrap midnight (e.g. 22:00 → 07:00)." />
+            <TextBlock Text="Quiet hours end (local HH:mm)" Margin="0,0,0,4" Opacity="0.7" FontSize="12" />
+            <TextBox Text="{Binding QuietHoursEnd, UpdateSourceTrigger=PropertyChanged}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,12"
+                     IsEnabled="{Binding QuietHoursEnabled}"
+                     ToolTip="Local end time. Successful per-run posts resume after this time." />
             <Rectangle Style="{StaticResource OptionsSettingSeparator}" />
             <TextBlock Text="Upload delay (seconds)" Margin="0,0,0,4" />
             <TextBox Text="{Binding UploadDelaySeconds}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,12" />
@@ -495,7 +527,7 @@
 
             <TextBlock Text="How it works" FontSize="16" FontWeight="Bold" Margin="0,12,0,8" />
             <TextBlock TextWrapping="Wrap" Margin="0,0,0,8" Opacity="0.85" MaxWidth="960"
-                       Text="When N.I.N.A. writes a new autofocus report, the plugin renders a V-curve graph (optional analysis hints) and posts per-run reports, sequence digests, and session digests to every enabled destination (Discord, Telegram, Slack, email). Use Per-run send to throttle good runs or post problems only. Use Preview sample on this tab to try CN-style curve shapes before a live run." />
+                       Text="When N.I.N.A. writes a new autofocus report, the plugin renders a V-curve graph (optional analysis hints) and posts per-run reports, sequence digests, and session digests to every enabled destination (Discord, Telegram, Slack, email). Use Per-run send and Quiet hours to cut overnight noise. Digests can include HFR trend and focus-drift charts. Use Preview sample on this tab to try CN-style curve shapes before a live run." />
             <Image Source="pack://application:,,,/AutoFocusGraphs;component/assets/flowchart.png"
                    Stretch="Uniform" MaxWidth="960" Margin="0,0,0,8"
                    RenderOptions.BitmapScalingMode="HighQuality" SnapsToDevicePixels="True" ToolTip="AutoFocusGraphs pipeline" />

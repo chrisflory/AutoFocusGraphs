@@ -4,6 +4,7 @@ using NINA.Core.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -54,13 +55,20 @@ namespace AutoFocusGraphs.Destinations {
             byte[] chartPng,
             string caption,
             CancellationToken tokenCt) {
-            if (chartPng != null && chartPng.Length > 0) {
-                await UploadFilesV2Async(
-                    token,
-                    channelId,
-                    new[] { (chartPng, "autofocus_digest.png") },
-                    caption,
-                    tokenCt).ConfigureAwait(false);
+            var files = chartPng != null && chartPng.Length > 0
+                ? new[] { (chartPng, "autofocus_digest.png") }
+                : Array.Empty<(byte[], string)>();
+            await SendDigestAsync(token, channelId, files, caption, tokenCt).ConfigureAwait(false);
+        }
+
+        public static async Task SendDigestAsync(
+            string token,
+            string channelId,
+            IReadOnlyList<(byte[] Bytes, string FileName)> files,
+            string caption,
+            CancellationToken tokenCt) {
+            if (files != null && files.Count > 0 && files.Any(f => f.Bytes != null && f.Bytes.Length > 0)) {
+                await UploadFilesV2Async(token, channelId, files, caption, tokenCt).ConfigureAwait(false);
             } else {
                 await PostMessageAsync(token, channelId, caption, tokenCt).ConfigureAwait(false);
             }

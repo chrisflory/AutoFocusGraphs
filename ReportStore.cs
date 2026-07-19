@@ -162,6 +162,38 @@ namespace AutoFocusGraphs {
             }
         }
 
+        /// <summary>
+        /// Most recent prior session report with the same filter and a usable V-curve (≥3 measure points).
+        /// </summary>
+        public AutofocusReport GetPreviousReportSameFilter(string excludeFileName, string filter) {
+            if (string.IsNullOrWhiteSpace(filter)) {
+                return null;
+            }
+
+            lock (gate) {
+                AutofocusReport previous = null;
+                foreach (var candidate in sessionReports) {
+                    if (string.Equals(candidate.FileName, excludeFileName, StringComparison.OrdinalIgnoreCase)) {
+                        continue;
+                    }
+
+                    if (!string.Equals(candidate.Filter, filter, StringComparison.OrdinalIgnoreCase)) {
+                        continue;
+                    }
+
+                    if (candidate.MeasurePoints == null || candidate.MeasurePoints.Count < 3) {
+                        continue;
+                    }
+
+                    if (previous == null || CompareReportOrder(candidate, previous) > 0) {
+                        previous = candidate;
+                    }
+                }
+
+                return previous;
+            }
+        }
+
         private static int CompareReportOrder(AutofocusReport a, AutofocusReport b) {
             var aUtc = a.CapturedUtc ?? DateTime.MinValue;
             var bUtc = b.CapturedUtc ?? DateTime.MinValue;

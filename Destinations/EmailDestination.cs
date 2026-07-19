@@ -1,6 +1,7 @@
 using AutoFocusGraphs.Properties;
 using NINA.Core.Utility;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -100,23 +101,25 @@ namespace AutoFocusGraphs.Destinations {
                 throw new InvalidOperationException(recipientError);
             }
 
-            byte[] chart = null;
+            DigestChartBuilder.Result charts = null;
             if (Settings.Default.IncludeDigestTrendChart && request.Reports?.Count > 0) {
-                try {
-                    var ordered = request.Reports.OrderBy(r => r.CapturedUtc ?? DateTime.MinValue).ToList();
-                    chart = AutofocusGraphGenerator.CreateTrendPng(
-                        ordered,
-                        Settings.Default.DigestTrendMaxRuns);
-                } catch (Exception ex) {
-                    Logger.Warning($"AutoFocusGraphs: Email digest chart failed: {ex.Message}");
-                }
+                charts = DigestChartBuilder.TryBuild(request.Reports, Settings.Default.DigestTrendMaxRuns);
             }
 
             var subject = EmailSubjectFormatter.FormatDigestSubject(
                 request.DigestLabel,
                 request.SequenceName,
                 Settings.Default.EmailSubjectTemplate);
-            var body = BuildDigestBody(request);
+            var body = BuildDigestBody(request, charts?.DriftSummary);
+            var chartFiles = new List<(byte[] Bytes, string FileName)>();
+            if (charts != null && charts.HasTrend) {
+                chartFiles.Add((charts.TrendPng, "autofocus_digest.png"));
+            }
+
+            if (charts != null && charts.HasDrift) {
+                chartFiles.Add((charts.DriftPng, "autofocus_drift.png"));
+            }
+
             await EmailSmtpClient.SendDigestAsync(
                 settings.Host,
                 settings.Port,
@@ -125,7 +128,7 @@ namespace AutoFocusGraphs.Destinations {
                 settings.Password,
                 settings.From,
                 settings.To,
-                chart,
+                chartFiles,
                 subject,
                 body,
                 token).ConfigureAwait(false);
@@ -178,7 +181,7 @@ namespace AutoFocusGraphs.Destinations {
             To = Settings.Default.EmailTo.Trim(),
         };
 
-        private static string BuildDigestBody(DigestPostRequest request) {
+        private static string BuildDigestBody(DigestPostRequest request, string driftSummary = null) {
             var sb = new StringBuilder();
             var label = string.Equals(request.DigestLabel, "sequence", StringComparison.OrdinalIgnoreCase)
                 ? "Sequence digest"
@@ -194,6 +197,10 @@ namespace AutoFocusGraphs.Destinations {
                 if (!string.IsNullOrWhiteSpace(filters)) {
                     sb.Append("\r\nFilters: ").Append(filters);
                 }
+            }
+
+            if (!string.IsNullOrWhiteSpace(driftSummary)) {
+                sb.Append("\r\n").Append(driftSummary);
             }
 
             return sb.ToString();

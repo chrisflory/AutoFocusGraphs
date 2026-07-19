@@ -71,23 +71,25 @@ namespace AutoFocusGraphs.Destinations {
         }
 
         public async Task PostDigestAsync(DigestPostRequest request, CancellationToken token) {
-            byte[] chart = null;
+            DigestChartBuilder.Result charts = null;
             if (Settings.Default.IncludeDigestTrendChart && request.Reports?.Count > 0) {
-                try {
-                    var ordered = request.Reports.OrderBy(r => r.CapturedUtc ?? DateTime.MinValue).ToList();
-                    chart = AutofocusGraphGenerator.CreateTrendPng(
-                        ordered,
-                        Settings.Default.DigestTrendMaxRuns);
-                } catch (Exception ex) {
-                    Logger.Warning($"AutoFocusGraphs: Slack digest chart failed: {ex.Message}");
-                }
+                charts = DigestChartBuilder.TryBuild(request.Reports, Settings.Default.DigestTrendMaxRuns);
             }
 
-            var caption = BuildDigestCaption(request);
+            var caption = BuildDigestCaption(request, charts?.DriftSummary);
+            var files = new System.Collections.Generic.List<(byte[] Bytes, string FileName)>();
+            if (charts != null && charts.HasTrend) {
+                files.Add((charts.TrendPng, "autofocus_digest.png"));
+            }
+
+            if (charts != null && charts.HasDrift) {
+                files.Add((charts.DriftPng, "autofocus_drift.png"));
+            }
+
             await SlackBotClient.SendDigestAsync(
                 Settings.Default.SlackBotToken.Trim(),
                 Settings.Default.SlackChannelId.Trim(),
-                chart,
+                files,
                 caption,
                 token).ConfigureAwait(false);
             Logger.Info($"AutoFocusGraphs: posted {request.DigestLabel} digest to Slack ({request.Reports?.Count ?? 0} run(s))");
@@ -99,7 +101,7 @@ namespace AutoFocusGraphs.Destinations {
                 Settings.Default.SlackChannelId.Trim(),
                 token);
 
-        private static string BuildDigestCaption(DigestPostRequest request) {
+        private static string BuildDigestCaption(DigestPostRequest request, string driftSummary = null) {
             var sb = new StringBuilder();
             var label = string.Equals(request.DigestLabel, "sequence", StringComparison.OrdinalIgnoreCase)
                 ? "Sequence digest"
@@ -115,6 +117,10 @@ namespace AutoFocusGraphs.Destinations {
                 if (!string.IsNullOrWhiteSpace(filters)) {
                     sb.Append("\nFilters: ").Append(filters);
                 }
+            }
+
+            if (!string.IsNullOrWhiteSpace(driftSummary)) {
+                sb.Append('\n').Append(driftSummary);
             }
 
             return sb.ToString();

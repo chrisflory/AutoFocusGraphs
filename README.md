@@ -54,11 +54,13 @@ Each digest line uses a **short AF timestamp** (not the long JSON filename):
 • #3 **2026-07-04--14-34-19** · **Ha** | HFR 2.85 | Pos 11240 | T 13.25 · 2026-07-04 14:34:19
 ```
 
-Digests include stats (min/avg/max HFR, best/worst, warnings, by-filter breakdown) and an optional HFR trend chart. Long sessions may truncate the text list. Automatic digests are skipped when no new AF JSON was written since NINA opened.
+Digests include stats (min/avg/max HFR, best/worst, warnings, by-filter breakdown) and optional charts (HFR trend + focus drift vs temperature). Long sessions may truncate the text list. Automatic digests are skipped when no new AF JSON was written since NINA opened.
 
 **Digest-only mode:** turn off **Post each autofocus run**, enable **Post digest when sequencer sequence completes** and/or **Post session digest when NINA exits** — runs are collected locally and only the digest(s) are posted.
 
 **Per-run send** (when per-run posts are on): post every AF, every Nth successful run, or only quality warnings/failures. Digests still include skipped runs.
+
+**Quiet hours:** when enabled, successful per-run posts are skipped inside the local time window (default 22:00–07:00, may wrap midnight). Warnings, failures, and digests still send.
 
 Message template tokens (per-run posts): `{shortfilename}`, `{filename}`, `{filenamefull}`, `{time}`, `{filter}`, `{prefix}`. On Discord, the full filename always appears in the embed footer.
 
@@ -151,6 +153,7 @@ Monitoring, graph rendering, quality gate, posting, and digests. A **live previe
 | **Focus position line** | Vertical dashed line at the calculated focus position |
 | **Context strip** | Top-right overlay: temperature, step size, run duration, and Δ focus vs previous AF |
 | **Previous AF marker** | Gray dotted vertical line at the previous autofocus position |
+| **Compare to last (same filter)** | Ghost previous session V-curve (same filter) behind current points |
 | **Trend R² in legend** | R² values for left and right trends in the graph legend |
 | **Initial focus marker** | Cyan diamond and dotted **Start pos** vertical line at the starting focuser position |
 | **HFR error bars** | Vertical bars from each point's HFR uncertainty (JSON `Error` field); off by default |
@@ -182,11 +185,13 @@ Examples of patterns the analyzer can surface:
 | **Post failures / unreadable reports** | Alert when a report file exists but cannot be parsed |
 | **Post each autofocus run** | Per-run posts on/off (off = digest-only mode) |
 | **Per-run send** | When per-run posts are on: **Every run**, **Every Nth run** (N = 2–50; warnings/failures always send), or **Problems only** |
+| **Quiet hours** | Local start/end window; successful per-run posts are skipped (warnings/failures/digests still send) |
 | **Include V-curve graph on each run** | Attach the PNG to each per-run post |
 | **Attach JSON** | Attach the raw AutoFocus JSON file to each per-run post |
 | **Graph analysis hints / Conservative hints** | Optional V-curve observations on live graphs and preview; conservative (default) = facts and patterns only |
 | **Post digest when sequencer sequence completes** | Sequence digest after the last per-run post (default on) |
 | **Post session digest when NINA exits** | Full-session digest on shutdown |
+| **Include trend chart in digests** | HFR trend PNG plus focus-drift chart (position vs temperature) when enough runs have both |
 | **Post sequence digest now** | Manual digest: current sequence first, then full session if the sequence is empty |
 | **Upload delay / message template** | Timing and template tokens |
 | **Watch folder** | Read-only AutoFocus path |

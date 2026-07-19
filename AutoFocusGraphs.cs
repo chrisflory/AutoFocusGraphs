@@ -58,6 +58,7 @@ namespace AutoFocusGraphs {
             nameof(ShowFocusPositionLine),
             nameof(ShowGraphContextStrip),
             nameof(ShowPreviousFocusMarker),
+            nameof(ShowCompareToLastCurve),
             nameof(ShowTrendR2InLegend),
             nameof(ShowInitialFocusMarker),
             nameof(ShowMeasurePointErrorBars),
@@ -75,6 +76,7 @@ namespace AutoFocusGraphs {
             nameof(ShowMeasurePointLabels),
             nameof(ShowGraphContextStrip),
             nameof(ShowPreviousFocusMarker),
+            nameof(ShowCompareToLastCurve),
             nameof(ShowTrendR2InLegend),
             nameof(ShowInitialFocusMarker),
             nameof(ShowMeasurePointErrorBars),
@@ -998,6 +1000,45 @@ namespace AutoFocusGraphs {
             }
         }
 
+        public bool ShowCompareToLastCurve {
+            get => Settings.Default.ShowCompareToLastCurve;
+            set {
+                Settings.Default.ShowCompareToLastCurve = value;
+                Save();
+                RaisePropertyChanged();
+            }
+        }
+
+        public bool QuietHoursEnabled {
+            get => Settings.Default.QuietHoursEnabled;
+            set {
+                Settings.Default.QuietHoursEnabled = value;
+                Save();
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(StatusText));
+            }
+        }
+
+        public string QuietHoursStart {
+            get => QuietHoursGate.NormalizeTime(Settings.Default.QuietHoursStart, QuietHoursGate.DefaultStart);
+            set {
+                Settings.Default.QuietHoursStart = QuietHoursGate.NormalizeTime(value, QuietHoursGate.DefaultStart);
+                Save();
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(StatusText));
+            }
+        }
+
+        public string QuietHoursEnd {
+            get => QuietHoursGate.NormalizeTime(Settings.Default.QuietHoursEnd, QuietHoursGate.DefaultEnd);
+            set {
+                Settings.Default.QuietHoursEnd = QuietHoursGate.NormalizeTime(value, QuietHoursGate.DefaultEnd);
+                Save();
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(StatusText));
+            }
+        }
+
         public bool ShowTrendR2InLegend {
             get => Settings.Default.ShowTrendR2InLegend;
             set {
@@ -1136,6 +1177,7 @@ namespace AutoFocusGraphs {
             Settings.Default.ShowFocusPositionLine = allOn;
             Settings.Default.ShowGraphContextStrip = allOn;
             Settings.Default.ShowPreviousFocusMarker = allOn;
+            Settings.Default.ShowCompareToLastCurve = allOn;
             Settings.Default.ShowTrendR2InLegend = allOn;
             Settings.Default.ShowInitialFocusMarker = allOn;
             Settings.Default.ShowMeasurePointErrorBars = allOn;
@@ -1244,6 +1286,10 @@ namespace AutoFocusGraphs {
                             PerRunSendGate.ModeEveryNth => $"watching (every {PerRunSendEveryN})",
                             _ => "watching"
                         };
+                if (QuietHoursEnabled &&
+                    QuietHoursGate.IsInQuietHours(DateTime.Now, QuietHoursStart, QuietHoursEnd)) {
+                    mode += " · quiet hours";
+                }
                 var seqCount = ReportStore.Instance.SequenceReports.Count;
                 var sessionCount = ReportStore.Instance.SessionReports.Count;
                 var destinations = string.Join(" + ", AutofocusDestinationRouter.GetActiveDestinations().Select(d => d.Name));
@@ -1280,7 +1326,9 @@ namespace AutoFocusGraphs {
                 propertyName == nameof(EmailFrom) || propertyName == nameof(EmailTo) ||
                 propertyName == nameof(EmailSubjectTemplate) ||
                 propertyName == nameof(PostPerRun) || propertyName == nameof(PerRunSendMode) ||
-                propertyName == nameof(PerRunSendEveryN) || propertyName == nameof(PostDigestOnShutdown) ||
+                propertyName == nameof(PerRunSendEveryN) || propertyName == nameof(QuietHoursEnabled) ||
+                propertyName == nameof(QuietHoursStart) || propertyName == nameof(QuietHoursEnd) ||
+                propertyName == nameof(PostDigestOnShutdown) ||
                 propertyName == nameof(PostDigestOnSequenceEnd)) {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(StatusText)));
             }

@@ -408,20 +408,21 @@ namespace AutoFocusGraphs {
                 body = body.Substring(0, 2799) + "…";
             }
 
-            byte[] chartPng = null;
+            DigestChartBuilder.Result charts = null;
             var includeGraph = postOptions.IncludeDigestTrendChart
                                && postOptions.AttachMode != AttachContentMode.EmbedOnly;
             if (includeGraph) {
-                try {
-                    chartPng = AutofocusGraphGenerator.CreateTrendPng(ordered, postOptions.DigestTrendMaxRuns);
-                } catch {
-                    // text-only digest
-                }
+                charts = DigestChartBuilder.TryBuild(ordered, postOptions.DigestTrendMaxRuns);
             }
 
+            var chartPng = charts?.TrendPng;
             var hasTrend = chartPng != null && chartPng.Length > 0;
             var includeEmbed = postOptions.AttachMode != AttachContentMode.GraphOnly;
-            var description = Truncate($"{stats}\n\n{body}", 4096);
+            var description = Truncate(
+                string.IsNullOrWhiteSpace(charts?.DriftSummary)
+                    ? $"{stats}\n\n{body}"
+                    : $"{stats}\n{charts.DriftSummary}\n\n{body}",
+                4096);
 
             try {
                 await RunSerializedWebhookAsync(async () => {
@@ -436,6 +437,24 @@ namespace AutoFocusGraphs {
                         reportFileName: null,
                         imageFileName: "af_trend.png",
                         token).ConfigureAwait(false);
+
+                    if (charts != null && charts.HasDrift) {
+                        var driftCaption = Truncate(
+                            string.IsNullOrWhiteSpace(charts.DriftSummary)
+                                ? "Focus drift"
+                                : charts.DriftSummary,
+                            2000);
+                        await PostPayloadWithForumFallbackAsync(
+                            webhookUrl,
+                            postOptions,
+                            opts => ApplyIdentity(new JObject { ["content"] = driftCaption }, opts).ToString(Formatting.None),
+                            charts.DriftPng,
+                            attachJson: false,
+                            jsonFilePath: null,
+                            reportFileName: null,
+                            imageFileName: "af_drift.png",
+                            token).ConfigureAwait(false);
+                    }
                 }).ConfigureAwait(false);
                 PostStatusTracker.RecordSuccess($"{digestLabel} digest ({ordered.Count} runs)");
                 Logger.Info($"AutoFocusGraphs: posted {digestLabel} digest ({ordered.Count} runs)");

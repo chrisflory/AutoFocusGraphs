@@ -29,6 +29,7 @@ namespace AutoFocusGraphs {
             bool conservativeGraphHints = true,
             double hintMinR2 = 0.90,
             double hintMaxFinalHfr = 3.0,
+            bool showCompareToLastCurve = false,
             int pixelWidth = 1200,
             int pixelHeight = 720) {
             var positions = report.MeasurePoints.Select(p => p.Position).ToArray();
@@ -43,6 +44,22 @@ namespace AutoFocusGraphs {
             plot.FigureBackground.Color = Color.FromHex("#36393F");
             plot.DataBackground.Color = Color.FromHex("#36393F");
             var previousFocusFallback = ReportStore.Instance.GetPreviousCalculatedFocusPosition(report.FileName);
+
+            if (!minimalMode && showCompareToLastCurve) {
+                var prior = ReportStore.Instance.GetPreviousReportSameFilter(report.FileName, report.Filter);
+                if (prior?.MeasurePoints != null && prior.MeasurePoints.Count >= 3) {
+                    var priorPos = prior.MeasurePoints.Select(p => p.Position).ToArray();
+                    var priorHfr = prior.MeasurePoints.Select(p => p.Value).ToArray();
+                    var priorLine = plot.Add.Scatter(priorPos, priorHfr);
+                    priorLine.Color = Color.FromHex("#888888");
+                    priorLine.LineWidth = 2;
+                    priorLine.LinePattern = LinePattern.Dashed;
+                    priorLine.MarkerSize = 5;
+                    priorLine.LegendText = string.IsNullOrWhiteSpace(prior.Filter)
+                        ? "Last curve"
+                        : $"Last {prior.Filter}";
+                }
+            }
 
             if (!minimalMode) {
                 var curve = plot.Add.Scatter(positions, values);
@@ -514,6 +531,84 @@ namespace AutoFocusGraphs {
             plot.Axes.Title.Label.Text = "Autofocus trend";
             StyleAxis(plot.Axes.Bottom);
             StyleAxis(plot.Axes.Left);
+            plot.Axes.Title.Label.ForeColor = Colors.White;
+            plot.Axes.Title.Label.FontSize = 18;
+            plot.ShowLegend(Edge.Bottom);
+            plot.Legend.Orientation = Orientation.Horizontal;
+            plot.Legend.FontColor = Colors.White;
+            plot.Legend.BackgroundColor = Color.FromHex("#36393F");
+            plot.Legend.OutlineColor = Color.FromHex("#555555");
+            plot.Legend.ShadowColor = Colors.Transparent;
+            plot.Grid.MajorLineColor = Color.FromHex("#555555");
+
+            return plot.GetImageBytes(1200, 640, ImageFormat.Png);
+        }
+
+        /// <summary>
+        /// Focus position (left) and temperature (right) across recent runs. Returns null when &lt;3 usable points.
+        /// </summary>
+        public static byte[] CreateDriftPng(IReadOnlyList<AutofocusReport> reports, int maxRuns = 20) {
+            var usable = FocusDriftAnalyzer.SelectUsable(reports).ToList();
+            if (usable.Count < 3) {
+                return null;
+            }
+
+            if (maxRuns > 0 && usable.Count > maxRuns) {
+                usable = usable.Skip(usable.Count - maxRuns).ToList();
+            }
+
+            var count = usable.Count;
+            var xs = new double[count];
+            var positions = new double[count];
+            var temps = new double[count];
+            for (var i = 0; i < count; i++) {
+                xs[i] = i + 1;
+                positions[i] = usable[i].Position;
+                temps[i] = usable[i].Temperature;
+            }
+
+            var plot = new Plot();
+            plot.FigureBackground.Color = Color.FromHex("#36393F");
+            plot.DataBackground.Color = Color.FromHex("#36393F");
+
+            var posSeries = plot.Add.Scatter(xs, positions);
+            posSeries.Color = Color.FromHex("#2ECC71");
+            posSeries.LineWidth = 3;
+            posSeries.MarkerSize = 10;
+            posSeries.LegendText = "Focus pos";
+            posSeries.Axes.YAxis = plot.Axes.Left;
+
+            var tempSeries = plot.Add.Scatter(xs, temps);
+            tempSeries.Color = Color.FromHex("#F1C40F");
+            tempSeries.LineWidth = 3;
+            tempSeries.MarkerSize = 10;
+            tempSeries.LegendText = "Temp °C";
+            tempSeries.Axes.YAxis = plot.Axes.Right;
+
+            var tickPositions = xs.ToArray();
+            var tickLabels = xs.Select(x => ((int)x).ToString()).ToArray();
+            plot.Axes.Bottom.TickGenerator = new ScottPlot.TickGenerators.NumericManual(tickPositions, tickLabels);
+            plot.Axes.SetLimitsX(0.5, count + 0.5);
+
+            var minPos = positions.Min();
+            var maxPos = positions.Max();
+            var posPad = Math.Max(5.0, (maxPos - minPos) * 0.2);
+            plot.Axes.SetLimitsY(minPos - posPad, maxPos + posPad, plot.Axes.Left);
+
+            var minT = temps.Min();
+            var maxT = temps.Max();
+            var tPad = Math.Max(0.3, (maxT - minT) * 0.25);
+            plot.Axes.SetLimitsY(minT - tPad, maxT + tPad, plot.Axes.Right);
+
+            plot.Axes.Bottom.Label.Text = "Run # (oldest → newest)";
+            plot.Axes.Left.Label.Text = "Focus position";
+            plot.Axes.Right.Label.Text = "Temperature °C";
+            plot.Axes.Title.Label.Text = "Focus drift";
+            StyleAxis(plot.Axes.Bottom);
+            StyleAxis(plot.Axes.Left);
+            StyleAxis(plot.Axes.Right);
+            plot.Axes.Left.Label.ForeColor = Color.FromHex("#2ECC71");
+            plot.Axes.Right.Label.ForeColor = Color.FromHex("#F1C40F");
             plot.Axes.Title.Label.ForeColor = Colors.White;
             plot.Axes.Title.Label.FontSize = 18;
             plot.ShowLegend(Edge.Bottom);

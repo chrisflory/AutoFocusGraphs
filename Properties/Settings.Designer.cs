@@ -252,6 +252,38 @@ namespace AutoFocusGraphs.Properties {
 
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ShowCompareToLastCurve {
+            get { return ((bool)(this["ShowCompareToLastCurve"])); }
+            set { this["ShowCompareToLastCurve"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool QuietHoursEnabled {
+            get { return ((bool)(this["QuietHoursEnabled"])); }
+            set { this["QuietHoursEnabled"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("22:00")]
+        public string QuietHoursStart {
+            get { return ((string)(this["QuietHoursStart"])); }
+            set { this["QuietHoursStart"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("07:00")]
+        public string QuietHoursEnd {
+            get { return ((string)(this["QuietHoursEnd"])); }
+            set { this["QuietHoursEnd"] = value; }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool ShowTrendR2InLegend {
             get { return ((bool)(this["ShowTrendR2InLegend"])); }

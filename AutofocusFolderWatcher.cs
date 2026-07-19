@@ -199,6 +199,15 @@ namespace AutoFocusGraphs {
                 return;
             }
 
+            if (!QuietHoursGate.ShouldPostPerRun(
+                    quality.Outcome,
+                    options.QuietHoursEnabled,
+                    options.QuietHoursStart,
+                    options.QuietHoursEnd)) {
+                Logger.Info($"AutoFocusGraphs: skipping per-run post (quiet hours) ({info.Name})");
+                return;
+            }
+
             SequenceRunPostTracker.BeginPost();
             try {
                 var delaySeconds = Math.Max(0, Math.Min(options.UploadDelaySeconds, 60));
@@ -229,7 +238,8 @@ namespace AutoFocusGraphs {
                         options.ShowGraphAnalysisHints,
                         options.ConservativeGraphHints,
                         options.MinR2,
-                        options.MaxFinalHfr);
+                        options.MaxFinalHfr,
+                        options.ShowCompareToLastCurve);
                     Logger.Info($"AutoFocusGraphs: graph rendered ({graphPng.Length} bytes)");
                 } catch (Exception ex) {
                     Logger.Error($"AutoFocusGraphs: graph generation failed, posting embed only: {ex.Message}");
@@ -353,6 +363,7 @@ namespace AutoFocusGraphs {
         public bool ShowMeasurePointLabels { get; init; }
         public bool ShowGraphContextStrip { get; init; }
         public bool ShowPreviousFocusMarker { get; init; }
+        public bool ShowCompareToLastCurve { get; init; }
         public bool ShowTrendR2InLegend { get; init; }
         public bool ShowInitialFocusMarker { get; init; }
         public bool ShowMeasurePointErrorBars { get; init; }
@@ -360,6 +371,9 @@ namespace AutoFocusGraphs {
         public bool ShowGraphAnalysisHints { get; init; }
         public bool ConservativeGraphHints { get; init; }
         public bool NotifyOnQualityWarning { get; init; }
+        public bool QuietHoursEnabled { get; init; }
+        public string QuietHoursStart { get; init; }
+        public string QuietHoursEnd { get; init; }
         public AttachContentMode AttachMode { get; init; }
         public string DiscordThreadId { get; init; }
         public bool UseNightlyThreadName { get; init; }
@@ -403,6 +417,7 @@ namespace AutoFocusGraphs {
                 ShowMeasurePointLabels = Settings.Default.ShowMeasurePointLabels,
                 ShowGraphContextStrip = Settings.Default.ShowGraphContextStrip,
                 ShowPreviousFocusMarker = Settings.Default.ShowPreviousFocusMarker,
+                ShowCompareToLastCurve = Settings.Default.ShowCompareToLastCurve,
                 ShowTrendR2InLegend = Settings.Default.ShowTrendR2InLegend,
                 ShowInitialFocusMarker = Settings.Default.ShowInitialFocusMarker,
                 ShowMeasurePointErrorBars = Settings.Default.ShowMeasurePointErrorBars,
@@ -410,6 +425,9 @@ namespace AutoFocusGraphs {
                 ShowGraphAnalysisHints = Settings.Default.ShowGraphAnalysisHints,
                 ConservativeGraphHints = Settings.Default.ConservativeGraphHints,
                 NotifyOnQualityWarning = Settings.Default.NotifyOnQualityWarning,
+                QuietHoursEnabled = Settings.Default.QuietHoursEnabled,
+                QuietHoursStart = Settings.Default.QuietHoursStart,
+                QuietHoursEnd = Settings.Default.QuietHoursEnd,
                 AttachMode = post.AttachMode,
                 DiscordThreadId = post.ThreadId,
                 UseNightlyThreadName = post.UseNightlyThreadName,

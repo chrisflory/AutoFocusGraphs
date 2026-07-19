@@ -65,25 +65,31 @@ namespace AutoFocusGraphs.Destinations {
         }
 
         public async Task PostDigestAsync(DigestPostRequest request, CancellationToken token) {
-            byte[] chart = null;
+            DigestChartBuilder.Result charts = null;
             if (Settings.Default.IncludeDigestTrendChart && request.Reports?.Count > 0) {
-                try {
-                    var ordered = request.Reports.OrderBy(r => r.CapturedUtc ?? DateTime.MinValue).ToList();
-                    chart = AutofocusGraphGenerator.CreateTrendPng(
-                        ordered,
-                        Settings.Default.DigestTrendMaxRuns);
-                } catch (System.Exception ex) {
-                    Logger.Warning($"AutoFocusGraphs: Telegram digest chart failed: {ex.Message}");
-                }
+                charts = DigestChartBuilder.TryBuild(request.Reports, Settings.Default.DigestTrendMaxRuns);
             }
 
-            var caption = BuildDigestCaption(request);
+            var caption = BuildDigestCaption(request, charts?.DriftSummary);
             await TelegramBotClient.SendDigestAsync(
                 Settings.Default.TelegramBotToken.Trim(),
                 Settings.Default.TelegramChatId.Trim(),
-                chart,
+                charts?.TrendPng,
                 caption,
                 token).ConfigureAwait(false);
+
+            if (charts != null && charts.HasDrift) {
+                var driftCaption = string.IsNullOrWhiteSpace(charts.DriftSummary)
+                    ? "Focus drift"
+                    : charts.DriftSummary;
+                await TelegramBotClient.SendDigestAsync(
+                    Settings.Default.TelegramBotToken.Trim(),
+                    Settings.Default.TelegramChatId.Trim(),
+                    charts.DriftPng,
+                    TelegramBotClient.ConvertDiscordMarkdownToHtml(driftCaption),
+                    token).ConfigureAwait(false);
+            }
+
             Logger.Info($"AutoFocusGraphs: posted {request.DigestLabel} digest to Telegram ({request.Reports?.Count ?? 0} run(s))");
         }
 
@@ -125,7 +131,7 @@ namespace AutoFocusGraphs.Destinations {
             return sb.ToString();
         }
 
-        private static string BuildDigestCaption(DigestPostRequest request) {
+        private static string BuildDigestCaption(DigestPostRequest request, string driftSummary = null) {
             var sb = new StringBuilder();
             var label = string.Equals(request.DigestLabel, "sequence", System.StringComparison.OrdinalIgnoreCase)
                 ? "Sequence digest"
@@ -141,6 +147,10 @@ namespace AutoFocusGraphs.Destinations {
                 if (!string.IsNullOrWhiteSpace(filters)) {
                     sb.Append("\nFilters: ").Append(TelegramBotClient.ConvertDiscordMarkdownToHtml(filters));
                 }
+            }
+
+            if (!string.IsNullOrWhiteSpace(driftSummary)) {
+                sb.Append('\n').Append(TelegramBotClient.ConvertDiscordMarkdownToHtml(driftSummary));
             }
 
             return sb.ToString();
