@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.0.3 — 2026-07-19
+
+Patch — Options Graph tab layout cleanup.
+
+- Renamed **Quality & posting** → **Quality** (gate, sound, R²/HFR, filter profiles only)
+- Merged **What to post** and quiet hours / delay / template into one **Posting** section
+- Moved failure hooks (**no JSON report**, **unreadable reports**) to the top of **Posting**
+
 ## 0.1.0.2 — 2026-07-19
 
 Feature release — quieter overnight posting, richer digests/charts, sharper exports.
