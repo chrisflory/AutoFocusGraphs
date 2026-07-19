@@ -22,7 +22,7 @@
   </defs>
   <rect width="1180" height="520" fill="#2f3136"/>
   <rect x="72" y="28" width="1092" height="476" fill="none" stroke="#72767d" stroke-width="2" rx="12"/>
-  <text x="88" y="48" class="title">v0.1.0.1+</text>
+  <text x="88" y="48" class="title">v0.1.0.2</text>
 
   <rect x="8" y="208" width="64" height="64" class="box nina"/>
   <text x="40" y="230" text-anchor="middle" class="label">NINA</text>

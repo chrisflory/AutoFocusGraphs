@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## 0.1.0.2 — 2026-07-19
+
+Feature release — quieter overnight posting, richer digests/charts, sharper exports.
 
 - **Per-run send** controls on the Graph tab: Every run (default), Every Nth run (2–50; warnings/failures always post), or Problems only. Digests and failure hooks are unchanged; skipped runs stay in ReportStore.
 - **Compare to last (same filter)** graph overlay: ghosts the previous session V-curve behind the current measure points

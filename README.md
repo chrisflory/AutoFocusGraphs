@@ -2,7 +2,7 @@
 
 A N.I.N.A. plugin that watches the AutoFocus report folder, renders a **dark-mode V-curve graph**, and posts per-run reports and digests to **Discord**, **Telegram**, **Slack**, **email**, or any combination.
 
-> **Latest release:** [v0.1.0.1](https://github.com/chrisflory/AutoFocusGraphs/releases/tag/v0.1.0.1) — multi-destination autofocus graph delivery for N.I.N.A. 3.3 nightlies.
+> **Latest release:** [v0.1.0.2](https://github.com/chrisflory/AutoFocusGraphs/releases/tag/v0.1.0.2) — multi-destination autofocus graph delivery for N.I.N.A. 3.3 nightlies.
 
 ---
 
@@ -80,7 +80,7 @@ Per-run history in NINA is left to NINA's own HFR history; this plugin focuses o
 
 **From a release (recommended):**
 
-Download [AutoFocusGraphs.0.1.0.1.zip](https://github.com/chrisflory/AutoFocusGraphs/releases/download/v0.1.0.1/AutoFocusGraphs.0.1.0.1.zip) and extract into:
+Download [AutoFocusGraphs.0.1.0.2.zip](https://github.com/chrisflory/AutoFocusGraphs/releases/download/v0.1.0.2/AutoFocusGraphs.0.1.0.2.zip) and extract into:
 
 `%localappdata%\NINA\Plugins\3.0.0\AutoFocusGraphs\`
 
