@@ -17,7 +17,7 @@
     <Compile Remove="tools\**\*.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MailKit" Version="4.11.0" />
+    <PackageReference Include="MailKit" Version="4.17.0" />
     <PackageReference Include="NINA.Plugin" Version="3.3.0.1047-nightly" />
     <PackageReference Include="ScottPlot" Version="5.0.55" />
   </ItemGroup>

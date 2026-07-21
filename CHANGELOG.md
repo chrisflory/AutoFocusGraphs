@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.0.4 — 2026-07-21
+
+Patch release — dependency security update and Graph-tab alignment polish.
+
+- Upgraded MailKit/MimeKit from 4.11.0 to 4.17.0, clearing their known moderate-severity advisories
+- Left-aligned the **How it works** help text and destination note with the section heading
+
 ## 0.1.0.3 — 2026-07-19
 
 Patch — Options Graph tab layout cleanup.
