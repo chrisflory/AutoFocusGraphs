@@ -113,7 +113,7 @@ namespace AutoFocusGraphs.Destinations {
                 ["files"] = filesJson.ToString(Formatting.None),
             };
             if (!string.IsNullOrWhiteSpace(initialComment)) {
-                form["initial_comment"] = TrimText(initialComment);
+                form["initial_comment"] = TrimText(EscapeSlackText(initialComment));
             }
 
             await PostSlackApiAsync("files.completeUploadExternal", form, null, tokenCt).ConfigureAwait(false);
@@ -166,7 +166,7 @@ namespace AutoFocusGraphs.Destinations {
             var form = new Dictionary<string, string> {
                 ["token"] = token,
                 ["channel"] = channelId,
-                ["text"] = TrimText(text),
+                ["text"] = TrimText(EscapeSlackText(text)),
                 ["mrkdwn"] = "true",
             };
 
@@ -243,6 +243,16 @@ namespace AutoFocusGraphs.Destinations {
 
         private static string EscapeInline(string text) =>
             (text ?? string.Empty).Replace("`", "'", StringComparison.Ordinal);
+
+        /// <summary>
+        /// Slack requires &amp;, &lt;, &gt; to be escaped in message text; unescaped &lt;...&gt; is parsed
+        /// as markup and would let report-derived strings inject mentions like &lt;!channel&gt; or disguised links.
+        /// </summary>
+        internal static string EscapeSlackText(string text) =>
+            (text ?? string.Empty)
+                .Replace("&", "&amp;", StringComparison.Ordinal)
+                .Replace("<", "&lt;", StringComparison.Ordinal)
+                .Replace(">", "&gt;", StringComparison.Ordinal);
 
         private static string TrimText(string text) {
             if (string.IsNullOrEmpty(text)) {

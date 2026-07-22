@@ -22,6 +22,15 @@ namespace AutoFocusGraphs {
             Timeout = TimeSpan.FromSeconds(60)
         };
 
+        /// <summary>
+        /// Used for fetching user-supplied image URLs. Redirects are followed manually so each hop
+        /// can be re-validated against the image-host allowlist (auto-redirect would bypass it).
+        /// </summary>
+        private static readonly HttpClient NoRedirectHttp = new HttpClient(
+            new HttpClientHandler { AllowAutoRedirect = false }) {
+            Timeout = TimeSpan.FromSeconds(60)
+        };
+
         private static readonly SemaphoreSlim WebhookGate = new SemaphoreSlim(1, 1);
 
         /// <summary>Discord can show the previous/default icon if we POST immediately after PATCH.</summary>
@@ -235,7 +244,7 @@ namespace AutoFocusGraphs {
                 if (!HttpsFetchUrlValidator.TryValidateImageFetchUrl(avatarUrl, out var urlError)) {
                     Logger.Warning($"AutoFocusGraphs: avatar URL blocked ({urlError}); using built-in icon.");
                 } else try {
-                    using var response = await Http.GetAsync(avatarUrl, token).ConfigureAwait(false);
+                    using var response = await GetImageWithValidatedRedirectsAsync(avatarUrl, token).ConfigureAwait(false);
                     if (response.IsSuccessStatusCode) {
                         var bytes = await response.Content.ReadAsByteArrayAsync(token).ConfigureAwait(false);
                         if (bytes != null && bytes.Length > 0 && bytes.Length <= 8 * 1024 * 1024) {
@@ -255,6 +264,37 @@ namespace AutoFocusGraphs {
 
             var embedded = LoadEmbeddedAvatar();
             return embedded == null ? (null, "image/png") : (embedded, "image/png");
+        }
+
+        private static async Task<HttpResponseMessage> GetImageWithValidatedRedirectsAsync(
+            string url,
+            CancellationToken token) {
+            const int maxRedirects = 5;
+            var current = url;
+            for (var hop = 0; hop <= maxRedirects; hop++) {
+                var response = await NoRedirectHttp.GetAsync(current, token).ConfigureAwait(false);
+                var status = (int)response.StatusCode;
+                if (status < 300 || status >= 400) {
+                    return response;
+                }
+
+                var location = response.Headers.Location;
+                response.Dispose();
+                if (location == null) {
+                    throw new InvalidOperationException("redirect response had no Location header");
+                }
+
+                var next = location.IsAbsoluteUri
+                    ? location.ToString()
+                    : new Uri(new Uri(current), location).ToString();
+                if (!HttpsFetchUrlValidator.TryValidateImageFetchUrl(next, out var redirectError)) {
+                    throw new InvalidOperationException($"redirect target blocked: {redirectError}");
+                }
+
+                current = next;
+            }
+
+            throw new InvalidOperationException("too many redirects");
         }
 
         private static byte[] embeddedAvatarBytes;

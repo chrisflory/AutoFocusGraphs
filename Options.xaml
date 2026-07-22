@@ -267,9 +267,9 @@
             </Grid>
 
             <TextBlock Text="Minimum hyperbolic R²" Margin="0,0,0,4" />
-            <TextBox Text="{Binding MinR2}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,8" />
+            <TextBox Text="{Binding MinR2Text}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,8" />
             <TextBlock Text="Maximum final HFR" Margin="0,0,0,4" />
-            <TextBox Text="{Binding MaxFinalHfr}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,8" />
+            <TextBox Text="{Binding MaxFinalHfrText}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,8" />
             <TextBlock Text="Per-filter profiles" Margin="0,0,0,4" />
             <TextBlock Text="Optional overrides per filter. Names match your NINA filter wheel (Equipment → Filter wheel), plus filters seen in AF reports. Pick from the list or type one. Prefix match: Ha also matches Ha-7nm and H-alpha." Margin="0,0,0,6" Opacity="0.7" TextWrapping="Wrap" />
             <Grid Margin="0,0,0,4">
@@ -457,7 +457,7 @@
                      ToolTip="Local end time. Successful per-run posts resume after this time." />
             <Rectangle Style="{StaticResource OptionsSettingSeparator}" />
             <TextBlock Text="Upload delay (seconds)" Margin="0,0,0,4" />
-            <TextBox Text="{Binding UploadDelaySeconds}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,12" />
+            <TextBox Text="{Binding UploadDelaySecondsText}" Width="80" HorizontalAlignment="Left" Margin="0,0,0,12" />
             <Rectangle Style="{StaticResource OptionsSettingSeparator}" />
             <TextBlock Text="Message template" Margin="0,0,0,4" />
             <TextBox Text="{Binding MessageTemplate, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource OptionsSettingField}" />

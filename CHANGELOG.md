@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.0.5 — 2026-07-22
+
+Patch release — code-review fixes: quality-gate correctness and posting hardening.
+
+- **Quality gate:** numeric option boxes (Min R², Max final HFR, upload delay) now parse decimal commas correctly on European locales — previously `0,90` could silently become 1.0 and flag every run
+- **Quality gate:** a missing/NaN Final HFR now raises a warning instead of silently passing
+- **Slack:** report-derived text is escaped (`&`, `<`, `>`) so crafted report content can't inject `<!channel>` pings or disguised links
+- **Discord:** avatar image fetches no longer follow redirects blindly — each hop is re-validated against the image-host allowlist (SSRF hardening)
+- **Shutdown:** the on-exit session digest is capped at 15 seconds so a dead network can't hang NINA's exit
+
 ## 0.1.0.4 — 2026-07-21
 
 Patch release — dependency security update and Graph-tab alignment polish.

@@ -99,7 +99,7 @@ def main():
         outline=CONTAINER_BORDER,
         width=max(1, s(2)),
     )
-    draw.text(sx(88, 38), "v0.1.0.4", fill=SUB, font=font(12, bold=True))
+    draw.text(sx(88, 38), "v0.1.0.5", fill=SUB, font=font(12, bold=True))
 
     box(draw, (8, 208, 72, 272), NINA)
     center_text(draw, (8, 208, 72, 272), "NINA\nwrites\nAF JSON")

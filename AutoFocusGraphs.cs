@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -312,8 +313,13 @@ namespace AutoFocusGraphs {
             try {
                 if (Settings.Default.PostDigestOnShutdown &&
                     AutofocusDestinationRouter.AnyActiveDestination()) {
-                    await SessionDigestService.PostShutdownDigestAsync().ConfigureAwait(false);
+                    // Bound the shutdown digest so a dead network can't hang NINA's exit
+                    // behind sequential per-destination HTTP timeouts.
+                    using var shutdownCts = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+                    await SessionDigestService.PostShutdownDigestAsync(shutdownCts.Token).ConfigureAwait(false);
                 }
+            } catch (OperationCanceledException) {
+                Logger.Warning("AutoFocusGraphs: shutdown digest timed out after 15s; continuing NINA exit.");
             } catch (Exception ex) {
                 Logger.Error($"AutoFocusGraphs: shutdown digest failed: {ex.Message}");
             }
@@ -688,11 +694,16 @@ namespace AutoFocusGraphs {
             }
         }
 
-        public double UploadDelaySeconds {
-            get => Settings.Default.UploadDelaySeconds;
+        // Numeric text boxes bind to string properties parsed invariant-then-current culture,
+        // because WPF's default en-US binding conversion silently misreads comma-decimal input
+        // (e.g. "0,90" became 90). Invalid input reverts to the stored value.
+        public string UploadDelaySecondsText {
+            get => Settings.Default.UploadDelaySeconds.ToString("0.##", CultureInfo.InvariantCulture);
             set {
-                Settings.Default.UploadDelaySeconds = value < 0 ? 0 : (value > 60 ? 60 : value);
-                Save();
+                if (TryParseDouble(value, out var parsed)) {
+                    Settings.Default.UploadDelaySeconds = Math.Clamp(parsed, 0, 60);
+                    Save();
+                }
                 RaisePropertyChanged();
             }
         }
@@ -786,22 +797,35 @@ namespace AutoFocusGraphs {
             }
         }
 
-        public double MinR2 {
-            get => Settings.Default.MinR2;
+        public string MinR2Text {
+            get => Settings.Default.MinR2.ToString("0.##", CultureInfo.InvariantCulture);
             set {
-                Settings.Default.MinR2 = value < 0 ? 0 : (value > 1 ? 1 : value);
-                Save();
+                if (TryParseDouble(value, out var parsed)) {
+                    Settings.Default.MinR2 = Math.Clamp(parsed, 0, 1);
+                    Save();
+                }
                 RaisePropertyChanged();
             }
         }
 
-        public double MaxFinalHfr {
-            get => Settings.Default.MaxFinalHfr;
+        public string MaxFinalHfrText {
+            get => Settings.Default.MaxFinalHfr.ToString("0.##", CultureInfo.InvariantCulture);
             set {
-                Settings.Default.MaxFinalHfr = value < 0.1 ? 0.1 : value;
-                Save();
+                if (TryParseDouble(value, out var parsed)) {
+                    Settings.Default.MaxFinalHfr = Math.Max(0.1, parsed);
+                    Save();
+                }
                 RaisePropertyChanged();
             }
+        }
+
+        private static bool TryParseDouble(string text, out double value) {
+            var trimmed = text?.Trim();
+            if (double.TryParse(trimmed, NumberStyles.Float, CultureInfo.InvariantCulture, out value) ||
+                double.TryParse(trimmed, NumberStyles.Float, CultureInfo.CurrentCulture, out value)) {
+                return !double.IsNaN(value) && !double.IsInfinity(value);
+            }
+            return false;
         }
 
         private void LoadFilterProfileRows() {

@@ -37,6 +37,13 @@ namespace AutoFocusGraphs {
                 };
             }
 
+            if (double.IsNaN(report.FinalHfr) || double.IsInfinity(report.FinalHfr)) {
+                return new QualityResult {
+                    Outcome = ReportOutcome.Warning,
+                    Reason = "Final HFR is missing or not a number."
+                };
+            }
+
             if (report.FinalHfr > maxFinalHfr) {
                 return new QualityResult {
                     Outcome = ReportOutcome.Warning,
